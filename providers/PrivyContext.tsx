@@ -2,9 +2,9 @@
 
 
 import { PrivyProvider } from "@privy-io/react-auth"
-import { SmartWalletsProvider } from "@privy-io/react-auth/smart-wallets"
 import type { ReactNode } from "react"
-import { celo } from "viem/chains"
+import { base, celo, celoAlfajores } from "viem/chains"
+import {SmartWalletsProvider} from '@privy-io/react-auth/smart-wallets'
 
 
 type Props = {
@@ -29,13 +29,11 @@ export function PrivyContext ({ children }: Props) {
                 supportedChains: [celo],
                 embeddedWallets: {
                     createOnLogin: "all-users",
+                    noPromptOnSignature: true
                 },
             }}
         >
-            <SmartWalletsProvider>
                 {children}
-            </SmartWalletsProvider>
-            {children}
         </PrivyProvider>
     )
 }

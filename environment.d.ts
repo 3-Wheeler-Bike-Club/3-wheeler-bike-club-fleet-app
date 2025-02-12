@@ -3,6 +3,7 @@ import { string } from "zod"
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
+            NEXT_PUBLIC_PAYSTACK_KEY: string
             NEXT_PUBLIC_PROJECT_ID: string
             MONGO: string
             WHEELER_API_KEY: string

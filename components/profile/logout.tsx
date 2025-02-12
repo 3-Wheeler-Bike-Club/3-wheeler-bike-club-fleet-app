@@ -34,7 +34,7 @@ export function Logout () {
                 <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This action will log you out of your membership dashboard. You can no longer view your account information!
+                    This action will log you out of your fleet management dashboard. You can no longer view your account information!
                 </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

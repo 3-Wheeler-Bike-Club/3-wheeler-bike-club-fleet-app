@@ -1,30 +1,27 @@
 "use client"
 
 import { usePrivy } from "@privy-io/react-auth";
-import { Authorized } from "../fleet/authorized";
-import { Unauthorized } from "../fleet/unauthorized";
+import { Authorized } from "./authorized";
+import { Unauthorized } from "./unauthorized";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 
-
 export function Wrapper() {
-    const { ready, authenticated, user } = usePrivy()
-
+    const { user, ready, authenticated } = usePrivy()
     const router = useRouter()
-    
+
 
     useEffect(() => {
-        if (!user?.customMetadata) {
+        if (ready && authenticated && !user?.customMetadata) {
             router.replace("/profile")
         }
 
-
-    }, [user?.customMetadata])
-
+    }, [ready, authenticated, router, user?.customMetadata])
     return (
         <>
         {
+
             !ready 
             ?(
                 <>

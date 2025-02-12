@@ -43,7 +43,7 @@ export default function RootLayout({
       >
         <WagmiContext initialState={initialState!}>
           <PrivyContext>
-            {children}
+                {children}
           </PrivyContext>
         </WagmiContext>
       </body>

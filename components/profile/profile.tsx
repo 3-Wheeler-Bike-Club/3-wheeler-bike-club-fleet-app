@@ -8,12 +8,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form"
 import { usePrivy } from "@privy-io/react-auth"
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "../ui/drawer"
 import { motion } from "framer-motion";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 //import { useSmartWallets } from "@privy-io/react-auth/smart-wallets"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Countries } from "@/utils/constants/countries"
 import { setCustomPrivyMetadata } from "@/app/actions/privy/setCustomPrivyMetadata"
 import { Logout } from "./logout"
-import { Ellipsis } from "lucide-react"
 
 
 
@@ -207,7 +207,7 @@ export function Profile () {
                                                             ease: "linear", // Animation easing function (linear makes it constant speed)
                                                         }}
                                                     >
-                                                            <Ellipsis />
+                                                            <DotsHorizontalIcon/>
                                                         </motion.div>
                                                     </>
                                                 )
