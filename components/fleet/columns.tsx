@@ -12,8 +12,8 @@ export const statusCodes = {
 }
 export const Columns: ColumnDef<OffchainFleetOrder>[] = [
     {
-        accessorKey: "order",
-        header: "Ornder No."
+        accessorKey: "invoice",
+        header: "Invoice No."
     },
     {
         accessorKey: "amount",
@@ -28,7 +28,23 @@ export const Columns: ColumnDef<OffchainFleetOrder>[] = [
         header: "Status",
         cell: ({row}) => {
             const statusCode = (row.getValue("status"))
-            return <div>{statusCodes[statusCode as keyof typeof statusCodes]}</div>
+            const status = statusCodes[statusCode as keyof typeof statusCodes]
+            const order = row.original
+            return (
+                <div>
+                    {
+                        statusCode === 2 ? (
+                            <div>
+                                {status} {order.ownerPinkSlipAttestationID.length + "/" + order.amount }
+                            </div>
+                        ) : (
+                            <div>
+                                {status}
+                            </div>
+                        )
+                    }
+                </div>
+            )
         },
     },
 ]

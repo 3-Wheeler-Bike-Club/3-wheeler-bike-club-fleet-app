@@ -1,6 +1,6 @@
 "use server"
 
-export const postFleetOrderAction = async (address: string, order: string, amount: number, tender: string, reference: string, status: number, ownerPinkSlipAttestationID: string[]) => {
+export const postFleetOrderAction = async (address: string | undefined, invoice: string | undefined, amount: number | undefined, tender: string | undefined, reference: string | undefined, status: number | undefined, ownerPinkSlipAttestationID: string[] | undefined) => {
     try {
         const res = await fetch(`${process.env.BASE_URL}/api/postFleetOrder`, {
             method: "POST",
@@ -10,7 +10,7 @@ export const postFleetOrderAction = async (address: string, order: string, amoun
             },
             body: JSON.stringify({
                 address: address,
-                order: order,
+                invoice: invoice,
                 amount: amount,
                 tender: tender,
                 reference: reference,

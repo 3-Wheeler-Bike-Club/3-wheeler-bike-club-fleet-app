@@ -46,9 +46,9 @@ export function Authorized() {
   console.log(currencyRate)
 
   const config : PaystackProps = {
-    reference: `${(new Date()).getTime().toString()}-3WB-${country.code}-${amount * Number(currencyRate?.rate) * price3WheelerUSD * 100}`,
+    reference: `${(new Date()).getTime().toString()}-3WB-${country.code}-${Math.ceil(amount * Number(currencyRate?.rate) * price3WheelerUSD * 100)}`,
     email: user!.email!.address!,
-    amount: amount * Number(currencyRate?.rate) * price3WheelerUSD * 100, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
+    amount: Math.ceil(amount * Number(currencyRate?.rate) * price3WheelerUSD * 100), //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_KEY,
     currency: currencyRate?.currency,
     channels: ['card', 'mobile_money'],
@@ -117,7 +117,7 @@ const purchaseWithPaystack = () => {
                             <Image src="/images/kekeHero.svg" alt="3-Wheeler" width={100} height={100} />
                         </div>
                         <div className="text-xl font-bold tracking-tighter">
-                            ${price3WheelerUSD} ~ GHS{price3WheelerUSD * Number(currencyRate?.rate)}
+                            ${amount * price3WheelerUSD} ~ GHS{Math.ceil(amount * price3WheelerUSD * Number(currencyRate?.rate))}
 
                         </div>
                         </div>

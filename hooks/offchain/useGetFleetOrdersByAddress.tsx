@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 export interface OffchainFleetOrder {
     _id: string
     address: string
-    order: string
+    invoice: string
     amount: number
     tender: string
     reference: string

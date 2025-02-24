@@ -150,11 +150,12 @@ export function Authorized() {
                 {
                     (fleetOrdersByAddress && fleetOrdersByAddress?.length == 0) && (ownerPinkSlipAttestations && ownerPinkSlipAttestations?.length == 0)
                     && (
-                        <div className="max-w-[66rem] flex flex-col items-center justify-center gap-6">
-                            <p className="text-3xl">No vehicles found, please add/buy a 3-Wheeler.</p>
-                            <CircleAlert className="h-36 w-36" />
-                            <p className="text-3xl">Your fleet is empty, your orders will appear here.</p>
-                            
+                        <div className="flex w-full items-center justify-center">
+                            <div className="max-w-[66rem] flex flex-col items-center justify-center gap-6">
+                                <p className="text-3xl">No vehicles found, please add/buy a 3-Wheeler.</p>
+                                <CircleAlert className="h-36 w-36" />
+                                <p className="text-3xl">Your fleet is empty, your orders will appear here.</p>
+                            </div>
                         </div>
                     )
                 }

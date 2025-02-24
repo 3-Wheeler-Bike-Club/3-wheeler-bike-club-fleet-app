@@ -33,7 +33,9 @@ export function PrivyContext ({ children }: Props) {
                 },
             }}
         >
+            <SmartWalletsProvider>
                 {children}
+            </SmartWalletsProvider>
         </PrivyProvider>
     )
 }
