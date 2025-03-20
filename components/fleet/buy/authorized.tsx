@@ -113,76 +113,65 @@ const purchaseWithPaystack = () => {
                     <div className="flex flex-col gap-8 p-4 pb-0">
                         
                         <div className="flex items-center justify-center space-x-2">
-                        <div>
-                            <Image src="/images/kekeHero.svg" alt="3-Wheeler" width={100} height={100} />
-                        </div>
-                        <div className="text-xl font-bold tracking-tighter">
-                            ${amount * price3WheelerUSD} ~ GHS{Math.ceil(amount * price3WheelerUSD * Number(currencyRate?.rate))}
+                            <div>
+                                <Image src="/images/kekeHero.svg" alt="3-Wheeler" width={100} height={100} />
+                            </div>
+                            <div className="text-xl font-bold tracking-tighter">
+                                ${amount * price3WheelerUSD} ~ GHS{Math.ceil(amount * price3WheelerUSD * Number(currencyRate?.rate))}
 
-                        </div>
-                        </div>
+                            </div>
+                            </div>
 
 
-                        <div>
-                        <div className="flex items-center justify-center space-x-2">
-                        <div className="flex-1 text-center">
+                            <div>
                             
-                            <div className="text-7xl font-bold tracking-tighter">
-                            {amount}
-                            </div>
-                            <div className="text-[0.70rem] uppercase text-muted-foreground">
-                            No. of 3-Wheelers
-                            </div>
-                        </div>
-                        </div>
 
-                        <div className="flex items-center justify-between space-x-2">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 shrink-0 rounded-full"
-                            onClick={decrease}
-                            disabled={amount <= 1}
+                            <div className="flex items-center justify-between space-x-2">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8 shrink-0 rounded-full"
+                                    onClick={decrease}
+                                    disabled={amount <= 1}
 
-                        >
-                            <Minus />
-                            <span className="sr-only">Decrease</span>
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 shrink-0 rounded-full"
-                            onClick={increase}
-                            disabled={amount >= ready3WheelerDrivers}
-                        >
-                            <Plus />
-                            <span className="sr-only">Increase</span>
+                                >
+                                    <Minus />
+                                    <span className="sr-only">Decrease</span>
+                                </Button>
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="flex-1 text-center">
+                                        
+                                        <div className="text-7xl font-bold tracking-tighter">
+                                        {amount}
+                                        </div>
+                                        <div className="text-[0.70rem] uppercase text-muted-foreground">
+                                        No. of 3-Wheelers
+                                        </div>
+                                    </div>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8 shrink-0 rounded-full"
+                                    onClick={increase}
+                                    disabled={amount >= ready3WheelerDrivers}
+                                >
+                                    <Plus />
+                                    <span className="sr-only">Increase</span>
 
-                        </Button>
-                        </div>
-                        <div className="flex items-center justify-center space-x-2">
-                        <div className="flex-1 text-center">
-                            <div className="text-5xl font-bold tracking-tighter">
-                            {ready3WheelerDrivers}
-
+                                </Button>
                             </div>
-                            <div className="text-[0.70rem] uppercase text-muted-foreground">
-                            Available 3-Wheeler Drivers
-                            </div>
-                        </div>
-                        
-                        </div>
                         </div>
                     </div>
                     
                     <DrawerFooter>
-                        <Button>Pay with External Wallet</Button>
+                        <Button disabled>Pay with External Wallet</Button>
                         <Separator />
-                        <Button>Pay with MiniPay</Button>
+                        <Button disabled>Pay with MiniPay</Button>
                         <Separator />
-                        <Button>Pay with Stripe</Button>
+                        <Button disabled >Pay with Stripe</Button>
                         <Separator />
-                        <Button onClick={purchaseWithPaystack}>
+                        <Button disabled={!amount} onClick={purchaseWithPaystack}>
                         {
                                     loading
                                     ? (

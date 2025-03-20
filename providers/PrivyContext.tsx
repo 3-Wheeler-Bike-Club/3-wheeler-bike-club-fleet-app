@@ -3,7 +3,7 @@
 
 import { PrivyProvider } from "@privy-io/react-auth"
 import type { ReactNode } from "react"
-import { base, celo, celoAlfajores } from "viem/chains"
+import { base, celo } from "viem/chains"
 import {SmartWalletsProvider} from '@privy-io/react-auth/smart-wallets'
 
 

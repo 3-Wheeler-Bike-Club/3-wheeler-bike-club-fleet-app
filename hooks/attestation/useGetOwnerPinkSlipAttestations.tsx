@@ -3,17 +3,20 @@ import { getOwnerPinkSlipAttestationsAction } from "@/app/actions/attestation/ge
 import { useState, useEffect } from "react"
 
 export interface OwnerPinkSlipAttestation {
-    _id: string
-    ownerPinkSlipAttestationID: string
-    vin: string
-    make: string
-    model: string
-    year: number
-    color: string
-    country: string
-    visualProof: string[]
-    ownerProof: string
-    transferProof: string
+    address: string;
+    invoice: string;
+    hirePurchaseAttestationID: string;
+    ownerPinkSlipAttestationID: string;
+    vin: string;
+    make: string;
+    model: string;
+    year: string;
+    color: string;
+    country: string;
+    licensePlate: string;
+    visualProof: string[];
+    ownerProof: string;
+    transferProof: string;
 }
 
 

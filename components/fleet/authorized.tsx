@@ -1,4 +1,4 @@
-import { ArrowRightFromLine, Caravan, CircleAlert, DiamondPlus, HandCoins } from "lucide-react";
+import { ArrowRightFromLine, Caravan, CircleAlert, DiamondPlus, HandCoins, Warehouse } from "lucide-react";
 import { Menu } from "../topnav/menu";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
@@ -7,9 +7,14 @@ import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import { useGetFleetOrdersByAddress } from "@/hooks/offchain/useGetFleetOrdersByAddress";
-import { useGetOwnerPinkSlipAttestations } from "@/hooks/attestation/useGetOwnerPinkSlipAttestations";
+import { OwnerPinkSlipAttestation, useGetOwnerPinkSlipAttestations } from "@/hooks/attestation/useGetOwnerPinkSlipAttestations";
 import { DataTable } from "./dataTable";
 import { Columns } from "./columns";
+import { useEffect, useState } from "react";
+import { CarouselContent, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import { Carousel } from "../ui/carousel";
+import { Vin } from "./vin";
+
 
 export function Authorized() {
 
@@ -22,7 +27,19 @@ export function Authorized() {
     console.log(smartWallet?.address);
 
     const {fleetOrdersByAddress} = useGetFleetOrdersByAddress(smartWallet?.address)
+    
     const {ownerPinkSlipAttestations} = useGetOwnerPinkSlipAttestations(smartWallet?.address)
+
+
+    const [ownerPinkSlipAttestationsRegistered , setOwnerPinkSlipAttestationsRegistered] = useState<OwnerPinkSlipAttestation[]>([])
+  
+    
+    useEffect(() => {
+        if (ownerPinkSlipAttestations) {
+            const filtered = ownerPinkSlipAttestations.filter(ownerPinkSlipAttestation => ownerPinkSlipAttestation.licensePlate !== "0xDEAD")
+            setOwnerPinkSlipAttestationsRegistered(filtered)
+        }
+    }, [ownerPinkSlipAttestations])
     
 
     return (
@@ -78,8 +95,8 @@ export function Authorized() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <Button className="w-full justify-end">
-                                    <p>Schedule Visit </p>
+                                <Button disabled className="w-full justify-end">
+                                    <p>Schedule Visit( Coming Soon )</p>
                                     <ArrowRightFromLine />
                                 </Button>
                             </CardContent>
@@ -107,10 +124,44 @@ export function Authorized() {
                     && (
                         <>
                             <div className="flex flex-col items-center w-full justify-center gap-6">
-                                <div className="max-w-[66rem] flex flex-col items-center justify-center gap-6">     
-                                    <CircleAlert className="h-36 w-36" />
-                                    <p className="text-3xl">vehicles found, showing stages of orders</p>
-                                </div>
+                                {
+                                    ownerPinkSlipAttestationsRegistered.length == 0 && (
+                                        <>
+                                            <div className="max-w-[66rem] flex flex-col items-center justify-center gap-6">
+                                                <Caravan className="h-36 w-36" />
+                                                <p className="text-xl font-semibold">Your 3-Wheeler order is being processed, please wait...</p>
+                                            </div>
+                                        </>
+                                    )
+                                }
+                                {
+                                    ownerPinkSlipAttestationsRegistered.length >= 1 && (
+                                        <>
+                                            <div className="max-w-[66rem] flex flex-col items-center justify-center gap-6">     
+                                                <Carousel className="w-full max-w-xs">
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="flex items-center justify-center gap-2">
+                                                        <Warehouse className="h-5 w-5"/>
+                                                        <span className="font-semibold text-xl">3-Wheelers:</span>
+                                                        </div>          
+                                                        <span className="text-right text-xl">{ownerPinkSlipAttestationsRegistered.length}</span>
+                                                    </div>
+                                                    
+                                                    <CarouselContent>
+                                                        
+                                                        {Array.from(ownerPinkSlipAttestationsRegistered).map((ownerPinkSlipAttestation) => (
+                                                        <Vin key={ownerPinkSlipAttestation.vin} ownerPinkSlipAttestation={ownerPinkSlipAttestation} ownersPinkSlipAttestations={ownerPinkSlipAttestations} />
+                                                        ))}
+                                                    </CarouselContent>
+                                                    <CarouselPrevious />
+                                                    <CarouselNext />
+                                                </Carousel>
+                                            </div>
+                                        </>
+                                    )
+                                }
+                                
+                                
                             </div>
                             <div className="flex w-full items-center justify-center">
                                 <div className="w-full max-w-[66rem]">
@@ -129,12 +180,11 @@ export function Authorized() {
                     && (
                         <>
                             <div className="flex flex-col items-center w-full justify-center gap-6">
-                                
                                 <div className="max-w-[66rem] flex flex-col items-center justify-center gap-6">
                                     <Caravan className="h-36 w-36" />
-                                    <p className="text-3xl">Your 3-Wheeler order is being processed, please wait...</p>
+                                    <p className="text-xl font-semibold">Your 3-Wheeler order is being processed, please wait...</p>
                                 </div>
-                            </div>
+                            </div> 
                             <div className="flex w-full items-center justify-center">
                                 <div className="w-full max-w-[66rem]">
                                     <DataTable columns={Columns} data={fleetOrdersByAddress!} />
@@ -152,15 +202,14 @@ export function Authorized() {
                     && (
                         <div className="flex w-full items-center justify-center">
                             <div className="max-w-[66rem] flex flex-col items-center justify-center gap-6">
-                                <p className="text-3xl">No vehicles found, please add/buy a 3-Wheeler.</p>
+                                <p className="text-xl font-semibold">No vehicles found, please add/buy a 3-Wheeler.</p>
                                 <CircleAlert className="h-36 w-36" />
-                                <p className="text-3xl">Your fleet is empty, your orders will appear here.</p>
+                                <p className="text-xl font-semibold">Your fleet is empty, your orders will appear here.</p>
                             </div>
                         </div>
                     )
                 }
             </div>
-
         </main>
 
 

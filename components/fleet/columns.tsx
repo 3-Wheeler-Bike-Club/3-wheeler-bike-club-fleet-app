@@ -6,9 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 export const statusCodes = {
     0: "Order Created",
     1: "Pending Vehicle Registration",
-    2: "Pending Driver Assignment",
-    3: "Hire Purchase Started",
-    99: "Order Refunded"
+    2: "Vehicle Registered",
 }
 export const Columns: ColumnDef<OffchainFleetOrder>[] = [
     {
