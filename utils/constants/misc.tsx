@@ -1,7 +1,7 @@
 
 export const ready3WheelerDrivers = 63;
 
-export const price3WheelerUSD = 3000;
+export const price3WheelerUSD = 1;
 
 
 export const statusCodes = {
