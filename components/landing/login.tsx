@@ -26,7 +26,7 @@ export function Login() {
             setLogging(false)
             //check if user has a profile 
             if (user?.customMetadata) {
-                router.replace("/dashboard");
+                router.replace("/fleet");
             } else {
                 router.replace("/profile");
             }
