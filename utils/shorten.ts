@@ -1,10 +1,10 @@
-export function shortenAddress(
-    addr?: string,
-    frontSlice = 5,
+export function shortenTxt(
+    txt?: string,
+    frontSlice = 3,
     backSlice = 3
 ): string {
-    if (!addr) return '';
-    if (addr.length < frontSlice + backSlice) return addr;
-    return addr.slice(0, frontSlice) + '...' + addr.slice(-backSlice);
+    if (!txt) return '';
+    if (txt.length < frontSlice + backSlice) return txt;
+    return txt.slice(0, frontSlice) + '...' + txt.slice(-backSlice);
 }
   

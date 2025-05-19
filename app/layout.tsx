@@ -1,23 +1,15 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "@/context/privyContext";
+import { WagmiContext } from "@/context/wagmiContext";
 
-import { PrivyContext } from "@/providers/PrivyContext";
 
-import { config } from "@/utils/config";
-import { headers } from "next/headers";
-import { cookieToInitialState } from "wagmi";
-import { WagmiContext } from "@/providers/WagmiContext";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  weight: "100 900",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -31,20 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const initialState = cookieToInitialState( 
-    config, 
-    headers().get("cookie") 
-  ) 
-
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistMono.className}`}
       >
-        <WagmiContext initialState={initialState!}>
-          <PrivyContext>
-                {children}
-          </PrivyContext>
+        <WagmiContext>
+          <Providers>
+            {children}
+          </Providers>
         </WagmiContext>
       </body>
     </html>
