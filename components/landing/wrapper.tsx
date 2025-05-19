@@ -6,19 +6,28 @@ import { Button } from "../ui/button";
 import { Wallet, TrendingUp, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { usePrivy } from "@privy-io/react-auth";
+import { useEffect, useState } from "react";
 
 export function Wrapper() {
+
+    const [isLoginClicked, setIsLoginClicked] = useState(false)
     const router = useRouter()
     console.log(router)
 
     
 
     async function Login() {
-        router.push("/fleet")
+        login()
+        setIsLoginClicked(true)
     }
 
-    const {ready} = usePrivy();
+    const {ready, login, authenticated} = usePrivy();
 
+    useEffect(() => {
+        if (authenticated && isLoginClicked) {
+            router.push("/fleet")
+        }
+    }, [authenticated, isLoginClicked])
    
     
 
@@ -60,16 +69,14 @@ export function Wrapper() {
                     </div>
                 </div>
 
-                {
-                    ready && (
-                        <Button 
-                            onClick={Login} 
-                            className="w-64 h-16 text-base font-semibold rounded-3xl"
-                        >
-                            <p>START EARNING</p>
-                        </Button>
-                    )
-                }
+                <Button 
+                    onClick={Login} 
+                    disabled={!ready || isLoginClicked}
+                    className="w-64 h-16 text-base font-semibold rounded-3xl"
+                >
+                    <p>START EARNING</p>
+                </Button>
+                
             </div>
 
             <footer className="w-full text-center py-4 text-sm">
