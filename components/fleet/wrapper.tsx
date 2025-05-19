@@ -17,6 +17,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Progress } from "../ui/progress";
 import { Returns } from "./withdraw/returns";
+import { usePrivy } from "@privy-io/react-auth";
 
 
 export function Wrapper() {
@@ -38,9 +39,12 @@ export function Wrapper() {
         api.on("select", () => {
           setCurrent(api.selectedScrollSnap() + 1)
         })
-      }, [api])
+    }, [api])
 
-    const { address, isConnected } = useAccount();
+    const {user, ready, authenticated} = usePrivy();
+    console.log(user);
+
+    const address = user?.wallet?.address as `0x${string}`;
     console.log(address);
 
     const fleetOwnedQueryClient = useQueryClient() 
@@ -143,7 +147,7 @@ export function Wrapper() {
                         <div/>
                         <div className="flex gap-2">
                             <Button 
-                                disabled={!isConnected}
+                                disabled={!ready || !authenticated}
                                 className="max-w-fit h-12 rounded-xl"
                                 onClick={() => router.push("/fleet/buy")}
                             >
