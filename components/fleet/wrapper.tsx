@@ -5,7 +5,7 @@ import { Menu } from "../top/menu"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 
-import { useAccount, useBlockNumber, useReadContract } from 'wagmi'
+import { useBlockNumber, useReadContract } from 'wagmi'
 import { useRouter } from "next/navigation";
 import { fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";

@@ -3,15 +3,15 @@ import { fleetOrderBook } from "@/utils/constants/addresses"
 import { getDataSuffix, submitReferral } from "@divvi/referral-sdk"
 import { useState } from "react"
 import { toast } from "sonner"
-import { createWalletClient, encodeFunctionData, erc20Abi, http, maxUint256 } from "viem"
+import { encodeFunctionData, erc20Abi, maxUint256 } from "viem"
 import { celo } from "viem/chains"
-import { useSendTransaction } from "wagmi"
+import { useSendTransaction } from '@privy-io/react-auth';
 
 
 export const useDivvi = () => {
   
     const [loading, setLoading] = useState(false)
-    const { sendTransactionAsync } = useSendTransaction()
+    const { sendTransaction } = useSendTransaction();
 
     async function registerUser(account: `0x${string}`, to: `0x${string}`) {
       try {
@@ -33,8 +33,7 @@ export const useDivvi = () => {
           providers: ["0x5f0a55FaD9424ac99429f635dfb9bF20c3360Ab8", "0xB06a1b291863f923E7417E9F302e2a84018c33C5", "0x6226ddE08402642964f9A6de844ea3116F0dFc7e", "0x0423189886D7966f0DD7E7d256898DAeEE625dca"],
         })
 
-        
-        const tx = await sendTransactionAsync({
+        const { hash } = await sendTransaction({
           to: to,
           data: data + dataSuffix as `0x${string}`,
           value: BigInt(0),
@@ -43,13 +42,13 @@ export const useDivvi = () => {
         
         const transaction = await publicClient.waitForTransactionReceipt({
           confirmations: 1,
-          hash: tx
+          hash: hash
         })
 
         // Step 2: Report the transaction to the attribution tracking API
         if (transaction) {
           await submitReferral({
-            txHash: tx,
+            txHash: hash,
             chainId: celo.id
           })
         }
