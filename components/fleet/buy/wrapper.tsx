@@ -26,14 +26,19 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { divviAbi } from "@/utils/abis/divvi";
 import { useDivvi } from "@/hooks/useDivvi";
+import { usePrivy } from "@privy-io/react-auth";
 
 
 
 
 export function Wrapper() {
 
-    const { address } = useAccount()
-
+    //const { address } = useAccount()
+    const {user} = usePrivy();
+    console.log(user);
+    const address = user?.wallet?.address as `0x${string}`;
+    console.log(address);
+    
     const [amount, setAmount] = useState(1)
     const [fractions, setFractions] = useState(1)
     const [loadingCeloUSD, setLoadingCeloUSD] = useState(false)
