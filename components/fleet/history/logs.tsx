@@ -22,7 +22,6 @@ import { usePrivy } from "@privy-io/react-auth";
 
 export function Logs() {
 
-   //const { address } = useAccount();
    const { user } = usePrivy();
    console.log(user);
    const address = user?.wallet?.address as `0x${string}`;

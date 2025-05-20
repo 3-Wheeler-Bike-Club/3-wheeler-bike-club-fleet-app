@@ -46,7 +46,6 @@ export function Wrapper() {
 
     const router = useRouter()
     
-    const { writeContractAsync } = useWriteContract()
 
     const fleetFractionPriceQueryClient = useQueryClient()
     const allowanceCeloDollarQueryClient = useQueryClient()
