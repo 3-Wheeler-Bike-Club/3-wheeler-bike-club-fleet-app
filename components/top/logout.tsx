@@ -26,7 +26,8 @@ export function Logout () {
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button className="gap-2" variant="outline">
-                    <LogOut/>
+                    <LogOut className="text-yellow-600"/>
+                    <span className="max-md:hidden">Logout</span>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
