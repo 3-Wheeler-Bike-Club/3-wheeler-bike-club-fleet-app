@@ -13,17 +13,21 @@ import {
 import { Button } from "../../ui/button";
 import { HistoryIcon } from "lucide-react";
 import { useGetLogs } from "@/hooks/useGetLogs";
-import { useAccount } from "wagmi";
 import { Table, TableBody, TableCaption } from "../../ui/table";
 import { Log } from "./log";
+import { usePrivy } from "@privy-io/react-auth";
 
 
 
 
 export function Logs() {
 
-   const { address } = useAccount();
-
+   //const { address } = useAccount();
+   const { user } = usePrivy();
+   console.log(user);
+   const address = user?.wallet?.address as `0x${string}`;
+   console.log(address);
+   
    const { logs } = useGetLogs(address);
    console.log(logs)
 

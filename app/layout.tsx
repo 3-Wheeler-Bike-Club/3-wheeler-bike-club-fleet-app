@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/context/privyContext";
 import { WagmiContext } from "@/context/wagmiContext";
+import { Toaster } from "@/components/ui/sonner";
 
 
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <WagmiContext>
           <Providers>
             {children}
+            <Toaster expand={true} richColors />
           </Providers>
         </WagmiContext>
       </body>

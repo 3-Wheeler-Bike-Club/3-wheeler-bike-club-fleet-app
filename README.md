@@ -79,7 +79,7 @@ npm start
 ├── components/            # Reusable UI components
 ├── hooks/                 # Custom React hooks (useFleet, useOrder)
 ├── lib/                   # Blockchain & util helpers
-├── providers/             # React context & Wagmi provider setup
+├── context/             # React context & Wagmi provider setup
 ├── public/                # Static assets (images, icons)
 ├── utils/                 # Generic utilities and constants
 ├── environment.d.ts       # Env var TypeScript definitions
