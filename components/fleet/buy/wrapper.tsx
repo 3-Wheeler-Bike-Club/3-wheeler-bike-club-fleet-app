@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { useAccount, useBlockNumber, useReadContract, useWriteContract } from "wagmi";
+import { useBlockNumber, useReadContract } from "wagmi";
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -18,7 +18,7 @@ import { motion } from "framer-motion"
 import { ChartPie, Ellipsis, Minus, Plus, RefreshCw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { USDT_ADAPTER, divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
+import { divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { celo, optimism } from "viem/chains";
