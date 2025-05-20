@@ -1,16 +1,9 @@
-import { string } from "zod"
 
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
-            NEXT_PUBLIC_PAYSTACK_KEY: string
-            NEXT_PUBLIC_PROJECT_ID: string
-            MONGO: string
-            WHEELER_API_KEY: string
-            BASE_URL: string
-            NEXT_PUBLIC_PRIVY_APP_ID: string
-            PRIVY_APP_SECRET: string
-            PRIVATE_KEY: `0x${string}`
+            NEXT_PUBLIC_PRIVY_APP_ID: string;
+            NEXT_PUBLIC_PRIVY_CLIENT_ID: string;
         }
     }
 }

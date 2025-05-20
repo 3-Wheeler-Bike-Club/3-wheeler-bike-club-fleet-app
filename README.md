@@ -1,6 +1,6 @@
 # 3WB Fleet App
 
-A client-facing Next.js 14 TypeScript application that interfaces with the FleetOrderBook and FleetOrderToken contracts on Celo, allowing users to browse, purchase, and manage three-wheeler fleet investments.
+A client-facing Next.js 14 TypeScript application that interfaces with the FleetOrderBook and FleetOrderToken contracts, allowing users to browse, purchase, and manage three-wheeler fleet investments.
 
 ## 🚀 Key Features
 
