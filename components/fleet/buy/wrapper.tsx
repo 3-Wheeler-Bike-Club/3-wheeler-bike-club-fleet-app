@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { useAccount, useBlockNumber, useReadContract, useWriteContract } from "wagmi";
+import { useBlockNumber, useReadContract } from "wagmi";
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -18,22 +18,22 @@ import { motion } from "framer-motion"
 import { ChartPie, Ellipsis, Minus, Plus, RefreshCw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { USDT_ADAPTER, divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
+import { divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { erc20Abi } from "viem";
+import { encodeFunctionData, erc20Abi } from "viem";
 import { celo, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { divviAbi } from "@/utils/abis/divvi";
 import { useDivvi } from "@/hooks/useDivvi";
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy, useSendTransaction } from "@privy-io/react-auth";
+import { publicClient } from "@/utils/client";
 
 
 
 
 export function Wrapper() {
 
-    //const { address } = useAccount()
     const {user} = usePrivy();
     console.log(user);
     const address = user?.wallet?.address as `0x${string}`;
@@ -46,13 +46,13 @@ export function Wrapper() {
 
     const router = useRouter()
     
-    const { writeContractAsync } = useWriteContract()
 
     const fleetFractionPriceQueryClient = useQueryClient()
     const allowanceCeloDollarQueryClient = useQueryClient()
     const isUserReferredToProviderQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
+    const { sendTransaction } = useSendTransaction();
     const { registerUser, loading } = useDivvi()
 
 
@@ -119,32 +119,34 @@ export function Wrapper() {
     async function orderFleetWithCeloUSD() { 
         try {
             setLoadingCeloUSD(true)
-            writeContractAsync({
-                abi: fleetOrderBookAbi,
-                address: fleetOrderBook,
+
+            const { hash } = await sendTransaction({
+                to: fleetOrderBook,
+                data: encodeFunctionData({
+                    abi: fleetOrderBookAbi,
+                    functionName: "orderFleet",
+                    args: [BigInt(amount), "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6"/*cUSD*/],
+                }),
                 chainId: celo.id,
-                feeCurrency: USDT_ADAPTER,
-                functionName: "orderFleet",
-                args: [BigInt(amount), "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6"/*cUSD*/],
-            },{
-                onSuccess() {
-                    //success toast
-                    toast.success("Purchase successful", {
-                        description: `You can now view your ${amount > 1 ? "3-Wheelers" : " 3-Wheeler"} in your fleet`,
-                    })
-                    setLoadingCeloUSD(false)
-                    router.push("/fleet")
-                },
-                onError(error) {
-                    console.log(error)
-                    toast.error("Purchase failed", {
-                        description: `Something went wrong, please try again`,
-                    })
-                    setLoadingCeloUSD(false)
-                }
-            });
+            })
+            const transaction = await publicClient.waitForTransactionReceipt({
+                confirmations: 1,
+                hash: hash
+            })
+              
+            if (transaction) {
+                //success toast
+                toast.success("Purchase successful", {
+                    description: `You can now view your ${amount > 1 ? "3-Wheelers" : " 3-Wheeler"} in your fleet`,
+                })
+                setLoadingCeloUSD(false)
+                router.push("/fleet")
+            }
         } catch (error) {
             console.log(error)
+            toast.error("Purchase failed", {
+                description: `Something went wrong, please try again`,
+            })
             setLoadingCeloUSD(false)
         }
     }
@@ -154,33 +156,35 @@ export function Wrapper() {
     async function orderFleetFractionsWithCeloUSD( shares: number ) {    
         try {
             setLoadingCeloUSD(true)
-            writeContractAsync({
-                abi: fleetOrderBookAbi,
-                address: fleetOrderBook,
-                chainId: celo.id,
-                feeCurrency: USDT_ADAPTER,
-                functionName: "orderFleetFraction",
-                args: [BigInt(shares), "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6"/*cUSD*/],
-            },{
-                onSuccess() {
-                    //success toast
-                    toast.success("Purchase successful", {
-                        description: `You can now view your 3-Wheeler ${shares == 50 ? "" : `${shares > 1 ? "fractions" : "fraction"}`} in your fleet`,
-                    })
 
-                    setLoadingCeloUSD(false)
-                    router.push("/fleet")
-                },
-                onError(error) {
-                    console.log(error)
-                    toast.error("Purchase failed", {
-                        description: `Something went wrong, please try again`,
-                    })
-                    setLoadingCeloUSD(false)
-                }
-            });
+            const { hash } = await sendTransaction({
+                to: fleetOrderBook,
+                data: encodeFunctionData({
+                    abi: fleetOrderBookAbi,
+                    functionName: "orderFleetFraction",
+                    args: [BigInt(shares), "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6"/*cUSD*/],
+                }),
+                chainId: celo.id,
+            })
+            const transaction = await publicClient.waitForTransactionReceipt({
+                confirmations: 1,
+                hash: hash
+            })
+
+            if (transaction) {
+                //success toast
+                toast.success("Purchase successful", {
+                    description: `You can now view your 3-Wheeler ${shares == 50 ? "" : `${shares > 1 ? "fractions" : "fraction"}`} in your fleet`,
+                })
+
+                setLoadingCeloUSD(false)
+                router.push("/fleet")
+            }
         } catch (error) {
             console.log(error)
+            toast.error("Purchase failed", {
+                description: `Something went wrong, please try again`,
+            })
             setLoadingCeloUSD(false)
         }
     }
