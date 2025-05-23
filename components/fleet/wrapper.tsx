@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { Progress } from "../ui/progress";
 import { Returns } from "./withdraw/returns";
 import { usePrivy } from "@privy-io/react-auth";
+import Verification from "../self/verification";
 
 
 export function Wrapper() {
@@ -159,6 +160,8 @@ export function Wrapper() {
                                     <div className="flex gap-2">
                                         <Logs/>
                                         <Returns/>
+                                        {/**<Verification/> */}
+                                        
                                     </div>
                                 )
                             }
