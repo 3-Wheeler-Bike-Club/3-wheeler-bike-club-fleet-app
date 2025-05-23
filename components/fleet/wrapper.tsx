@@ -160,7 +160,8 @@ export function Wrapper() {
                                     <div className="flex gap-2">
                                         <Logs/>
                                         <Returns/>
-                                        <Verification/>
+                                        {/**<Verification/> */}
+                                        
                                     </div>
                                 )
                             }

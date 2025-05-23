@@ -1,13 +1,11 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { getUserIdentifier, SelfBackendVerifier } from "@selfxyz/core";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === "POST") {
-        try {
-        const { proof, publicSignals } = req.body;
+export async function POST(req: Request) {
+    try {
+        const { proof, publicSignals } = await req.json();
 
         if (!proof || !publicSignals) {
-            return res.status(400).json({ message: "Proof and publicSignals are required" });
+            return new Response("Proof and publicSignals are required", { status: 400 });
         }
 
         // Extract user ID from the proof
@@ -25,29 +23,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
         if (result.isValid) {
             // Return successful verification response
-            return res.status(200).json({
-            status: "success",
-            result: true,
-            credentialSubject: result.credentialSubject
-            });
+            
+            return new Response(JSON.stringify({
+                status: "success",
+                result: true,
+                credentialSubject: result.credentialSubject
+            }), { status: 200 });
         } else {
             // Return failed verification response
-            return res.status(500).json({
-            status: "error",
-            result: false,
-            message: "Verification failed",
-            details: result.isValidDetails
-            });
+            
+            return new Response(JSON.stringify({
+                status: "error",
+                result: false,
+                message: "Verification failed",
+                details: result.isValidDetails
+            }), { status: 500 });
         }
-        } catch (error) {
+    } catch (error) {
         console.error("Error verifying proof:", error);
-        return res.status(500).json({
+        return new Response(JSON.stringify({
             status: "error",
             result: false,
             message: error instanceof Error ? error.message : "Unknown error"
-        });
-        }
-    } else {
-        return res.status(405).json({ message: "Method not allowed" });
+        }), { status: 500 });
     }
 }
