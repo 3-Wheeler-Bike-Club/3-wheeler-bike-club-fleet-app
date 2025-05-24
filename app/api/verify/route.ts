@@ -14,8 +14,10 @@ export async function POST(req: Request) {
 
         // Initialize and configure the verifier
         const selfBackendVerifier = new SelfBackendVerifier(
-            "my-application-scope", 
-            "https://finance.3wb.club/api/verify"
+            "3wb-p2p-fleet-finance", 
+            "https://finance.3wb.club/api/verify",
+            "uuid",
+            true
         );
 
         // Verify the proof

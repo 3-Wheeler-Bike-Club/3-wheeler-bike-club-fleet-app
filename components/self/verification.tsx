@@ -22,7 +22,9 @@ function VerificationPage() {
         appName: "3WB P2P Fleet Finance",
         scope: "my-application-scope",
         endpoint: "https://finance.3wb.club/api/verify",
+        endpointType: "https",
         userId,
+        userIdType: "uuid"
     }).build();
 
     return (
