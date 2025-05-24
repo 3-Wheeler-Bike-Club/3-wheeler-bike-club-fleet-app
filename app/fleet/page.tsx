@@ -1,6 +1,6 @@
 import { Wrapper } from "@/components/fleet/wrapper";
 
-export default async function Fleet() {
+export default function Fleet() {
 
   return (
     <div className="flex flex-col w-full h-full">
