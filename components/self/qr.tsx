@@ -1,10 +1,13 @@
-import SelfQRcodeWrapper, { SelfAppBuilder } from '@selfxyz/qrcode';
+import SelfQRcodeWrapper, { SelfAppBuilder } from "@selfxyz/qrcode";
+import { useRouter } from "next/navigation";
 
 interface QRProps {
     userId: string;
 }
 
 export function QR({ userId }: QRProps) {
+
+    const router = useRouter();
 
     // Create the SelfApp configuration
     const selfApp = new SelfAppBuilder({
@@ -23,8 +26,9 @@ export function QR({ userId }: QRProps) {
             // Handle successful verification
             console.log("Verification successful!");
             // Redirect or update UI
+            router.push("/fleet");
             }}
-            size={350}
+            size={360}
         />
     )
 }
