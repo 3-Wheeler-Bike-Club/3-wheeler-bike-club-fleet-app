@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { Progress } from "../ui/progress";
 import { Returns } from "./withdraw/returns";
 import { usePrivy } from "@privy-io/react-auth";
-import Verification from "../self/verification";
+import { Verification } from "../self/verification";
 
 
 export function Wrapper() {
@@ -161,7 +161,7 @@ export function Wrapper() {
                                         <Logs/>
                                         <Returns/>
                                         {/**<Verification/> */}
-                                        
+                                        <Verification/>
                                     </div>
                                 )
                             }

@@ -7,7 +7,7 @@ import { Drawer, DrawerContent, DrawerTitle, DrawerHeader, DrawerDescription, Dr
 import { Button } from '../ui/button';
 import { PersonStanding } from 'lucide-react';
 
-function VerificationPage() {
+export function Verification() {
     const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -65,5 +65,3 @@ function VerificationPage() {
         
     );
 }
-
-export default VerificationPage;
