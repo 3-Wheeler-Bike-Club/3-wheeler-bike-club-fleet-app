@@ -15,18 +15,15 @@ import { HistoryIcon } from "lucide-react";
 import { useGetLogs } from "@/hooks/useGetLogs";
 import { Table, TableBody, TableCaption } from "../../ui/table";
 import { Log } from "./log";
-import { usePrivy } from "@privy-io/react-auth";
+import { useAccount } from "wagmi";
 
 
 
 
 export function Logs() {
 
-   const { user } = usePrivy();
-   console.log(user);
-   const address = user?.wallet?.address as `0x${string}`;
-   console.log(address);
-   
+   const { address } = useAccount()
+
    const { logs } = useGetLogs(address);
    console.log(logs)
 
@@ -55,7 +52,6 @@ export function Logs() {
                             <span className="w-1/4">Date</span>
                         </div>
                         <Table>
-                            <TableCaption className="mt-12">A list of your recent fleet orders.</TableCaption>
                             <TableBody>
                                 <div className="h-64">
                                     {
@@ -66,6 +62,7 @@ export function Logs() {
                                 </div>        
                             </TableBody>
                         </Table>
+                        <p className="mt-12 text-center text-sm text-muted-foreground">A list of your recent fleet orders.</p>
                     </div>
                 </div>
                 <DrawerFooter></DrawerFooter>

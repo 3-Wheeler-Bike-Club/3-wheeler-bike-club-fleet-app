@@ -5,7 +5,7 @@ import { Menu } from "../top/menu"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 
-import { useBlockNumber, useReadContract } from 'wagmi'
+import { useBlockNumber, useReadContract, useAccount } from 'wagmi'
 import { useRouter } from "next/navigation";
 import { fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
@@ -17,7 +17,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Progress } from "../ui/progress";
 import { Returns } from "./withdraw/returns";
-import { usePrivy } from "@privy-io/react-auth";
 import { Verification } from "../self/verification";
 
 
@@ -42,11 +41,10 @@ export function Wrapper() {
         })
     }, [api])
 
-    const {user, ready, authenticated} = usePrivy();
-    console.log(user);
+    
+    const { address, isConnected } = useAccount()
 
-    const address = user?.wallet?.address as `0x${string}`;
-    console.log(address);
+
 
     const fleetOwnedQueryClient = useQueryClient() 
     const maxFleetOrderQueryClient = useQueryClient() 
@@ -148,7 +146,7 @@ export function Wrapper() {
                         <div/>
                         <div className="flex gap-2">
                             <Button 
-                                disabled={!ready || !authenticated}
+                                disabled={!isConnected}
                                 className="max-w-fit h-12 rounded-xl"
                                 onClick={() => router.push("/fleet/buy")}
                             >

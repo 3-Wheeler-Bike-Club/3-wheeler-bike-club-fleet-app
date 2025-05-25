@@ -11,17 +11,14 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from "../../ui/button";
 import { BanknoteArrowUp } from "lucide-react";
-import { usePrivy } from "@privy-io/react-auth";
+import { useAccount } from "wagmi";
 
 
 
 
 export function Returns() {
     
-    const { user } = usePrivy();
-    console.log(user);
-    const address = user?.wallet?.address as `0x${string}`;
-    console.log(address);
+    const { address } = useAccount()
 
 
 

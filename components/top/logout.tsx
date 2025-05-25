@@ -1,7 +1,4 @@
-
-import { usePrivy } from "@privy-io/react-auth"
 import { useRouter } from "next/navigation"
-
 import { 
     AlertDialog,
     AlertDialogAction,
@@ -15,10 +12,11 @@ import {
 } from "../ui/alert-dialog"
 import { Button } from "../ui/button"
 import { LogOut } from "lucide-react"
+import { useDisconnect } from "wagmi"
 
 export function Logout () {
     
-    const { logout } = usePrivy()
+    const { disconnect } = useDisconnect()
     const router = useRouter()
 
     
@@ -43,7 +41,7 @@ export function Logout () {
                 <AlertDialogAction asChild>
                     <Button
                         onClick={async ()=>{
-                            await logout()
+                            disconnect()
                             router.push("/")
                         }}
                         className="gap-2"

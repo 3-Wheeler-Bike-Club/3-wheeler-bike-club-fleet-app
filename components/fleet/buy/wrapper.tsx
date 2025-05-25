@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { useBlockNumber, useReadContract } from "wagmi";
+import { useBlockNumber, useReadContract, useAccount } from "wagmi";
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { divviAbi } from "@/utils/abis/divvi";
 import { useDivvi } from "@/hooks/useDivvi";
-import { usePrivy, useSendTransaction } from "@privy-io/react-auth";
+import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 
 
@@ -34,10 +34,7 @@ import { publicClient } from "@/utils/client";
 
 export function Wrapper() {
 
-    const {user} = usePrivy();
-    console.log(user);
-    const address = user?.wallet?.address as `0x${string}`;
-    console.log(address);
+    const { address } = useAccount()
     
     const [amount, setAmount] = useState(1)
     const [fractions, setFractions] = useState(1)
@@ -52,7 +49,7 @@ export function Wrapper() {
     const isUserReferredToProviderQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
-    const { sendTransaction } = useSendTransaction();
+    const { sendTransactionAsync } = useSendTransaction();
     const { registerUser, loading } = useDivvi()
 
 
@@ -120,7 +117,7 @@ export function Wrapper() {
         try {
             setLoadingCeloUSD(true)
 
-            const { hash } = await sendTransaction({
+            const hash = await sendTransactionAsync({
                 to: fleetOrderBook,
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
@@ -157,7 +154,7 @@ export function Wrapper() {
         try {
             setLoadingCeloUSD(true)
 
-            const { hash } = await sendTransaction({
+            const hash = await sendTransactionAsync({
                 to: fleetOrderBook,
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,

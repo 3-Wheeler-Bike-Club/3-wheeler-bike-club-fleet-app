@@ -5,13 +5,13 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { encodeFunctionData, erc20Abi, maxUint256 } from "viem"
 import { celo } from "viem/chains"
-import { useSendTransaction } from '@privy-io/react-auth';
+import { useSendTransaction } from "wagmi";
 
 
 export const useDivvi = () => {
   
     const [loading, setLoading] = useState(false)
-    const { sendTransaction } = useSendTransaction();
+    const { sendTransactionAsync } = useSendTransaction();
 
     async function registerUser(account: `0x${string}`, to: `0x${string}`) {
       try {
@@ -33,7 +33,7 @@ export const useDivvi = () => {
           providers: ["0x5f0a55FaD9424ac99429f635dfb9bF20c3360Ab8", "0xB06a1b291863f923E7417E9F302e2a84018c33C5", "0x6226ddE08402642964f9A6de844ea3116F0dFc7e", "0x0423189886D7966f0DD7E7d256898DAeEE625dca"],
         })
 
-        const { hash } = await sendTransaction({
+        const hash = await sendTransactionAsync({
           to: to,
           data: data + dataSuffix as `0x${string}`,
           value: BigInt(0),
