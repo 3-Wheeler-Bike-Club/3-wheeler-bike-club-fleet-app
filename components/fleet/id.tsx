@@ -3,12 +3,11 @@ import { CarouselItem } from "../ui/carousel"
 import { CardContent } from "../ui/card"
 import { Card } from "../ui/card"
 import Image from "next/image"
-import { useBlockNumber, useReadContract } from "wagmi"
+import { useBlockNumber, useReadContract, useAccount } from "wagmi"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { fleetOrderBook } from "@/utils/constants/addresses"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { usePrivy } from "@privy-io/react-auth"
 
 
 
@@ -18,10 +17,7 @@ interface IdProps {
 
 export function Id( {fleet}: IdProps ) {    
 
-    const { user } = usePrivy();
-    console.log(user);
-    const address = user?.wallet?.address as `0x${string}`;
-    console.log(address);
+    const { address } = useAccount()
 
     const isfleetFractionedQueryClient = useQueryClient()
     const fleetSharesQueryClient = useQueryClient()
