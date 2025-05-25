@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Wallet, TrendingUp, ShieldCheck } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { useAccount, useConnect } from "wagmi";
 import { injected } from "wagmi/connectors";
 export function Wrapper() {
