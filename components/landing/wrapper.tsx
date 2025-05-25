@@ -5,29 +5,30 @@ import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Wallet, TrendingUp, ShieldCheck } from "lucide-react";
 import Image from "next/image";
-import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
-
+import { useAccount, useConnect } from "wagmi";
+import { injected } from "wagmi/connectors";
 export function Wrapper() {
 
-    const [isLoginClicked, setIsLoginClicked] = useState(false)
+    
     const router = useRouter()
     console.log(router)
 
+    const { connectAsync } = useConnect()
+
+    const { isConnected } = useAccount()
     
-
     async function Login() {
-        login()
-        setIsLoginClicked(true)
-    }
-
-    const {ready, login, authenticated} = usePrivy();
-
-    useEffect(() => {
-        if (authenticated && isLoginClicked) {
+        if (!isConnected) {
+            await connectAsync({ connector: injected() })
+            
+            router.push("/fleet")
+            
+        }
+        if (isConnected) {
             router.push("/fleet")
         }
-    }, [authenticated, isLoginClicked])
+    }
    
     
 
@@ -71,7 +72,7 @@ export function Wrapper() {
 
                 <Button 
                     onClick={Login} 
-                    disabled={!ready || isLoginClicked}
+                    //disabled={isConnected}
                     className="w-64 h-16 text-base font-semibold rounded-3xl"
                 >
                     <p>START EARNING</p>
