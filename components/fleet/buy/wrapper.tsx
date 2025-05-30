@@ -85,7 +85,7 @@ export function Wrapper() {
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6"/*cUSD*/,
+        address: "0x654058B149385fcC6294FBe649876A830B574A21"/*cUSD*/,
         functionName: "allowance",
         args: [address!, fleetOrderBook],
     })
@@ -122,7 +122,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleet",
-                    args: [BigInt(amount), "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6"/*cUSD*/],
+                    args: [BigInt(amount), "0x654058B149385fcC6294FBe649876A830B574A21"/*cUSD*/],
                 }),
                 chainId: celo.id,
             })
@@ -159,7 +159,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleetFraction",
-                    args: [BigInt(shares), "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6"/*cUSD*/],
+                    args: [BigInt(shares), "0x654058B149385fcC6294FBe649876A830B574A21"/*cUSD*/],
                 }),
                 chainId: celo.id,
             })
@@ -269,7 +269,7 @@ export function Wrapper() {
                                             }
                                         } else {
                                             if (!isUserReferredToProvider) {
-                                                registerUser(address!, "0x74869c892C9f64AC650e3eC13F6d07C0f21007a6")
+                                                registerUser(address!, "0x654058B149385fcC6294FBe649876A830B574A21")
                                             } else {
                                                 toast.error("Already approved!", {
                                                     description: "You are have already approved & registered to a provider",
