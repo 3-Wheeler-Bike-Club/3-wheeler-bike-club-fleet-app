@@ -139,6 +139,14 @@ export function Wrapper() {
                 confirmations: 1,
                 hash: hash
             })
+
+            if (transaction) {
+                toast.success("Got Test Tokens", {
+                    description: `You can now make orders to your fleet with test tokens`,
+                })
+                setLoadingCeloUSD(false)
+                router.push("/fleet")
+            }
             
         } catch (error) {
             
