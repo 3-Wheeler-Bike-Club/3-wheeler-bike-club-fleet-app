@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { encodeFunctionData, erc20Abi } from "viem";
+import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
 import { celo, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,6 +28,7 @@ import { divviAbi } from "@/utils/abis/divvi";
 import { useDivvi } from "@/hooks/useDivvi";
 import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
+import { fleetOrderTokenAbi } from "@/utils/abis/fleetOrderToken";
 
 
 
@@ -109,7 +110,28 @@ export function Wrapper() {
     console.log(isUserReferredToProvider!)
 
 
-   
+    async function getTestTokens() {
+        try {
+            setLoadingCeloUSD(true)
+            const hash = await sendTransactionAsync({
+                to: fleetOrderBook,
+                data: encodeFunctionData({
+                    abi: fleetOrderTokenAbi,
+                    functionName: "dripPayeeFromPSP",
+                    args: [address!, parseUnits("30000", 18)],
+                }),
+                chainId: celo.id,
+            })
+            const transaction = await publicClient.waitForTransactionReceipt({
+                confirmations: 1,
+                hash: hash
+            })
+            
+        } catch (error) {
+            
+        }
+        
+    }
 
 
     // order multiple fleet with celoUSD
