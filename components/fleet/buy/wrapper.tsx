@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { encodeFunctionData, erc20Abi } from "viem";
+import { encodeFunctionData, erc20Abi, formatUnits, parseUnits } from "viem";
 import { celo, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,6 +28,7 @@ import { divviAbi } from "@/utils/abis/divvi";
 import { useDivvi } from "@/hooks/useDivvi";
 import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
+import { fleetOrderTokenAbi } from "@/utils/abis/fleetOrderToken";
 
 
 
@@ -47,6 +48,7 @@ export function Wrapper() {
     const fleetFractionPriceQueryClient = useQueryClient()
     const allowanceCeloDollarQueryClient = useQueryClient()
     const isUserReferredToProviderQueryClient = useQueryClient()
+    const testTokenBalanceQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
     const { sendTransactionAsync } = useSendTransaction();
@@ -108,8 +110,49 @@ export function Wrapper() {
     }, [blockNumber, isUserReferredToProviderQueryClient, isUserReferredToProviderQueryKey]) 
     console.log(isUserReferredToProvider!)
 
+    const { data: testTokenBalance, queryKey: testTokenBalanceQueryKey } = useReadContract({
+        abi: erc20Abi,
+        address: "0x654058B149385fcC6294FBe649876A830B574A21",
+        functionName: "balanceOf",
+        chainId: optimism.id,
+        args: [address!],
 
-   
+    })
+    useEffect(() => { 
+        testTokenBalanceQueryClient.invalidateQueries({ queryKey: testTokenBalanceQueryKey }) 
+    }, [blockNumber, testTokenBalanceQueryClient, testTokenBalanceQueryKey]) 
+    console.log(testTokenBalance!)
+
+    async function getTestTokens() {
+        try {
+            setLoadingCeloUSD(true)
+            const hash = await sendTransactionAsync({
+                to: "0x654058B149385fcC6294FBe649876A830B574A21",
+                data: encodeFunctionData({
+                    abi: fleetOrderTokenAbi,
+                    functionName: "dripPayeeFromPSP",
+                    args: [address!, parseUnits("30000", 18)],
+                }),
+                chainId: celo.id,
+            })
+            const transaction = await publicClient.waitForTransactionReceipt({
+                confirmations: 1,
+                hash: hash
+            })
+
+            if (transaction) {
+                toast.success("Got Test Tokens", {
+                    description: `You can now make orders to your fleet with test tokens`,
+                })
+                setLoadingCeloUSD(false)
+                router.push("/fleet")
+            }
+            
+        } catch (error) {
+            
+        }
+        
+    }
 
 
     // order multiple fleet with celoUSD
@@ -268,13 +311,19 @@ export function Wrapper() {
                                                 orderFleetWithCeloUSD()
                                             }
                                         } else {
-                                            if (!isUserReferredToProvider) {
-                                                registerUser(address!, "0x654058B149385fcC6294FBe649876A830B574A21")
+
+                                            if (( Number(formatUnits(testTokenBalance!, 18)) < 100 )) {
+                                                getTestTokens()
                                             } else {
-                                                toast.error("Already approved!", {
-                                                    description: "You are have already approved & registered to a provider",
-                                                })
+                                                if (!isUserReferredToProvider) {
+                                                    registerUser(address!, "0x654058B149385fcC6294FBe649876A830B574A21")
+                                                } else {
+                                                    toast.error("Already approved!", {
+                                                        description: "You are have already approved & registered to a provider",
+                                                    })
+                                                }
                                             }
+                                            
                                         }
                                     }}
                                 >
@@ -305,7 +354,7 @@ export function Wrapper() {
                                                     : (
                                                         <>
                                                             {
-                                                                allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : "Approve cUSD"
+                                                                allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( Number(formatUnits(testTokenBalance!, 18)) < 100 ) } ? "Get Test cUSD" : "Approve cUSD"`
                                                             }
                                                         </>
                                                     )
