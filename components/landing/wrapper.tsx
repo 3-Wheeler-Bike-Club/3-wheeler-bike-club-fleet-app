@@ -7,6 +7,7 @@ import { Wallet, TrendingUp, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { useAccount, useConnect } from "wagmi";
 import { injected } from "wagmi/connectors";
+
 export function Wrapper() {
 
     
