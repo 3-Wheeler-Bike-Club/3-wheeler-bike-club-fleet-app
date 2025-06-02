@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
+import { encodeFunctionData, erc20Abi, formatUnits, parseUnits } from "viem";
 import { celo, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -112,7 +112,7 @@ export function Wrapper() {
 
     const { data: testTokenBalance, queryKey: testTokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: "0x0423189886D7966f0DD7E7d256898DAeEE625dca",
+        address: "0x654058B149385fcC6294FBe649876A830B574A21",
         functionName: "balanceOf",
         chainId: optimism.id,
         args: [address!],
@@ -127,7 +127,7 @@ export function Wrapper() {
         try {
             setLoadingCeloUSD(true)
             const hash = await sendTransactionAsync({
-                to: fleetOrderBook,
+                to: "0x654058B149385fcC6294FBe649876A830B574A21",
                 data: encodeFunctionData({
                     abi: fleetOrderTokenAbi,
                     functionName: "dripPayeeFromPSP",
@@ -311,13 +311,19 @@ export function Wrapper() {
                                                 orderFleetWithCeloUSD()
                                             }
                                         } else {
-                                            if (!isUserReferredToProvider) {
-                                                registerUser(address!, "0x654058B149385fcC6294FBe649876A830B574A21")
+
+                                            if (( Number(formatUnits(testTokenBalance!, 18)) < 100 )) {
+                                                getTestTokens()
                                             } else {
-                                                toast.error("Already approved!", {
-                                                    description: "You are have already approved & registered to a provider",
-                                                })
+                                                if (!isUserReferredToProvider) {
+                                                    registerUser(address!, "0x654058B149385fcC6294FBe649876A830B574A21")
+                                                } else {
+                                                    toast.error("Already approved!", {
+                                                        description: "You are have already approved & registered to a provider",
+                                                    })
+                                                }
                                             }
+                                            
                                         }
                                     }}
                                 >
@@ -348,7 +354,7 @@ export function Wrapper() {
                                                     : (
                                                         <>
                                                             {
-                                                                allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : "Approve cUSD"
+                                                                allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( Number(formatUnits(testTokenBalance!, 18)) < 100 ) } ? "Get Test cUSD" : "Approve cUSD"`
                                                             }
                                                         </>
                                                     )
