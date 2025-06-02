@@ -48,6 +48,7 @@ export function Wrapper() {
     const fleetFractionPriceQueryClient = useQueryClient()
     const allowanceCeloDollarQueryClient = useQueryClient()
     const isUserReferredToProviderQueryClient = useQueryClient()
+    const testTokenBalanceQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
     const { sendTransactionAsync } = useSendTransaction();
@@ -109,6 +110,18 @@ export function Wrapper() {
     }, [blockNumber, isUserReferredToProviderQueryClient, isUserReferredToProviderQueryKey]) 
     console.log(isUserReferredToProvider!)
 
+    const { data: testTokenBalance, queryKey: testTokenBalanceQueryKey } = useReadContract({
+        abi: erc20Abi,
+        address: "0x0423189886D7966f0DD7E7d256898DAeEE625dca",
+        functionName: "balanceOf",
+        chainId: optimism.id,
+        args: [address!],
+
+    })
+    useEffect(() => { 
+        testTokenBalanceQueryClient.invalidateQueries({ queryKey: testTokenBalanceQueryKey }) 
+    }, [blockNumber, testTokenBalanceQueryClient, testTokenBalanceQueryKey]) 
+    console.log(testTokenBalance!)
 
     async function getTestTokens() {
         try {
