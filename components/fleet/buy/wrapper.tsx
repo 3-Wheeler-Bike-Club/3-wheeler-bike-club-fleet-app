@@ -114,7 +114,7 @@ export function Wrapper() {
         abi: erc20Abi,
         address: "0x654058B149385fcC6294FBe649876A830B574A21",
         functionName: "balanceOf",
-        chainId: optimism.id,
+        chainId: celo.id,
         args: [address!],
 
     })
@@ -131,7 +131,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderTokenAbi,
                     functionName: "dripPayeeFromPSP",
-                    args: [address!, parseUnits("30000", 18)],
+                    args: [address!, parseUnits("50000", 18)],
                 }),
                 chainId: celo.id,
             })
@@ -141,15 +141,18 @@ export function Wrapper() {
             })
 
             if (transaction) {
-                toast.success("Got Test Tokens", {
+                toast.success("Test Tokens Received", {
                     description: `You can now make orders to your fleet with test tokens`,
                 })
                 setLoadingCeloUSD(false)
-                router.push("/fleet")
             }
             
         } catch (error) {
-            
+            console.log(error)
+            toast.error("Transaction failed", {
+                description: `Something went wrong, please try again`,
+            })
+            setLoadingCeloUSD(false)
         }
         
     }
@@ -312,7 +315,7 @@ export function Wrapper() {
                                             }
                                         } else {
 
-                                            if (( Number(formatUnits(testTokenBalance!, 18)) < 100 )) {
+                                            if ( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) {
                                                 getTestTokens()
                                             } else {
                                                 if (!isUserReferredToProvider) {
@@ -354,7 +357,7 @@ export function Wrapper() {
                                                     : (
                                                         <>
                                                             {
-                                                                allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( Number(formatUnits(testTokenBalance!, 18)) < 100 ) } ? "Get Test cUSD" : "Approve cUSD"`
+                                                                allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) ? "Get Test cUSD" : "Approve cUSD"}`
                                                             }
                                                         </>
                                                     )
