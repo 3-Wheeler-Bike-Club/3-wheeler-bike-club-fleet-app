@@ -318,7 +318,7 @@ export function Wrapper() {
                                             if ( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) {
                                                 getTestTokens()
                                             } else {
-                                                if (!isUserReferredToProvider) {
+                                                if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
                                                     registerUser(address!, "0x654058B149385fcC6294FBe649876A830B574A21")
                                                 } else {
                                                     toast.error("Already approved!", {
