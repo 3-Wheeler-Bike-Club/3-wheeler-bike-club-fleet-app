@@ -87,7 +87,7 @@ export function Wrapper() {
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: "0x654058B149385fcC6294FBe649876A830B574A21"/*cUSD*/,
+        address: "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638"/*cUSD*/,
         functionName: "allowance",
         args: [address!, fleetOrderBook],
     })
@@ -112,7 +112,7 @@ export function Wrapper() {
 
     const { data: testTokenBalance, queryKey: testTokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: "0x654058B149385fcC6294FBe649876A830B574A21",
+        address: "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638",
         functionName: "balanceOf",
         chainId: celo.id,
         args: [address!],
@@ -127,11 +127,11 @@ export function Wrapper() {
         try {
             setLoadingCeloUSD(true)
             const hash = await sendTransactionAsync({
-                to: "0x654058B149385fcC6294FBe649876A830B574A21",
+                to: "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638",
                 data: encodeFunctionData({
                     abi: fleetOrderTokenAbi,
                     functionName: "dripPayeeFromPSP",
-                    args: [address!, parseUnits("50000", 18)],
+                    args: [address!, parseUnits("1500000", 18)],
                 }),
                 chainId: celo.id,
             })
@@ -154,7 +154,6 @@ export function Wrapper() {
             })
             setLoadingCeloUSD(false)
         }
-        
     }
 
 
@@ -168,7 +167,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleet",
-                    args: [BigInt(amount), "0x654058B149385fcC6294FBe649876A830B574A21"/*cUSD*/],
+                    args: [BigInt(amount), "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638"/*cUSD*/],
                 }),
                 chainId: celo.id,
             })
@@ -205,7 +204,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleetFraction",
-                    args: [BigInt(shares), "0x654058B149385fcC6294FBe649876A830B574A21"/*cUSD*/],
+                    args: [BigInt(shares), "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638"/*cUSD*/],
                 }),
                 chainId: celo.id,
             })
@@ -234,171 +233,168 @@ export function Wrapper() {
 
     return (
         <div className="flex flex-col w-full h-full items-center gap-8 p-24 max-md:p-6">
-
-        <Drawer open={true}>
-      
-            <DrawerContent>
-                <div className="mx-auto w-full max-w-sm pb-6">
-                    <DrawerHeader className="max-md:gap-[0.1rem]">
-                        <DrawerTitle>
-                            {isFractionsMode ? "Purchase 3-Wheeler Fractions" : "Purchase a 3-Wheeler"}
-                        </DrawerTitle>
-                        <DrawerDescription className="text-xs">Choose the amount of {isFractionsMode ? "fractions" : "3-Wheelers"} to purchase.</DrawerDescription>
-                    </DrawerHeader>
-                    <div className="flex flex-col gap-2 p-4 pb-0">
-                        
-                        <div className="flex items-center justify-center space-x-2">
-                            <div>
-                                <Image className="max-md:w-[80px] max-md:h-[80px]" src="/images/kekeHero.svg" alt="3-Wheeler" width={100} height={100} />
-                            </div>
-                            <div className="text-xl font-bold">
-                                ~
-                            </div>
-                            <div className="text-xl font-bold">
-                                {isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))} <span className="text-muted-foreground">USD</span>
-                            </div>
-                        </div>  
+            <Drawer open={true}>
+                <DrawerContent>
+                    <div className="mx-auto w-full max-w-sm pb-6">
+                        <DrawerHeader className="max-md:gap-[0.1rem]">
+                            <DrawerTitle>
+                                {isFractionsMode ? "Purchase 3-Wheeler Fractions" : "Purchase a 3-Wheeler"}
+                            </DrawerTitle>
+                            <DrawerDescription className="text-xs">Choose the amount of {isFractionsMode ? "fractions" : "3-Wheelers"} to purchase.</DrawerDescription>
+                        </DrawerHeader>
+                        <div className="flex flex-col gap-2 p-4 pb-0">
+                            
+                            <div className="flex items-center justify-center space-x-2">
+                                <div>
+                                    <Image className="max-md:w-[80px] max-md:h-[80px]" src="/images/kekeHero.svg" alt="3-Wheeler" width={100} height={100} />
+                                </div>
+                                <div className="text-xl font-bold">
+                                    ~
+                                </div>
+                                <div className="text-xl font-bold">
+                                    {isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))} <span className="text-muted-foreground">USD</span>
+                                </div>
+                            </div>  
 
 
-                    <div>
-                            <div className="flex items-center justify-between space-x-2">
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-8 w-8 shrink-0 rounded-full"
-                                    onClick={isFractionsMode ? decreaseFractions : decrease}
-                                    disabled={isFractionsMode ? fractions <= 1 : amount <= 1}
+                        <div>
+                                <div className="flex items-center justify-between space-x-2">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 shrink-0 rounded-full"
+                                        onClick={isFractionsMode ? decreaseFractions : decrease}
+                                        disabled={isFractionsMode ? fractions <= 1 : amount <= 1}
 
-                                >
-                                    <Minus />
-                                    <span className="sr-only">Decrease</span>
-                                </Button>
-                                <div className="flex items-center justify-center space-x-2">
-                                    <div className="flex-1 text-center">
-                                        
-                                        <div className="text-7xl max-md:text-5xl font-bold tracking-tighter">
-                                        {isFractionsMode ? fractions : amount}
-                                        </div>
-                                        <div className="text-[0.70rem] max-md:text-[0.6rem] uppercase text-muted-foreground">
-                                            No. of {isFractionsMode ? "Fractions" : "3-Wheelers"}
+                                    >
+                                        <Minus />
+                                        <span className="sr-only">Decrease</span>
+                                    </Button>
+                                    <div className="flex items-center justify-center space-x-2">
+                                        <div className="flex-1 text-center">
+                                            
+                                            <div className="text-7xl max-md:text-5xl font-bold tracking-tighter">
+                                            {isFractionsMode ? fractions : amount}
+                                            </div>
+                                            <div className="text-[0.70rem] max-md:text-[0.6rem] uppercase text-muted-foreground">
+                                                No. of {isFractionsMode ? "Fractions" : "3-Wheelers"}
+                                            </div>
                                         </div>
                                     </div>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 shrink-0 rounded-full"
+                                        onClick={isFractionsMode ? increaseFractions : increase}
+                                        disabled={isFractionsMode ? fractions >= 50 : amount >= 10}
+                                    >
+                                        <Plus />
+                                        <span className="sr-only">Increase</span>
+
+                                    </Button>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-8 w-8 shrink-0 rounded-full"
-                                    onClick={isFractionsMode ? increaseFractions : increase}
-                                    disabled={isFractionsMode ? fractions >= 50 : amount >= 3}
-                                >
-                                    <Plus />
-                                    <span className="sr-only">Increase</span>
-
-                                </Button>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2 py-14 px-4 pb-6">
-                            <div className="flex w-full justify-between">
-                                
-                                {/**pay with celoUSD */}
-                                <Button 
-                                    className={` ${allowanceCeloUSD && allowanceCeloUSD > 0 ? "w-full hover:bg-yellow-600" : "w-full bg-yellow-300 hover:bg-yellow-400"}` }
-                                    disabled={loadingCeloUSD  || loading} 
-                                    onClick={() => {
-                                        if (allowanceCeloUSD && allowanceCeloUSD > 0) {
-                                            if (isFractionsMode) {
-                                                orderFleetFractionsWithCeloUSD(fractions)
-                                            } else {
-                                                orderFleetWithCeloUSD()
-                                            }
-                                        } else {
-
-                                            if ( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) {
-                                                getTestTokens()
-                                            } else {
-                                                if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
-                                                    registerUser(address!, "0x654058B149385fcC6294FBe649876A830B574A21")
-                                                } else {
-                                                    toast.error("Already approved!", {
-                                                        description: "You are have already approved & registered to a provider",
-                                                    })
-                                                }
-                                            }
-                                            
-                                        }
-                                    }}
-                                >
-                                    {
-                                        loadingCeloUSD || loading
-                                        ? (
-                                            <>
-                                                <motion.div
-                                                    initial={{ rotate: 0 }}
-                                                    animate={{ rotate: 360 }}
-                                                    transition={{
-                                                        duration: 1,
-                                                        repeat: Infinity,
-                                                        ease: "linear",
-                                                    }}
-                                                >
-                                                    <Ellipsis/>
-                                                </motion.div>
-                                            </>
-                                        )
-                                        : (
-                                            <>
-                                            <>
-                                                {
-                                                    allowanceCeloDollarLoading ? (
-                                                       <></>
-                                                    )  
-                                                    : (
-                                                        <>
-                                                            {
-                                                                allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) ? "Get Test cUSD" : "Approve cUSD"}`
-                                                            }
-                                                        </>
-                                                    )
-                                                }
-                                            </>
-                                                
-                                            </>
-                                        )
-                                    }
-                                </Button>
-                            </div>
-                            <DrawerClose asChild>
-                                <Button className="w-full" variant="outline" onClick={() => router.push("/fleet")}>Cancel</Button>
-                            </DrawerClose>
-                    </div>
-                    <div className="flex flex-col gap-2 items-center justify-center">
-                            <div className="flex items-center space-x-2">
-                                <Label htmlFor="fractions-mode">
-                                    {isFractionsMode ? <ChartPie className="h-7 w-7 text-yellow-600"/> : <ChartPie className="h-6 w-6 text-muted-foreground"/>}
-                                </Label>
-                                <Switch checked={!isFractionsMode} onCheckedChange={() => {
-                                    setIsFractionsMode(!isFractionsMode);
-                                    setFractions(1);
-                                    setAmount(1);
-                                }} id="fractions-mode" />
-                                <Label htmlFor="single-mode">
-                                    {isFractionsMode ? <RefreshCw className="h-6 w-6 text-muted-foreground"/> : <RefreshCw className="h-7 w-7 text-yellow-600"/>}
-                                </Label>
-                            </div>
-                            <div className="text-xs text-muted-foreground max-md:text-[11px] text-center">
-                                <p>Toggle between buying fractions or a single 3-Wheeler</p>
-                            </div>
-                        </div>
-                    <DrawerFooter>
                         
-                    </DrawerFooter>
-                </div>
+                        <div className="flex flex-col gap-2 py-14 px-4 pb-6">
+                                <div className="flex w-full justify-between">
+                                    
+                                    {/**pay with celoUSD */}
+                                    <Button 
+                                        className={` ${allowanceCeloUSD && allowanceCeloUSD > 0 ? "w-full hover:bg-yellow-600" : "w-full bg-yellow-300 hover:bg-yellow-400"}` }
+                                        disabled={loadingCeloUSD  || loading} 
+                                        onClick={() => {
+                                            if (allowanceCeloUSD && allowanceCeloUSD > 0) {
+                                                if (isFractionsMode) {
+                                                    orderFleetFractionsWithCeloUSD(fractions)
+                                                } else {
+                                                    orderFleetWithCeloUSD()
+                                                }
+                                            } else {
 
-            </DrawerContent>
-        </Drawer>
-        
+                                                if ( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) {
+                                                    getTestTokens()
+                                                } else {
+                                                    if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
+                                                        registerUser(address!, "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638")
+                                                    } else {
+                                                        toast.error("Already approved!", {
+                                                            description: "You are have already approved & registered to a provider",
+                                                        })
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }}
+                                    >
+                                        {
+                                            loadingCeloUSD || loading
+                                            ? (
+                                                <>
+                                                    <motion.div
+                                                        initial={{ rotate: 0 }}
+                                                        animate={{ rotate: 360 }}
+                                                        transition={{
+                                                            duration: 1,
+                                                            repeat: Infinity,
+                                                            ease: "linear",
+                                                        }}
+                                                    >
+                                                        <Ellipsis/>
+                                                    </motion.div>
+                                                </>
+                                            )
+                                            : (
+                                                <>
+                                                <>
+                                                    {
+                                                        allowanceCeloDollarLoading ? (
+                                                        <></>
+                                                        )  
+                                                        : (
+                                                            <>
+                                                                {
+                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) ? "Get Test cUSD" : "Approve cUSD"}`
+                                                                }
+                                                            </>
+                                                        )
+                                                    }
+                                                </>
+                                                    
+                                                </>
+                                            )
+                                        }
+                                    </Button>
+                                </div>
+                                <DrawerClose asChild>
+                                    <Button className="w-full" variant="outline" onClick={() => router.push("/fleet")}>Cancel</Button>
+                                </DrawerClose>
+                        </div>
+                        <div className="flex flex-col gap-2 items-center justify-center">
+                                <div className="flex items-center space-x-2">
+                                    <Label htmlFor="fractions-mode">
+                                        {isFractionsMode ? <ChartPie className="h-7 w-7 text-yellow-600"/> : <ChartPie className="h-6 w-6 text-muted-foreground"/>}
+                                    </Label>
+                                    <Switch checked={!isFractionsMode} onCheckedChange={() => {
+                                        setIsFractionsMode(!isFractionsMode);
+                                        setFractions(1);
+                                        setAmount(1);
+                                    }} id="fractions-mode" />
+                                    <Label htmlFor="single-mode">
+                                        {isFractionsMode ? <RefreshCw className="h-6 w-6 text-muted-foreground"/> : <RefreshCw className="h-7 w-7 text-yellow-600"/>}
+                                    </Label>
+                                </div>
+                                <div className="text-xs text-muted-foreground max-md:text-[11px] text-center">
+                                    <p>Toggle between buying fractions or a single 3-Wheeler</p>
+                                </div>
+                            </div>
+                        <DrawerFooter>
+                            
+                        </DrawerFooter>
+                    </div>
+
+                </DrawerContent>
+            </Drawer>
         </div>
     );
 }
