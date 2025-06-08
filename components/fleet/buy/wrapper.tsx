@@ -18,7 +18,7 @@ import { motion } from "framer-motion"
 import { ChartPie, Ellipsis, Minus, Plus, RefreshCw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { divvi, /*cUSD,*/ fleetOrderBook } from "@/utils/constants/addresses";
+import { divvi, /*cUSD,*/ fleetOrderBook, fleetOrderToken } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
 import { encodeFunctionData, erc20Abi, formatUnits, parseUnits } from "viem";
 import { celo, optimism } from "viem/chains";
@@ -87,7 +87,7 @@ export function Wrapper() {
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638"/*cUSD*/,
+        address: fleetOrderToken/*cUSD*/,
         functionName: "allowance",
         args: [address!, fleetOrderBook],
     })
@@ -112,7 +112,7 @@ export function Wrapper() {
 
     const { data: testTokenBalance, queryKey: testTokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638",
+        address: fleetOrderToken,
         functionName: "balanceOf",
         chainId: celo.id,
         args: [address!],
@@ -127,7 +127,7 @@ export function Wrapper() {
         try {
             setLoadingCeloUSD(true)
             const hash = await sendTransactionAsync({
-                to: "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638",
+                to: fleetOrderToken,
                 data: encodeFunctionData({
                     abi: fleetOrderTokenAbi,
                     functionName: "dripPayeeFromPSP",
@@ -167,7 +167,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleet",
-                    args: [BigInt(amount), "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638"/*cUSD*/],
+                    args: [BigInt(amount), fleetOrderToken/*cUSD*/],
                 }),
                 chainId: celo.id,
             })
@@ -204,7 +204,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleetFraction",
-                    args: [BigInt(shares), "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638"/*cUSD*/],
+                    args: [BigInt(shares), fleetOrderToken/*cUSD*/],
                 }),
                 chainId: celo.id,
             })
@@ -316,7 +316,7 @@ export function Wrapper() {
                                                     getTestTokens()
                                                 } else {
                                                     if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
-                                                        registerUser(address!, "0xfB0e37b55650Ba1f524Ef4940c752E69B80C2638")
+                                                        registerUser(address!, fleetOrderToken)
                                                     } else {
                                                         toast.error("Already approved!", {
                                                             description: "You are have already approved & registered to a provider",
