@@ -29,13 +29,16 @@ import { useDivvi } from "@/hooks/useDivvi";
 import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 import { fleetOrderTokenAbi } from "@/utils/abis/fleetOrderToken";
-
+import { useSwitchChain } from "wagmi";
 
 
 
 export function Wrapper() {
 
-    const { address } = useAccount()
+    const { address, chainId } = useAccount()
+    const { switchChainAsync } = useSwitchChain()
+    console.log(chainId)
+
     
     const [amount, setAmount] = useState(1)
     const [fractions, setFractions] = useState(1)
@@ -126,6 +129,9 @@ export function Wrapper() {
     async function getTestTokens() {
         try {
             setLoadingCeloUSD(true)
+            if (chainId !== celo.id) {
+                await switchChainAsync({ chainId: celo.id })
+            }
             const hash = await sendTransactionAsync({
                 to: fleetOrderToken,
                 data: encodeFunctionData({
@@ -161,7 +167,9 @@ export function Wrapper() {
     async function orderFleetWithCeloUSD() { 
         try {
             setLoadingCeloUSD(true)
-
+            if (chainId !== celo.id) {
+               await switchChainAsync({ chainId: celo.id })
+            }
             const hash = await sendTransactionAsync({
                 to: fleetOrderBook,
                 data: encodeFunctionData({
@@ -198,7 +206,9 @@ export function Wrapper() {
     async function orderFleetFractionsWithCeloUSD( shares: number ) {    
         try {
             setLoadingCeloUSD(true)
-
+            if (chainId !== celo.id) {
+                await switchChainAsync({ chainId: celo.id })
+            }
             const hash = await sendTransactionAsync({
                 to: fleetOrderBook,
                 data: encodeFunctionData({
