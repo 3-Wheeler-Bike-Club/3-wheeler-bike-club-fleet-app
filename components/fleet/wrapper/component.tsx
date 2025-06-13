@@ -6,6 +6,9 @@ import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Compliant } from "./compliant"
+import { Menu } from "@/components/top/menu"
+import { Invite } from "./invite"
+import { Referred } from "./referred"
 
 
 
@@ -42,6 +45,7 @@ export function Component() {
 
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
+            <Menu/>
             {
                 whitelistedLoading || compliantLoading 
                 ? (
@@ -54,14 +58,14 @@ export function Component() {
                     {
                         !whitelisted 
                         ? (
-                            <></>
+                            <Invite />
                         )
                         : (
                             <>
                             {
                                 !compliant 
                                 ? (
-                                    <></>
+                                    <Referred />
                                 )
                                 : (
                                     <Compliant />

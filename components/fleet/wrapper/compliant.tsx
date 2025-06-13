@@ -119,9 +119,7 @@ export function Compliant() {
     }, [totalFractions, totalFleet, maxFleetOrder])
     
     return (
-        <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
-            <Menu/>
-
+        <div className="flex flex-col h-full w-full gap-6">
             <div className="flex w-full justify-center">
                 <Alert className="w-full max-w-[66rem]">
                     <Caravan className="h-4 w-4" />
