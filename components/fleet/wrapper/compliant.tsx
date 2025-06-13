@@ -1,26 +1,26 @@
 "use client"
 
 import { Caravan, HandCoins, OctagonMinus, Warehouse } from "lucide-react";
-import { Menu } from "../top/menu"
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Button } from "../ui/button";
+import { Menu } from "../../top/menu"
+import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
+import { Button } from "../../ui/button";
 
 import { useBlockNumber, useReadContract, useAccount } from 'wagmi'
 import { useRouter } from "next/navigation";
 import { fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { Logs } from "./history/logs";
-import { CarouselApi, CarouselContent, CarouselNext, CarouselPrevious } from "../ui/carousel";
-import { Carousel } from "../ui/carousel";
+import { Logs } from "../history/logs";
+import { CarouselApi, CarouselContent, CarouselNext, CarouselPrevious } from "../../ui/carousel";
+import { Carousel } from "../../ui/carousel";
 import { Id } from "./id";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Progress } from "../ui/progress";
-import { Returns } from "./withdraw/returns";
-import { Verification } from "../self/verification";
+import { Progress } from "../../ui/progress";
+import { Returns } from "../withdraw/returns";
+import { Verification } from "../../self/verification";
 
 
-export function Wrapper() {
+export function Compliant() {
 
     const router = useRouter();
 
@@ -119,9 +119,7 @@ export function Wrapper() {
     }, [totalFractions, totalFleet, maxFleetOrder])
     
     return (
-        <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
-            <Menu/>
-
+        <div className="flex flex-col h-full w-full gap-6">
             <div className="flex w-full justify-center">
                 <Alert className="w-full max-w-[66rem]">
                     <Caravan className="h-4 w-4" />
