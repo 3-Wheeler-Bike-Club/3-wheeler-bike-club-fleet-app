@@ -5,6 +5,21 @@ export const fleetOrderBookAbi = [
     "stateMutability": "nonpayable"
   },
   {
+    "name": "AlreadyCompliant",
+    "type": "error",
+    "inputs": []
+  },
+  {
+    "name": "AlreadyReferred",
+    "type": "error",
+    "inputs": []
+  },
+  {
+    "name": "AlreadyWhitelisted",
+    "type": "error",
+    "inputs": []
+  },
+  {
     "name": "BulkUpdateLimitExceeded",
     "type": "error",
     "inputs": []
@@ -60,6 +75,11 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
+    "name": "InvalidReferrer",
+    "type": "error",
+    "inputs": []
+  },
+  {
     "name": "InvalidStateTransition",
     "type": "error",
     "inputs": []
@@ -100,7 +120,22 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
+    "name": "NotCompliant",
+    "type": "error",
+    "inputs": []
+  },
+  {
     "name": "NotEnoughTokens",
+    "type": "error",
+    "inputs": []
+  },
+  {
+    "name": "NotReferrer",
+    "type": "error",
+    "inputs": []
+  },
+  {
+    "name": "NotWhitelisted",
     "type": "error",
     "inputs": []
   },
@@ -429,6 +464,31 @@ export const fleetOrderBookAbi = [
     "anonymous": false
   },
   {
+    "name": "Referrered",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "referrer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "referred",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "shares",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
     "name": "Transfer",
     "type": "event",
     "inputs": [
@@ -474,6 +534,25 @@ export const fleetOrderBookAbi = [
         "type": "address",
         "indexed": false,
         "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "Whitelisted",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "referrer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "owners",
+        "type": "address[]",
+        "indexed": false,
+        "internalType": "address[]"
       }
     ],
     "anonymous": false
@@ -529,6 +608,32 @@ export const fleetOrderBookAbi = [
         "name": "erc20Contract",
         "type": "address",
         "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "addReferrer",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "referrers",
+        "type": "address[]",
+        "internalType": "address[]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "addWhitelisted",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "owners",
+        "type": "address[]",
+        "internalType": "address[]"
       }
     ],
     "outputs": [],
@@ -744,6 +849,25 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "isCompliant",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "isOperator",
     "type": "function",
     "inputs": [
@@ -752,6 +876,44 @@ export const fleetOrderBookAbi = [
         "type": "address",
         "internalType": "address"
       },
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "isReferrer",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "isWhitelisted",
+    "type": "function",
+    "inputs": [
       {
         "name": "",
         "type": "address",
@@ -806,6 +968,11 @@ export const fleetOrderBookAbi = [
         "name": "erc20Contract",
         "type": "address",
         "internalType": "address"
+      },
+      {
+        "name": "referrer",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "outputs": [],
@@ -822,6 +989,11 @@ export const fleetOrderBookAbi = [
       },
       {
         "name": "erc20Contract",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "referrer",
         "type": "address",
         "internalType": "address"
       }
@@ -863,6 +1035,44 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "referral",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "referralPoolShares",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "removeERC20",
     "type": "function",
     "inputs": [
@@ -895,6 +1105,19 @@ export const fleetOrderBookAbi = [
         "name": "status",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "setCompliance",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "owners",
+        "type": "address[]",
+        "internalType": "address[]"
       }
     ],
     "outputs": [],
