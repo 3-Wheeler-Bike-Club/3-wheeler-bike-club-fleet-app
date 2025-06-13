@@ -5,6 +5,7 @@ import { fleetOrderBook } from "@/utils/constants/addresses"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
+import { Compliant } from "./compliant"
 
 
 
@@ -40,13 +41,35 @@ export function Component() {
 
 
     return (
-        <div>
+        <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             {
                 whitelistedLoading || compliantLoading 
-                ? <div>Loading...</div> 
+                ? (
+                    <div className="flex h-full justify-center items-center text-2xl font-bold">
+                        <p>Loading...</p>
+                    </div>
+                ) 
                 : (
                     <>
-                    {}
+                    {
+                        !whitelisted 
+                        ? (
+                            <></>
+                        )
+                        : (
+                            <>
+                            {
+                                !compliant 
+                                ? (
+                                    <></>
+                                )
+                                : (
+                                    <Compliant />
+                                )
+                            }
+                            </>
+                        )
+                    }
                     </>
                 )
             }
