@@ -4,6 +4,7 @@ import { DoorClosedLocked } from "lucide-react";
 export function Invite() {
     return (
         <div className="flex flex-col h-full w-full gap-6">
+            
             <div className="flex w-full justify-center">
                 <Alert className="w-full max-w-[66rem]">
                     <DoorClosedLocked className="h-4 w-4" />
