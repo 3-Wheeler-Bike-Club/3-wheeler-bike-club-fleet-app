@@ -20,7 +20,7 @@ import { Returns } from "../withdraw/returns";
 import { Verification } from "../../self/verification";
 
 
-export function Compliant() {
+export function Garage() {
 
     const router = useRouter();
 
