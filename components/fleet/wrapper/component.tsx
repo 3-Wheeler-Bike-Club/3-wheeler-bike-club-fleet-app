@@ -9,16 +9,18 @@ import { Compliant } from "./compliant"
 import { Menu } from "@/components/top/menu"
 import { Invite } from "./invite"
 import { Referred } from "./referred"
+import { Referrer } from "./referrer"
 
 
 
 export function Component() {
 
-    const { address, isConnected } = useAccount()
+    const { address } = useAccount()
 
 
     const invitedQueryClient = useQueryClient() 
     const compliantQueryClient = useQueryClient()
+    const referrerQueryClient = useQueryClient()
     
     const { data: blockNumber } = useBlockNumber({ watch: true })  
 
@@ -42,12 +44,22 @@ export function Component() {
         compliantQueryClient.invalidateQueries({ queryKey: compliantQueryKey }) 
     }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
 
+    const { data: referrer, isLoading: referrerLoading, queryKey: referrerQueryKey } = useReadContract({
+        address: fleetOrderBook,
+        abi: fleetOrderBookAbi,
+        functionName: "isReferrer",
+        args: [address!],
+    })
+    useEffect(() => { 
+        referrerQueryClient.invalidateQueries({ queryKey: referrerQueryKey }) 
+    }, [blockNumber, referrerQueryClient, referrerQueryKey]) 
+
 
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
             {
-                whitelistedLoading || compliantLoading 
+                whitelistedLoading || compliantLoading || referrerLoading
                 ? (
                     <div className="flex h-full justify-center items-center text-2xl font-bold">
                         <p>Loading...</p>
@@ -55,29 +67,41 @@ export function Component() {
                 ) 
                 : (
                     <>
-                    {
-                        !whitelisted 
-                        ? (
-                            <Invite />
-                        )
-                        : (
-                            <>
-                            {
-                                !compliant 
-                                ? (
-                                    <Referred />
-                                )
-                                : (
-                                    <Compliant />
-                                )
-                            }
-                            </>
-                        )
-                    }
+                        {
+                            !whitelisted && !referrer && !compliant
+                            && (
+                                <Invite />
+                            )
+                        }
+                        {
+                            referrer && !whitelisted && !compliant
+                            && (
+                                <Referrer />
+                            )
+                            
+                        }
+                        {
+                            referrer && !whitelisted && compliant
+                            && (
+                                <Compliant />
+                            )
+                        }
+                        {
+                            whitelisted && !referrer && !compliant
+                            && (
+                                <Referred />
+                            )
+                            
+                        }
+                        {
+                            whitelisted && !referrer && compliant
+                            && (
+                                <Compliant />
+                            )
+                        }
                     </>
                 )
             }
         </div>
     )
 }
-
