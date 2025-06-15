@@ -1,18 +1,48 @@
 "use client"
-
-import { useState } from "react";
-import { Drawer, DrawerContent, DrawerTitle, DrawerHeader, DrawerDescription, DrawerTrigger } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { Ellipsis } from "lucide-react";
-import { Input } from "@/components/ui/input"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { motion } from "framer-motion"
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-
+import {
+    useState
+  } from "react"
+  import {
+    toast
+  } from "sonner"
+  import {
+    useForm
+  } from "react-hook-form"
+  import {
+    zodResolver
+  } from "@hookform/resolvers/zod"
+  import * as z from "zod"
+  import {
+    cn
+  } from "@/lib/utils"
+  import {
+    Button
+  } from "@/components/ui/button"
+  import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+  } from "@/components/ui/form"
+  import {
+    CloudUpload,
+    Paperclip
+  } from "lucide-react"
+  import {
+    FileInput,
+    FileUploader,
+    FileUploaderContent,
+    FileUploaderItem
+  } from "@/components/ui/file-upload"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer"
+  
+  const formSchema = z.object({
+    name_2777197896: z.string()
+  });
+  
 
 
 const FormSchema = z.object({
@@ -21,6 +51,7 @@ const FormSchema = z.object({
     othername: z.string(),
     email: z.string().email(),
     id: z.string(),
+    files: z.string()
 })
 
 
@@ -28,24 +59,29 @@ export function Verify() {
 
     const [files, setFiles] = useState < File[] | null > (null);
 
-    const dropZoneConfig = {
-        maxFiles: 2,
-        maxSize: 1024 * 1024 * 4,
-        multiple: true,
-    };
-    
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
-        defaultValues: {
-            firstname: undefined,
-            lastname: undefined,
-            othername: undefined,
-            email: undefined,
-            id: undefined,
-        },
-    })
+  const dropZoneConfig = {
+    maxFiles: 5,
+    maxSize: 1024 * 1024 * 4,
+    multiple: true,
+  };
+  const form = useForm < z.infer < typeof FormSchema >> ({
+    resolver: zodResolver(FormSchema),
 
-    async function onSubmit() {}
+  })
+
+  function onSubmit(values: z.infer < typeof FormSchema > ) {
+    try {
+      console.log(values);
+      toast(
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+        </pre>
+      );
+    } catch (error) {
+      console.error("Form submission error", error);
+      toast.error("Failed to submit the form. Please try again.");
+    }
+  }
 
     return (
         <Drawer>
@@ -64,137 +100,58 @@ export function Verify() {
                         <DrawerDescription className="max-md:text-[0.9rem]">Enter Full Name, Scan & Upload your ID.</DrawerDescription>
                     </DrawerHeader>
                     <div className="flex flex-col p-4">
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                    <FormField
-                                        control={form.control}
-                                        name="firstname"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                                    <FormLabel className="">First Name</FormLabel>
-                                                    <FormControl >
-                                                        <Input disabled={ true } className="col-span-3" placeholder={""} {...field} />
-                                                    </FormControl>
-                                                </div>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="lastname"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                                    <FormLabel className="">Last Name</FormLabel>
-                                                    <FormControl >
-                                                        <Input disabled={ true } className="col-span-3" placeholder={""} {...field} />
-                                                    </FormControl>
-                                                </div>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="othername"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                                    <FormLabel className="">Other Name</FormLabel>
-                                                    <FormControl >
-                                                        <Input disabled={ true } className="col-span-3" placeholder={""} {...field} />
-                                                    </FormControl>
-                                                </div>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                                    <FormLabel className="">Email</FormLabel>
-                                                    <FormControl >
-                                                        <Input disabled={ true } className="col-span-3" placeholder={""} {...field} />
-                                                    </FormControl>
-                                                </div>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="id"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                                    <FormLabel className="">ID</FormLabel>
-                                                    {
-                                                        !false
-                                                        ?(
-                                                            <>
-                                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                                    <FormControl>
-                                                                    <SelectTrigger className='col-span-3'>
-                                                                        <SelectValue placeholder='Select an ID' />
-                                                                    </SelectTrigger>
-                                                                    </FormControl>
-                                                                    <SelectContent className='col-span-3'>
-                                                                        <SelectItem value="passport">Passport</SelectItem>
-                                                                        <SelectItem value="drivers">Driver's License</SelectItem>
-                                                                        <SelectItem value="national">National ID</SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </>
-                                                        )
-                                                        :(
-                                                            <>
-                                                                <FormControl>
-                                                                    <Input disabled className='col-span-3' placeholder={""} {...field} />
-                                                                </FormControl>
-                                                            </>
-                                                        )
-                                                    }
-                                                </div>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    
-                            
-                                    <div className="flex justify-between">
-                                        <Button
-                                            className="w-36"
-                                            disabled={true}
-                                            type="submit"
+                      <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
+                          
+                              <FormField
+                                control={form.control}
+                                name="files"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Select File</FormLabel>
+                                    <FormControl>
+                                      <FileUploader
+                                        value={files}
+                                        onValueChange={setFiles}
+                                        dropzoneOptions={dropZoneConfig}
+                                        className="relative bg-background rounded-lg p-2"
+                                      >
+                                        <FileInput
+                                          id="fileInput"
+                                          className="outline-dashed outline-1 outline-slate-500"
                                         >
-                                            {
-                                                true
-                                                ? (
-                                                    <>
-                                                        <motion.div
-                                                        initial={{ rotate: 0 }} // Initial rotation value (0 degrees)
-                                                        animate={{ rotate: 360 }} // Final rotation value (360 degrees)
-                                                        transition={{
-                                                            duration: 1, // Animation duration in seconds
-                                                            repeat: Infinity, // Infinity will make it rotate indefinitely
-                                                            ease: "linear", // Animation easing function (linear makes it constant speed)
-                                                        }}
-                                                    >
-                                                            <Ellipsis/>
-                                                        </motion.div>
-                                                    </>
-                                                )
-                                                : (
-                                                    <>
-                                                        Save changes
-                                                    </>
-                                                )
-                                            }
-                                        </Button>
-                                    </div>
-                                </form>
-                            </Form>
-                        </div>              
+                                          <div className="flex items-center justify-center flex-col p-8 w-full ">
+                                            <CloudUpload className='text-gray-500 w-10 h-10' />
+                                            <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                              <span className="font-semibold">Click to upload</span>
+                                              &nbsp; or drag and drop
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                              SVG, PNG, JPG or GIF
+                                            </p>
+                                          </div>
+                                        </FileInput>
+                                        <FileUploaderContent>
+                                          {files &&
+                                            files.length > 0 &&
+                                            files.map((file, i) => (
+                                              <FileUploaderItem key={i} index={i}>
+                                                <Paperclip className="h-4 w-4 stroke-current" />
+                                                <span>{file.name}</span>
+                                              </FileUploaderItem>
+                                            ))}
+                                        </FileUploaderContent>
+                                      </FileUploader>
+                                    </FormControl>
+                                    <FormDescription>Select a file to upload.</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                          <Button type="submit">Submit</Button>
+                        </form>
+                      </Form>
+                    </div>              
                 </div>
                 </DrawerContent>
         </Drawer>
