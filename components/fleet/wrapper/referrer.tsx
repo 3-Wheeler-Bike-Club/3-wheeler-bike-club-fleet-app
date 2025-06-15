@@ -2,16 +2,16 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DoorOpen, UserRoundSearch } from "lucide-react";
 import { Verify } from "./verify";
 
-export function Referred() {
+export function Referrer() {
     return (
         <div className="flex flex-col h-full w-full gap-6">
             
             <div className="flex w-full justify-center">
                 <Alert className="w-full max-w-[66rem]">
                     <DoorOpen className="h-4 w-4" />
-                    <AlertTitle className="font-bold">Access Granted!</AlertTitle>
+                    <AlertTitle className="font-bold">Referrer Access Granted!</AlertTitle>
                     <AlertDescription className="text-xs italic">
-                        <p className="max-md:text-[11px]">{"You can now complete KYC & access P2P fleet financing"}</p>
+                        <p className="max-md:text-[11px]">{"You can now complete KYC & access P2P fleet financing & refer your friends"}</p>
                     </AlertDescription>
                 </Alert>
             </div>
