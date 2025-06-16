@@ -5,9 +5,10 @@ import { fleetOrderBook } from "@/utils/constants/addresses"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { Garage } from "./garage"
 import { Menu } from "@/components/top/menu"
+import { Referrals } from "../referrals/referrals"
 import { useRouter } from "next/navigation"
+
 
 
 export function Wrapper() {
@@ -61,6 +62,7 @@ export function Wrapper() {
         }
     }, [compliant])
 
+
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
@@ -74,9 +76,9 @@ export function Wrapper() {
                 : (
                     <>
                         {
-                            whitelisted && !referrer && compliant
+                            referrer && !whitelisted && compliant
                             && (
-                                <Garage />
+                                <Referrals />
                             )
                         }
                     </>

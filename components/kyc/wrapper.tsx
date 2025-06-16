@@ -9,12 +9,14 @@ import { Menu } from "@/components/top/menu"
 import { Invite } from "../kyc/invite"
 import { Referred } from "../kyc/referred"
 import { Referrer } from "../kyc/referrer"
+import { useRouter } from "next/navigation"
 
 
 
-export function Component() {
+export function Wrapper() {
 
     const { address } = useAccount()
+    const router = useRouter()  
 
 
     const invitedQueryClient = useQueryClient() 
@@ -52,6 +54,17 @@ export function Component() {
     useEffect(() => { 
         referrerQueryClient.invalidateQueries({ queryKey: referrerQueryKey }) 
     }, [blockNumber, referrerQueryClient, referrerQueryKey]) 
+
+
+    useEffect(() => {
+        console.log(whitelisted, referrer, compliant)
+
+        if (referrer && !whitelisted && compliant) {
+            router.replace("/referrals")
+        } else if (whitelisted && !referrer && compliant) {
+            router.replace("/fleet")
+        }
+    }, [whitelisted, referrer, compliant])
 
 
     return (
