@@ -1,7 +1,7 @@
 
-import { CarouselItem } from "../../ui/carousel"
-import { CardContent } from "../../ui/card"
-import { Card } from "../../ui/card"
+import { CarouselItem } from "../ui/carousel"
+import { CardContent } from "../ui/card"
+import { Card } from "../ui/card"
 import Image from "next/image"
 import { useBlockNumber, useReadContract, useAccount } from "wagmi"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"

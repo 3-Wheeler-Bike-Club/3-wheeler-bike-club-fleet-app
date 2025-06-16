@@ -1,4 +1,4 @@
-import { Wrapper } from "@/components/fleet/wrapper";
+import { Wrapper } from "@/components/kyc/wrapper";
 
 export default function Fleet() {
 

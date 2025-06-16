@@ -5,18 +5,16 @@ import { fleetOrderBook } from "@/utils/constants/addresses"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { Garage } from "./garage"
 import { Menu } from "@/components/top/menu"
-import { Invite } from "./invite"
-import { Referred } from "./referred"
-import { Referrer } from "./referrer"
-import { Referrals } from "./referrals"
+import { Referrals } from "../referrals/referrals"
+import { useRouter } from "next/navigation"
 
 
 
-export function Component() {
+export function Wrapper() {
 
     const { address } = useAccount()
+    const router = useRouter()
 
 
     const invitedQueryClient = useQueryClient() 
@@ -56,6 +54,15 @@ export function Component() {
     }, [blockNumber, referrerQueryClient, referrerQueryKey]) 
 
 
+    useEffect(() => {
+        console.log(compliant)
+
+        if (!compliant) {
+            router.replace("/kyc")
+        }
+    }, [compliant])
+
+
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
@@ -69,35 +76,9 @@ export function Component() {
                 : (
                     <>
                         {
-                            !whitelisted && !referrer && !compliant
-                            && (
-                                <Invite />
-                            )
-                        }
-                        {
-                            referrer && !whitelisted && !compliant
-                            && (
-                                <Referrer />
-                            )
-                            
-                        }
-                        {
                             referrer && !whitelisted && compliant
                             && (
                                 <Referrals />
-                            )
-                        }
-                        {
-                            whitelisted && !referrer && !compliant
-                            && (
-                                <Referred />
-                            )
-                            
-                        }
-                        {
-                            whitelisted && !referrer && compliant
-                            && (
-                                <Garage />
                             )
                         }
                     </>

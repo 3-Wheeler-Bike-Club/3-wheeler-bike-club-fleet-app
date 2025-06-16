@@ -1,4 +1,5 @@
-import { Wrapper } from "@/components/fleet/wrapper";
+import { Wrapper } from "@/components/referrals/wrapper";
+
 
 export default function Fleet() {
 
