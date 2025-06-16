@@ -5,12 +5,10 @@ import { fleetOrderBook } from "@/utils/constants/addresses"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { Garage } from "./garage"
 import { Menu } from "@/components/top/menu"
-import { Invite } from "./invite"
-import { Referred } from "./referred"
-import { Referrer } from "./referrer"
-import { Referrals } from "./referrals"
+import { Invite } from "../kyc/invite"
+import { Referred } from "../kyc/referred"
+import { Referrer } from "../kyc/referrer"
 
 
 
@@ -82,23 +80,11 @@ export function Component() {
                             
                         }
                         {
-                            referrer && !whitelisted && compliant
-                            && (
-                                <Referrals />
-                            )
-                        }
-                        {
                             whitelisted && !referrer && !compliant
                             && (
                                 <Referred />
                             )
                             
-                        }
-                        {
-                            whitelisted && !referrer && compliant
-                            && (
-                                <Garage />
-                            )
                         }
                     </>
                 )
