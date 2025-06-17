@@ -48,6 +48,9 @@ export function Invitation() {
 
     const handleClearInput = () => {
         setReceiverAddress("")
+        toast.success("Address cleared", {
+            description: `Address cleared from your input`,
+        })
     }; 
 
     useEffect(()=>{
