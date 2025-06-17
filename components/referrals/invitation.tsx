@@ -120,7 +120,7 @@ export function Invitation() {
                     <DrawerTitle>
                         Refer Friends
                     </DrawerTitle>
-                    <DrawerDescription className="max-md:text-[0.9rem]">{"Invite your friends & earn rewards"}</DrawerDescription>
+                    <DrawerDescription className="max-md:text-[0.9rem]">{"Invite your friends & earn"}</DrawerDescription>
                 </DrawerHeader>      
                 <div className="flex w-full flex-col gap-2 p-4 pb-0">
                     <div className="flex w-full max-w-sm items-center space-x-2">
@@ -170,12 +170,13 @@ export function Invitation() {
                         
                         {
                             addresses.length > 0 && (
-                                <div className="flex items-center gap-1 mb-4 text-sm leading-none font-medium"><Timer className="w-6 h-6 text-yellow-600" /> Pending Invites
+                                <div>
+                                    <div className="flex items-center gap-1 mb-4 text-sm leading-none font-medium"><Timer className="w-6 h-6 text-yellow-600" /> Pending Invites ({addresses.length}/ 6)</div>
                                     {addresses.map((address) => (
-                                        <Fragment key={address}>
+                                        <div key={address} className="flex flex-col items-center gap-1 mb-4 text-sm leading-none font-medium">
                                             <div className="text-xs text-center">{address}</div>
                                             <Separator className="my-2" />
-                                        </Fragment>
+                                        </div>
                                     ))}
                                 </div>
                             )
