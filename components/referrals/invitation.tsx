@@ -41,6 +41,20 @@ export function Invitation() {
         const clipboardText = await navigator.clipboard.readText();
         if (isAddress(clipboardText)) {
 
+            // check if address is already a referrer
+            const referrer = await publicClient.readContract({
+                address: fleetOrderBook,
+                abi: fleetOrderBookAbi,
+                functionName: "isReferrer",
+                args: [clipboardText as `0x${string}`],
+            })  
+            if(referrer){
+                toast.error("Address already a referrer", {
+                    description: `Please enter a different address`,
+                })
+                return
+            }
+
             // check if address is already whitelisted
             const whitelisted = await publicClient.readContract({
                 address: fleetOrderBook,
