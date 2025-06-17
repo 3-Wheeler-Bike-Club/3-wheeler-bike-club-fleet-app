@@ -3,9 +3,9 @@
 
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import {  ClipboardPen, Eraser,  UserRoundPlus, Send } from "lucide-react"
+import {  ClipboardPen, Eraser,  UserRoundPlus, Send, Timer } from "lucide-react"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { encodeFunctionData, isAddress } from "viem"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { publicClient } from "@/utils/client"
@@ -15,6 +15,8 @@ import { useSendTransaction, useSwitchChain } from "wagmi"
 import { useAccount } from "wagmi"
 import { useRouter } from "next/navigation"
 import { Input } from "../ui/input"
+import { shortenAddress } from "@/utils/shorten"
+import { Separator } from "../ui/separator"
 
 
 
@@ -124,9 +126,10 @@ export function Invitation() {
                     <div className="flex w-full max-w-sm items-center space-x-2">
                         <Input 
                             id="address"
-                            value={receiverAddress}
-                            placeholder="Paste address"
+                            value={shortenAddress(receiverAddress)}
+                            placeholder="Paste address here..."
                             disabled
+                            className=" text-base font-bold text-center"
                             onChange={(e) => {
                                 try {
                                     (e.target.value.length >= 1)
@@ -162,6 +165,21 @@ export function Invitation() {
                         </div>
 
 
+                    </div>
+                    <div className="pt-6">
+                        
+                        {
+                            addresses.length > 0 && (
+                                <div className="flex items-center gap-1 mb-4 text-sm leading-none font-medium"><Timer className="w-6 h-6 text-yellow-600" /> Pending Invites
+                                    {addresses.map((address) => (
+                                        <Fragment key={address}>
+                                            <div className="text-xs text-center">{address}</div>
+                                            <Separator className="my-2" />
+                                        </Fragment>
+                                    ))}
+                                </div>
+                            )
+                        }
                     </div>
                 </div>       
             </div>
