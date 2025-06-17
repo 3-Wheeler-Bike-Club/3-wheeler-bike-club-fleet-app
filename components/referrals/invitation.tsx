@@ -40,6 +40,22 @@ export function Invitation() {
     const handlePaste = async () => {
         const clipboardText = await navigator.clipboard.readText();
         if (isAddress(clipboardText)) {
+
+            // check if address is already whitelisted
+            const whitelisted = await publicClient.readContract({
+                address: fleetOrderBook,
+                abi: fleetOrderBookAbi,
+                functionName: "isWhitelisted",
+                args: [clipboardText as `0x${string}`],
+            })
+            if(whitelisted){
+                toast.error("Address already whitelisted", {
+                    description: `Please enter a different address`,
+                })
+                return
+            }
+
+            // check if address is already in the addresses array
             if(addresses.includes(clipboardText as `0x${string}`)){
                 toast.error("Address already added", {
                     description: `Please enter a different address`,
