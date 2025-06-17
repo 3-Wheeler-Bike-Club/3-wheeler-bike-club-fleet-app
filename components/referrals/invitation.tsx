@@ -40,6 +40,12 @@ export function Invitation() {
     const handlePaste = async () => {
         const clipboardText = await navigator.clipboard.readText();
         if (isAddress(clipboardText)) {
+            if(addresses.includes(clipboardText as `0x${string}`)){
+                toast.error("Address already added", {
+                    description: `Please enter a different address`,
+                })
+                return
+            }
             setReceiverAddress(clipboardText as `0x${string}`);
         } else {
             toast.error("Invalid address", {
@@ -140,16 +146,16 @@ export function Invitation() {
                                 }
                             }}
                         />
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-1">
                             <>
                                 {
                                     receiverAddress != "" 
-                                    ?<Button variant="ghost" size="icon" onClick={handleClearInput}><Eraser /></Button>
-                                    :<Button variant="ghost" size="icon" onClick={handlePaste}><ClipboardPen /></Button>
+                                    ?<Button variant="destructive" size="icon" onClick={handleClearInput}><Eraser /></Button>
+                                    :<Button variant="outline" size="icon" onClick={handlePaste} disabled={addresses.length >= 6}><ClipboardPen /></Button>
                                 }
                             </>
-                            <Button variant="ghost" size="icon" 
-                                disabled={!valid}
+                            <Button variant="default" size="icon" 
+                                disabled={!valid || addresses.length >= 6}
                                 onClick={()=>{
                                     if(valid){
                                         setAddresses([...addresses, receiverAddress as `0x${string}`])
