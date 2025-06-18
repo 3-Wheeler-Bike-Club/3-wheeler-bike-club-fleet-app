@@ -3,7 +3,7 @@
 
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import {  ClipboardPen, Eraser,  UserRoundPlus, Send, Timer } from "lucide-react"
+import {  ClipboardPen, Eraser,  UserRoundPlus, Send, Timer, Loader2, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { Fragment, useEffect, useState } from "react"
 import { encodeFunctionData, isAddress } from "viem"
@@ -40,6 +40,42 @@ export function Invitation() {
     const handlePaste = async () => {
         const clipboardText = await navigator.clipboard.readText();
         if (isAddress(clipboardText)) {
+
+            // check if address is already a referrer
+            const referrer = await publicClient.readContract({
+                address: fleetOrderBook,
+                abi: fleetOrderBookAbi,
+                functionName: "isReferrer",
+                args: [clipboardText as `0x${string}`],
+            })  
+            if(referrer){
+                toast.error("Address already a referrer", {
+                    description: `Please enter a different address`,
+                })
+                return
+            }
+
+            // check if address is already whitelisted
+            const whitelisted = await publicClient.readContract({
+                address: fleetOrderBook,
+                abi: fleetOrderBookAbi,
+                functionName: "isWhitelisted",
+                args: [clipboardText as `0x${string}`],
+            })
+            if(whitelisted){
+                toast.error("Address already whitelisted", {
+                    description: `Please enter a different address`,
+                })
+                return
+            }
+
+            // check if address is already in the addresses array
+            if(addresses.includes(clipboardText as `0x${string}`)){
+                toast.error("Address already added", {
+                    description: `Please enter a different address`,
+                })
+                return
+            }
             setReceiverAddress(clipboardText as `0x${string}`);
         } else {
             toast.error("Invalid address", {
@@ -120,7 +156,7 @@ export function Invitation() {
                     <DrawerTitle>
                         Refer Friends
                     </DrawerTitle>
-                    <DrawerDescription className="max-md:text-[0.9rem]">{"Invite your friends & earn rewards"}</DrawerDescription>
+                    <DrawerDescription className="max-md:text-[0.9rem]">{"Invite your friends & earn"}</DrawerDescription>
                 </DrawerHeader>      
                 <div className="flex w-full flex-col gap-2 p-4 pb-0">
                     <div className="flex w-full max-w-sm items-center space-x-2">
@@ -140,16 +176,16 @@ export function Invitation() {
                                 }
                             }}
                         />
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-1">
                             <>
                                 {
                                     receiverAddress != "" 
-                                    ?<Button variant="ghost" size="icon" onClick={handleClearInput}><Eraser /></Button>
-                                    :<Button variant="ghost" size="icon" onClick={handlePaste}><ClipboardPen /></Button>
+                                    ?<Button variant="destructive" size="icon" onClick={handleClearInput}><Eraser /></Button>
+                                    :<Button variant="outline" size="icon" onClick={handlePaste} disabled={addresses.length >= 6}><ClipboardPen /></Button>
                                 }
                             </>
-                            <Button variant="ghost" size="icon" 
-                                disabled={!valid}
+                            <Button variant="default" size="icon" 
+                                disabled={!valid || addresses.length >= 6}
                                 onClick={()=>{
                                     if(valid){
                                         setAddresses([...addresses, receiverAddress as `0x${string}`])
@@ -170,16 +206,27 @@ export function Invitation() {
                         
                         {
                             addresses.length > 0 && (
-                                <div className="flex items-center gap-1 mb-4 text-sm leading-none font-medium"><Timer className="w-6 h-6 text-yellow-600" /> Pending Invites
+                                <div>
+                                    <div className="flex items-center gap-1 mb-4 text-sm leading-none font-medium"><Timer className="w-6 h-6 text-yellow-600" /> Pending Invites ({addresses.length}/ 6)</div>
                                     {addresses.map((address) => (
-                                        <Fragment key={address}>
+                                        <div key={address} className="flex flex-col items-center gap-1 mb-4 text-sm leading-none font-medium">
                                             <div className="text-xs text-center">{address}</div>
                                             <Separator className="my-2" />
-                                        </Fragment>
+                                        </div>
                                     ))}
                                 </div>
                             )
                         }
+                    </div>
+                    <div className="flex justify-end">
+                        <Button  className="w-full" variant="default" onClick={addWhitelist} disabled={addresses.length === 0 || loading}>
+                            {
+                                loading
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Plus />
+                            }
+                            <p>Add Friends to Whitelist</p>
+                        </Button>
                     </div>
                 </div>       
             </div>

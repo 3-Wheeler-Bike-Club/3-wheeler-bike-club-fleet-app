@@ -10,7 +10,7 @@ export function Referrals() {
                     <Gift className="h-4 w-4" />
                     <AlertTitle className="font-bold"> Manage Invites!</AlertTitle>
                     <AlertDescription className="text-xs italic">
-                        <p className="max-md:text-[11px]">Refer your friends & earn rewards</p>
+                        <p className="max-md:text-[11px]">Refer your friends & earn</p>
                         
                     </AlertDescription>
                 </Alert>
@@ -33,7 +33,7 @@ export function Referrals() {
                         <div className="flex flex-col w-full h-full items-center pt-36 max-md:pt-18 gap-4">
                             <UserX className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                             <p className="text-2xl max-md:text-xl text-center font-bold">No referrals yet.</p>
-                            <p className="text-sm max-md:text-xs text-center text-muted-foreground">Send invites to your friends to start earning rewards.</p>
+                            <p className="text-sm max-md:text-xs text-center text-muted-foreground">Send invites to your friends to start earning incentives.</p>
                         </div>
                     </div>
                     )
