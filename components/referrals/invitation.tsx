@@ -3,7 +3,7 @@
 
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerDescription } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import {  ClipboardPen, Eraser,  UserRoundPlus, Send, Timer } from "lucide-react"
+import {  ClipboardPen, Eraser,  UserRoundPlus, Send, Timer, Loader2, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { Fragment, useEffect, useState } from "react"
 import { encodeFunctionData, isAddress } from "viem"
@@ -217,6 +217,16 @@ export function Invitation() {
                                 </div>
                             )
                         }
+                    </div>
+                    <div className="flex justify-end">
+                        <Button  className="w-full" variant="default" onClick={addWhitelist} disabled={addresses.length === 0 || loading}>
+                            {
+                                loading
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Plus />
+                            }
+                            <p>Add Friends to Whitelist</p>
+                        </Button>
                     </div>
                 </div>       
             </div>
