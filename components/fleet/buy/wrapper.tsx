@@ -33,11 +33,12 @@ import { useSwitchChain } from "wagmi";
 
 
 
-export function Wrapper() {
+export function Wrapper({ referrer }: { referrer: string }) {
 
     const { address, chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
     console.log(chainId)
+    console.log(referrer)
 
     
     const [amount, setAmount] = useState(1)
@@ -175,7 +176,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleet",
-                    args: [BigInt(amount), fleetOrderToken/*cUSD*/, address!],
+                    args: [BigInt(amount), fleetOrderToken/*cUSD*/, referrer as `0x${string}`],
                 }),
                 chainId: celo.id,
             })
@@ -214,7 +215,7 @@ export function Wrapper() {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleetFraction",
-                    args: [BigInt(shares), fleetOrderToken/*cUSD*/, address!],
+                    args: [BigInt(shares), fleetOrderToken/*cUSD*/, referrer as `0x${string}`],
                 }),
                 chainId: celo.id,
             })
