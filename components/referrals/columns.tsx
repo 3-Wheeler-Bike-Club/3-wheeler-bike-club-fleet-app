@@ -76,9 +76,22 @@ function StatusCell({ address }: { address: string }) {
 }
 
 function SharesCell({ address }: { address: string }) {
+
+    const sharesQueryClient = useQueryClient()
+
+    const { data: blockNumber } = useBlockNumber({ watch: true })  
     
+    const { data: shares, isLoading: sharesLoading, queryKey: sharesQueryKey } = useReadContract({
+        address: fleetOrderBook,
+        abi: fleetOrderBookAbi,
+        functionName: "referralPoolShares",
+        args: [address as `0x${string}`],
+    })
+    useEffect(() => {   
+        sharesQueryClient.invalidateQueries({ queryKey: sharesQueryKey }) 
+    }, [blockNumber, sharesQueryClient, sharesQueryKey]) 
     
     return (
-        <></>
+        <div>{Number(shares)}</div>
     );
 }
