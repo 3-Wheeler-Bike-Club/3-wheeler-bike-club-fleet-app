@@ -29,7 +29,7 @@ export const useGetInvites = (address: `0x${string}` | undefined) => {
             const inviteLogs = await fetchWhitelistedLogs()
             if (inviteLogs) {
                 const sortedLogs = inviteLogs.sort((a, b) => {
-                    return Number(b.blockNumber) - Number(a.blockNumber);
+                    return Number(a.blockNumber) - Number(b.blockNumber);
                 });
                 setInvites(sortedLogs)
             }

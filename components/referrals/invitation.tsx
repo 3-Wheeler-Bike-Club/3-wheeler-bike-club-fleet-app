@@ -130,7 +130,7 @@ export function Invitation() {
                     description: `You can now view your invites in your referrals`,
                 })
                 setLoading(false)
-                router.push("/fleet")
+                //router.push("/referrals")
             }
         } catch (error) {
             console.log(error)

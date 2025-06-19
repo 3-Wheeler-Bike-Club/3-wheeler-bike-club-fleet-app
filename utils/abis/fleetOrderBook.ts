@@ -1078,6 +1078,25 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "referrerPoolShares",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "removeERC20",
     "type": "function",
     "inputs": [
