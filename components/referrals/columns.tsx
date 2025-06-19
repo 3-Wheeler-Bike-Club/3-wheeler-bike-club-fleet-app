@@ -14,16 +14,16 @@ type Referral = {
 
 export const Columns: ColumnDef<Referral>[] = [
     {
-        accessorKey: "invoice",
-        header: "Invoice No."
+        accessorKey: "referral",
+        header: "Referral"
     },
     {
-        accessorKey: "amount",
-        header: "Amount",
+        accessorKey: "status",
+        header: "Status",
     },
     {
-        accessorKey: "tender",
-        header: "Pay Method",
+        accessorKey: "shares",
+        header: "Shares",
     },
     {
         id: "actions",
