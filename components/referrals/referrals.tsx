@@ -10,6 +10,8 @@ export function Referrals() {
 
     const { address } = useAccount()
     const { invites } = useGetInvites(address)
+    console.log(invites)
+    
     return (
         <div className="flex flex-col h-full w-full gap-6">
             <div className="flex w-full justify-center">
