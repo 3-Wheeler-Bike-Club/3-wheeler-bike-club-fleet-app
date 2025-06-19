@@ -25,6 +25,11 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
+    "name": "CannotWhitelistReferrer",
+    "type": "error",
+    "inputs": []
+  },
+  {
     "name": "DuplicateIds",
     "type": "error",
     "inputs": []
@@ -549,10 +554,10 @@ export const fleetOrderBookAbi = [
         "internalType": "address"
       },
       {
-        "name": "owners",
-        "type": "address[]",
-        "indexed": false,
-        "internalType": "address[]"
+        "name": "owner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       }
     ],
     "anonymous": false

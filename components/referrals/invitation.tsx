@@ -124,6 +124,7 @@ export function Invitation() {
             })
               
             if (transaction) {
+                setAddresses([])
                 //success toast
                 toast.success("Whitelist successful", {
                     description: `You can now view your invites in your referrals`,
