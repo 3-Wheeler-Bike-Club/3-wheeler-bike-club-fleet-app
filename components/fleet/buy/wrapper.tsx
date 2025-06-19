@@ -31,9 +31,11 @@ import { publicClient } from "@/utils/client";
 import { fleetOrderTokenAbi } from "@/utils/abis/fleetOrderToken";
 import { useSwitchChain } from "wagmi";
 
+interface WrapperProps {
+    referrer: string
+}
 
-
-export function Wrapper({ referrer }: { referrer: string }) {
+export function Wrapper({ referrer }: WrapperProps) {
 
     const { address, chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
