@@ -15,6 +15,7 @@ import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from "
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useGetProfile } from "@/hooks/useGetProfile"
+import { useUploadThing } from "@/hooks/useUploadThing"
 import { useAccount } from "wagmi"
 
   
@@ -33,13 +34,24 @@ const FormSchema = z.object({
 export function Verify() {
 
   const [files, setFiles] = useState < File[] | null > (null);
+  console.log(files);
   const [maxFiles, setMaxFiles] = useState<number | null>(null);
 
   const { address } = useAccount()
   const { profile, loading, error } = useGetProfile(address!)
   console.log(profile);
 
-  
+  const { startUpload, routeConfig } = useUploadThing("imageUploader", {
+    onClientUploadComplete: () => {
+      alert("uploaded successfully!");
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+    onUploadBegin: (file: string) => {
+      console.log("upload has begun for", file);
+    },
+  });
   
   const form = useForm < z.infer < typeof FormSchema >> ({
     resolver: zodResolver(FormSchema),
@@ -51,12 +63,12 @@ export function Verify() {
       id: undefined,
       files: undefined,
     },
-
   })
 
   function onSubmit(values: z.infer < typeof FormSchema > ) {
     try {
       console.log(values);
+      
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
@@ -252,8 +264,13 @@ export function Verify() {
                 <div className="flex justify-between">
                     <Button
                         className="w-36"
-                        disabled={true}
-                        type="submit"
+                        //disabled={true}
+                        onClick={() => {
+                          if (files) {
+                            startUpload(files);
+                          }
+                        }}
+                        //type="submit"
                     >
                         {
                             false
