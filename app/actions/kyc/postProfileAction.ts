@@ -31,7 +31,7 @@ export async function postProfileAction(
             throw new Error("Failed to post profile")
         }
         return response.json()
-    } catch (error) {
+    } catch (error) { 
         console.log(error)
     }
 }
