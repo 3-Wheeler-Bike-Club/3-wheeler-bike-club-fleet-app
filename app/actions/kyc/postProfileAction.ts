@@ -2,6 +2,7 @@
 
 
 export async function postProfileAction(
+    address: `0x${string}`,
     firstname: string,
     lastname: string,
     othername: string,
@@ -17,6 +18,7 @@ export async function postProfileAction(
                 "x-api-key": process.env.THREEWB_API_KEY
             },
             body: JSON.stringify({ 
+                address: address,
                 firstname: firstname,
                 lastname: lastname,
                 othername: othername,

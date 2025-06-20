@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input"
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from "@/components/ui/file-upload"
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useGetProfile } from "@/hooks/useGetProfile"
+import { useAccount } from "wagmi"
 
   
 
@@ -32,7 +34,12 @@ export function Verify() {
 
   const [files, setFiles] = useState < File[] | null > (null);
   const [maxFiles, setMaxFiles] = useState<number | null>(null);
-  console.log(maxFiles);
+
+  const { address } = useAccount()
+  const { profile, loading, error } = useGetProfile(address!)
+  console.log(profile);
+
+  
   
   const form = useForm < z.infer < typeof FormSchema >> ({
     resolver: zodResolver(FormSchema),

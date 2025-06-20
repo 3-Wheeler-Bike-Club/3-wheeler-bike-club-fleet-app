@@ -12,11 +12,12 @@ export async function POST(
         return authResponse
     }
 
-    const { firstname, lastname, othername, email, id, files } = await req.json()
+    const { address, firstname, lastname, othername, email, id, files } = await req.json()
     
     try {
         await connectDB()
         const profile = await Profile.create({ 
+            address: address,
             firstname: firstname,
             lastname: lastname,
             othername: othername,

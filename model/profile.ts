@@ -1,6 +1,11 @@
 import mongoose from "mongoose"
 
 const ProfileSchema = new mongoose.Schema({
+    address: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     firstname: {
         type: String,
         required: true,
