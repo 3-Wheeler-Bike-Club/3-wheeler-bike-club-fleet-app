@@ -4,6 +4,7 @@ declare global {
         interface ProcessEnv {
             UPLOADTHING_TOKEN: string;
             MONGO: string;
+            THREEWB_API_KEY: string;
         }
     }
 }
