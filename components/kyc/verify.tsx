@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { CloudUpload, Ellipsis, Paperclip } from "lucide-react"
+import { CloudUpload, Ellipsis, Loader2, Paperclip, SaveAll } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useGetProfile } from "@/hooks/useGetProfile"
 import { useUploadThing } from "@/hooks/useUploadThing"
 import { useAccount } from "wagmi"
+import { sendWelcomeEmail } from "@/app/actions/mail/sendWelcomeMail"
+import { postProfileAction } from "@/app/actions/kyc/postProfileAction"
 
   
 
@@ -36,9 +38,10 @@ export function Verify() {
   const [files, setFiles] = useState < File[] | null > (null);
   console.log(files);
   const [maxFiles, setMaxFiles] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const { address } = useAccount()
-  const { profile, loading, error } = useGetProfile(address!)
+  const { profile } = useGetProfile(address!)
   console.log(profile);
 
   const { startUpload, routeConfig } = useUploadThing("imageUploader", {
@@ -65,10 +68,41 @@ export function Verify() {
     },
   })
 
-  function onSubmit(values: z.infer < typeof FormSchema > ) {
+  async function onSubmit(values: z.infer < typeof FormSchema > ) {
     try {
       console.log(values);
-      
+
+      setLoading(true);
+
+      //send email to validate return if email is invalid
+      const welcomeEmail = await sendWelcomeEmail(values.email, values.firstname);
+
+      if(welcomeEmail) {
+        //post profile preupload
+        const postProfile = await postProfileAction(
+          address!,
+          values.firstname,
+          values.lastname,
+          values.othername,
+          values.email,
+          values.id,
+          []
+        );
+        // upload files to uploadthing
+        if(files) {
+          const uploadFiles = await startUpload(files);
+          if(uploadFiles) {
+            toast.success("Files uploaded successfully");
+          } else {
+            toast.error("Files upload failed");
+          }
+        }
+      } else {
+        toast.error("Email Verification failed", {
+            description: `Something went wrong, Enter a valid email address`,
+        })
+      }
+
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
@@ -76,7 +110,10 @@ export function Verify() {
       );
     } catch (error) {
       console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      toast.error(" ", {
+        description: ` `,
+      })
+      setLoading(false);
     }
   }
 
@@ -85,7 +122,6 @@ export function Verify() {
       <DrawerTrigger asChild>
           <Button className="max-w-fit h-12 rounded-2xl">
               Complete KYC
-              {/** <PersonStanding className="text-yellow-600" /> */}
           </Button>
       </DrawerTrigger>
       <DrawerContent className="h-full">
@@ -264,37 +300,15 @@ export function Verify() {
                 <div className="flex justify-between">
                     <Button
                         className="w-36"
-                        //disabled={true}
-                        onClick={() => {
-                          if (files) {
-                            startUpload(files);
-                          }
-                        }}
-                        //type="submit"
+                        disabled={loading}
+                        type="submit"
                     >
                         {
-                            false
-                            ? (
-                                <>
-                                    <motion.div
-                                    initial={{ rotate: 0 }} // Initial rotation value (0 degrees)
-                                    animate={{ rotate: 360 }} // Final rotation value (360 degrees)
-                                    transition={{
-                                        duration: 1, // Animation duration in seconds
-                                        repeat: Infinity, // Infinity will make it rotate indefinitely
-                                        ease: "linear", // Animation easing function (linear makes it constant speed)
-                                    }}
-                                >
-                                        <Ellipsis/>
-                                    </motion.div>
-                                </>
-                            )
-                            : (
-                                <>
-                                    Save changes
-                                </>
-                            )
-                        }
+                                loading
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <SaveAll />
+                            }
+                            <p>Save Changs</p>
                     </Button>
                 </div>
               </form>

@@ -25,8 +25,7 @@ const ProfileSchema = new mongoose.Schema({
     },
     id: {
         type: String,
-        required: true,
-        unique: true,
+        enum: ["passport", "national"],
     },
     files: {
         type: Array,

@@ -13,13 +13,17 @@ export async function POST(
 
     try {
         await connectDB();
-        const profiles = await Profile.find({});
+        
+        const { address, files } = await req.json();
 
+        const profile = await Profile.findOneAndUpdate({address: address}, {
+            files: files
+        }, { new: true });
 
-        if (!profiles) {
+        if (!profile) {
             return new Response(
                 JSON.stringify({
-                    error: "Profiles not found",
+                    error: "Profile not found",
                 }),
                 { status: 404 }
             );
@@ -27,14 +31,14 @@ export async function POST(
 
 
         return new Response(
-            JSON.stringify(profiles),
+            JSON.stringify(profile),
             { status: 200 }
         );
 
     } catch (error) {
         return new Response(
             JSON.stringify({
-                error: "Failed to fetch profiles",
+                error: "Failed to update profile",
                 details: error
             }),
             { status: 500 }

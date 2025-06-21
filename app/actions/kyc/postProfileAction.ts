@@ -8,10 +8,10 @@ export async function postProfileAction(
     othername: string,
     email: string,
     id: string,
-    files: string
+    files: string[]
 ) {
     try {
-        const response = await fetch("/api/kyc/postProfile", {
+        const response = await fetch("/kyc/postProfile", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
