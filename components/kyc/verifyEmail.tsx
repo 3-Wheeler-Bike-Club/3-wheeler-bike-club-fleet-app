@@ -11,14 +11,10 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from "@/components/ui/file-upload"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Profile, useGetProfile } from "@/hooks/useGetProfile"
-import { useUploadThing } from "@/hooks/useUploadThing"
-import { useAccount } from "wagmi"
-import { sendWelcomeEmail } from "@/app/actions/mail/sendWelcomeMail"
+import { sendVerifyEmail } from "@/app/actions/mail/sendVerifyMail"
 import { postProfileAction } from "@/app/actions/kyc/postProfileAction"
-import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
+import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 
   
 
@@ -26,6 +22,7 @@ import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 const FormSchema = z.object({
 
     email: z.string().email(),
+    
 })
 
 interface VerifyEmailProps {
@@ -35,9 +32,8 @@ interface VerifyEmailProps {
 
 export function VerifyEmail({ address, profile }: VerifyEmailProps) {
 
-  const [files, setFiles] = useState < File[] | null > (null);
-  console.log(files);
-  const [maxFiles, setMaxFiles] = useState<number | null>(null);
+  
+  const [code, setCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   
@@ -51,33 +47,53 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
   })
 
   async function onSubmit(values: z.infer < typeof FormSchema > ) {
+    
+  }
+
+  async function sendEmailCode(email: string) {
     try {
-      console.log(values);
 
       setLoading(true);
 
       //send email to validate return if email is invalid
-      const welcomeEmail = await sendWelcomeEmail(values.email);
+      const token = await sendVerifyEmail(email);
 
-      if(welcomeEmail) {
-        //post profile preupload
-        const postProfile = await postProfileAction(
-          address!,
-          values.email,
-        );
-
-      } else {
-        toast.error("Email Verification failed", {
-          description: `Something went wrong, Enter a valid email address`,
+      if(token) {
+        localStorage.setItem('emailTokenJWT', token);
+        toast.success("Email Verification code sent", {
+          description: `Check your email for the verification code`,
         })
         setLoading(false);
-      }
+      } 
     } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form.", {
-        description: `Something went wrong, please try again`,
+      console.error("Send email code error", error);
+      toast.error("Email Verification failed", {
+        description: `Something went wrong, Enter a valid email address`,
       })
       setLoading(false);
+    }
+  }
+
+  async function verifyEmailCode(token: string, code: string) {
+    try {
+      if(token) {
+        const verifiedEmail = await verifyMailCode(token, code);
+        if(verifiedEmail) {
+          //post profile preupload
+          const postProfile = await postProfileAction(
+            address!,
+            verifiedEmail,
+          );
+          toast.success("Email verified successfully", {
+            description: `You can now complete your KYC`,
+          })
+        }
+      }
+    } catch (error) {
+      console.error("Verify email error", error);
+      toast.error("Failed to verify email.", {
+        description: `Invalid code or expired, please try again`,
+      })
     }
   }
 

@@ -8,6 +8,7 @@ declare global {
             FINANCE_3WB_USER: string;
             FINANCE_3WB_PASS: string;
             BASE_URL: string;
+            JWT_SECRET: string;
         }
     }
 }
