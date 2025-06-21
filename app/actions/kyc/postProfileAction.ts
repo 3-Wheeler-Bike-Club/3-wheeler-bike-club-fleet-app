@@ -11,7 +11,7 @@ export async function postProfileAction(
     files: string[]
 ) {
     try {
-        const response = await fetch("/kyc/postProfile", {
+        const response = await fetch(`${process.env.BASE_URL}/api/kyc/postProfile`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

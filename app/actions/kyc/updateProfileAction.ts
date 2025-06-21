@@ -6,7 +6,7 @@ export async function updateProfileAction(
     files: string[]
 ) {
     try {
-        const response = await fetch("/kyc/updateProfile", {
+        const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateProfile`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
