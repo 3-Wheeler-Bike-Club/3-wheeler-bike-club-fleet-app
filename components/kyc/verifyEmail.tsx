@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { CloudUpload, Ellipsis, Loader2, Paperclip, SaveAll } from "lucide-react"
+import { CloudUpload, Ellipsis, Loader2, Paperclip, SaveAll, Send } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -19,10 +19,11 @@ import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
   
 
 
-const FormSchema = z.object({
-
-    email: z.string().email(),
-    
+const emailFormSchema = z.object({
+  email: z.string().email(),
+})
+const codeFormSchema = z.object({
+  code: z.string().min(6).max(6),
 })
 
 interface VerifyEmailProps {
@@ -39,14 +40,24 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
   
   
   
-  const form = useForm < z.infer < typeof FormSchema >> ({
-    resolver: zodResolver(FormSchema),
+  const emailForm = useForm < z.infer < typeof emailFormSchema >> ({
+    resolver: zodResolver(emailFormSchema),
     defaultValues: {
       email: undefined,
     },
   })
 
-  async function onSubmit(values: z.infer < typeof FormSchema > ) {
+  const codeForm = useForm < z.infer < typeof codeFormSchema >> ({
+    resolver: zodResolver(codeFormSchema),
+    defaultValues: {
+      code: undefined,
+    },
+  })
+
+  async function onSubmitEmail(values: z.infer < typeof emailFormSchema > ) {
+    sendEmailCode(values.email);
+  }
+  async function onSubmitCode(values: z.infer < typeof codeFormSchema > ) {
     
   }
 
@@ -76,6 +87,7 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
 
   async function verifyEmailCode(token: string, code: string) {
     try {
+      setLoading(true);
       if(token) {
         const verifiedEmail = await verifyMailCode(token, code);
         if(verifiedEmail) {
@@ -87,6 +99,7 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
           toast.success("Email verified successfully", {
             description: `You can now complete your KYC`,
           })
+          setLoading(false);
         }
       }
     } catch (error) {
@@ -94,6 +107,7 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
       toast.error("Failed to verify email.", {
         description: `Invalid code or expired, please try again`,
       })
+      setLoading(false);
     }
   }
 
@@ -112,41 +126,84 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
               </DrawerTitle>
               <DrawerDescription className="max-md:text-[0.9rem]">{"Link your email account to your wallet"}</DrawerDescription>
           </DrawerHeader>
-          <div className="flex flex-col p-4">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                <FormLabel className="text-yellow-600">Email</FormLabel>
-                                <FormControl >
-                                    <Input disabled={ !!profile } className="col-span-3" placeholder={""} {...field} />
-                                </FormControl>
-                            </div>
-                        </FormItem>
-                    )}
-                />
-                <div className="flex justify-between">
-                    <Button
-                        className="w-36"
+          <div className="flex flex-col p-4 w-full">
+            <Form {...emailForm}>
+              <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-6">
+                <div className="flex w-full justify-between gap-2">
+                  <div className="flex flex-col w-full">
+                    <FormField
+                        control={emailForm.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                    <FormControl >
+                                        <Input disabled={ !!profile } className="col-span-3" placeholder={""} {...field} />
+                                    </FormControl>
+                                </div>
+                            </FormItem>
+                        )}
+                    />
+                  </div>
+                  <div className="flex justify-between w-2/10">
+                      <Button
+                        className="w-12"
                         disabled={loading}
                         type="submit"
-                    >
+                      >
                         {
-                                loading
-                                ? <Loader2 className="w-4 h-4 animate-spin" />
-                                : <SaveAll />
-                            }
-                            <p>Save Changs</p>
-                    </Button>
+                          loading
+                          ? <Loader2 className="w-4 h-4 animate-spin" />
+                          : <Send className="w-4 h-4" />
+                        }
+                      </Button>
+                  </div>
                 </div>
+                
               </form>
             </Form>
-          </div>              
+          </div>    
+          {
+            code && (
+              <>
+                <div className="flex flex-col p-4">
+                  <Form {...codeForm}>
+                    <form onSubmit={codeForm.handleSubmit(onSubmitCode)} className="space-y-6">
+                      
+                      <FormField
+                          control={codeForm.control}
+                          name="code"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                      <FormLabel className="text-yellow-600">Email</FormLabel>
+                                      <FormControl >
+                                          <Input disabled={ !!profile } className="col-span-3" placeholder={""} {...field} />
+                                      </FormControl>
+                                  </div>
+                              </FormItem>
+                          )}
+                      />
+                      <div className="flex justify-between">
+                          <Button
+                              className="w-36"
+                              disabled={loading}
+                              type="submit"
+                          >
+                              {
+                                      loading
+                                      ? <Loader2 className="w-4 h-4 animate-spin" />
+                                      : <SaveAll />
+                                  }
+                                  <p>Save Changs</p>
+                          </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>  
+              </>
+            )
+          }          
         </div>
       </DrawerContent>
     </Drawer>
