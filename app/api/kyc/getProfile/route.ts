@@ -36,7 +36,7 @@ export async function POST(
     } catch (error) {
         return new Response(
             JSON.stringify({
-                error: "Failed to fetch fleet orders",
+                error: "Failed to fetch profile",
                 details: error
             }),
             { status: 500 }

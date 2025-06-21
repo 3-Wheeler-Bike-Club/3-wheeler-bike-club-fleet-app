@@ -5,6 +5,10 @@ declare global {
             UPLOADTHING_TOKEN: string;
             MONGO: string;
             THREEWB_API_KEY: string;
+            FINANCE_3WB_USER: string;
+            FINANCE_3WB_PASS: string;
+            BASE_URL: string;
+            JWT_SECRET: string;
         }
     }
 }
