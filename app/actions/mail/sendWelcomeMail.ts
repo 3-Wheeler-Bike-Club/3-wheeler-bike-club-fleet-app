@@ -3,7 +3,7 @@
 
 import nodemailer from "nodemailer"
 
-export const sendWelcomeEmail = async (email: string, firstname: string) => {
+export const sendWelcomeEmail = async (email: string) => {
 
     try {
         const transporter = nodemailer.createTransport({
@@ -21,7 +21,7 @@ export const sendWelcomeEmail = async (email: string, firstname: string) => {
             to: email, // Dynamic recipient email address
             subject: "Welcome to 3WB P2P Fleet Finance",
             html: `
-                <p>Dear ${firstname},</p>
+                <p>Hi there,</p>
 
                 <p>Your have successfully registered to 3WB P2P Fleet Finance. You can now start financing your fleet and earn interest on your investments.</p>
 

@@ -3,6 +3,10 @@
 
 export async function updateProfileAction(
     address: `0x${string}`,
+    firstname: string,
+    lastname: string,
+    othername: string,
+    id: string,
     files: string[]
 ) {
     try {
@@ -14,6 +18,10 @@ export async function updateProfileAction(
             },
             body: JSON.stringify({ 
                 address: address,
+                firstname: firstname,
+                lastname: lastname,
+                othername: othername,
+                id: id,
                 files: files
             })
         })

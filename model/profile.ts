@@ -6,30 +6,27 @@ const ProfileSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    firstname: {
-        type: String,
-        required: true,
-    },
-    lastname: {
-        type: String,
-        required: true,
-    },
-    othername: {
-        type: String,
-        required: true,
-    },
     email: {
         type: String,
         required: true,
         unique: true,
     },
+    firstname: {
+        type: String,
+    },
+    lastname: {
+        type: String,
+    },
+    othername: {
+        type: String,
+    },
+    
     id: {
         type: String,
         enum: ["passport", "national"],
     },
     files: {
         type: Array,
-        required: true,
     },
     createdAt: {
         type: Date,
