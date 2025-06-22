@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { CloudUpload, Loader2, Paperclip, SaveAll } from "lucide-react"
+import { CloudUpload, Hourglass, Loader2, Paperclip, SaveAll } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUploadThing } from "@/hooks/useUploadThing"
 import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 import { Profile } from "@/hooks/useGetProfile"
+import { Label } from "../ui/label"
 
   
 
@@ -25,7 +26,6 @@ const FormSchema = z.object({
     lastname: z.string(),
     othername: z.string(),
     id: z.string(),
-    files: z.string()
 })
 
 interface VerifyKYCProps {
@@ -45,10 +45,15 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
 
   const { startUpload, routeConfig } = useUploadThing("imageUploader", {
     onClientUploadComplete: () => {
-      alert("uploaded successfully!");
+      toast.info("ID Uploaded", {
+        description: "Please wait while we save the rest of your details",
+      })
     },
     onUploadError: () => {
-      alert("error occurred while uploading");
+      toast.error("Failed to upload files.", {
+        description: `Something went wrong, please try again`,
+      })
+      setLoading(false);
     },
     onUploadBegin: (file: string) => {
       console.log("upload has begun for", file);
@@ -62,47 +67,50 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
       lastname: undefined,
       othername: undefined,
       id: undefined,
-      files: undefined,
     },
   })
 
   async function onSubmit(values: z.infer < typeof FormSchema > ) {
+    setLoading(true);
     try {
       console.log(values);
-
-      setLoading(true);
-
-
-      if(files) {
-        const uploadFiles = await startUpload(files);
-        if(uploadFiles) {
-          //update profile with files
-          const updateProfile = await updateProfileAction(
-            address!,
-            values.firstname,
-            values.lastname,
-            values.othername,
-            values.id,
-            uploadFiles.map((file) => file.ufsUrl)
-          );
-          if (updateProfile) {
-            toast.success("KYC Completed", {
-              description: "Our Team will review your KYC and get back to you shortly",
-            })
-            setLoading(false);
-            getProfileSync();
-          } else {
-            toast.error("KYC Failed", {
-              description: `Something went wrong, please try again`,
-            })
-            setLoading(false);
-          }
-        } else {
-          toast.error("ID Upload Failed", {
-            description: `Something went wrong, please try again`,
+      if(files && files.length > 0) {
+        if (values.id === "national" && files.length != 2) {
+          toast.error("National ID must have both front and back scans", {
+            description: `Please upload both the front and back of your National ID`,
           })
           setLoading(false);
-        }
+          return;
+        } 
+        const uploadFiles = await startUpload(files);
+          if(uploadFiles) {
+            //update profile with files
+            const updateProfile = await updateProfileAction(
+              address!,
+              values.firstname,
+              values.lastname,
+              values.othername,
+              values.id,
+              uploadFiles.map((file) => file.ufsUrl)
+            );
+            if (updateProfile) {
+              toast.success("KYC Completed", {
+                description: "Our Team will review your KYC and get back to you shortly",
+              })
+              setLoading(false);
+              getProfileSync();
+            } else {
+              toast.error("KYC Failed", {
+                description: `Something went wrong, please try again`,
+              })
+              setLoading(false);
+            }
+          }
+      } else {
+        toast.error("No ID Uploaded", {
+          description: `Please upload your ID`,
+        })
+        setLoading(false);
       }
     } catch (error) {
       console.error("Form submission error", error);
@@ -117,7 +125,11 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
     <Drawer>
       <DrawerTrigger asChild>
           <Button className="max-w-fit h-12 rounded-2xl">
-              Complete KYC
+              {
+                profile.files.length > 0
+                ? <p>View KYC Profile</p>
+                : <p>Complete KYC</p>
+              }
           </Button>
       </DrawerTrigger>
       <DrawerContent className="h-full">
@@ -139,7 +151,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                               <FormLabel className="text-yellow-600">First Name</FormLabel>
                               <FormControl >
-                                  <Input disabled={ !!profile.firstname } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
+                                  <Input disabled={ !!profile.firstname || loading } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
                               </FormControl>
                           </div>
                       </FormItem>
@@ -153,26 +165,13 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                 <FormLabel className="text-yellow-600">Last Name</FormLabel>
                                 <FormControl >
-                                    <Input disabled={ !!profile.lastname } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
+                                    <Input disabled={ !!profile.lastname || loading } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
                                 </FormControl>
                             </div>
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="othername"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                <FormLabel className="text-yellow-600">Other Name</FormLabel>
-                                <FormControl >
-                                    <Input disabled={ !!profile.othername } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
-                                </FormControl>
-                            </div>
-                        </FormItem>
-                    )}
-                />
+                
                 <FormField
                   control={form.control}
                   name="id"
@@ -198,7 +197,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                             defaultValue={field.value}
                                           >
                                               <FormControl>
-                                              <SelectTrigger className="col-span-3">
+                                              <SelectTrigger disabled={loading} className="col-span-3">
                                                   <SelectValue placeholder="Select an ID Type" />
                                               </SelectTrigger>
                                               </FormControl>
@@ -222,19 +221,15 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                   )}
                 />
                 {
-                  maxFiles && ( 
+                  maxFiles  && ( 
                     <>
-                      <FormField
-                        control={form.control}
-                        name="files"
-                        render={({ field }) => (
-                          <FormItem>
+                      <div>
                             {
                               profile.files.length <= 0
                               ?(
                                 <>
-                                  <FormLabel className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></FormLabel>
-                                  <FormControl>
+                                  <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></Label>
+                                  <div>
                                     <FileUploader
                                       value={files}
                                       onValueChange={setFiles}
@@ -274,38 +269,44 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                           ))}
                                       </FileUploaderContent>
                                     </FileUploader>
-                                  </FormControl>
-                                  <FormDescription className="text-xs text-muted-foreground text-center">{maxFiles === 1 ? "Upload the Front Photo of your Passport" : "Upload the Front and Back of your National ID"}</FormDescription>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground text-center">{maxFiles === 1 ? "Upload the Front Photo of your Passport" : "Upload the Front and Back of your National ID"}</div>
                                   
                                 </>
                               ) 
                               :(
                                 <>
-                                  <FormLabel className="text-yellow-600">Uploaded ID Scans</FormLabel>
-                                  <FormControl>
-                                  </FormControl>
+                                  <Label className="text-yellow-600">Uploaded ID Scans</Label>
+                                  <div>
+                                  </div>
                                 </>
                               ) 
                             }
-                          </FormItem>
-                        )}
-                      />
+                          </div>
                     </> 
                   )
                 }
                 <div className="flex justify-between">
                     <div/>
                     <Button
-                        className="w-36"
-                        disabled={loading}
+                        //className="w-36"
+                        disabled={loading || profile.files.length > 0}
                         type="submit"
                     >
                         {
-                                loading
-                                ? <Loader2 className="w-4 h-4 animate-spin" />
-                                : <SaveAll />
-                            }
-                            <p>Save Changs</p>
+                            loading
+                            ? <Loader2 className="w-4 h-4 animate-spin" />
+                            : (
+                              profile.files.length > 0
+                              ? <Hourglass />
+                              : <SaveAll />
+                            )
+                        }
+                        {
+                          profile.files.length > 0
+                          ? <p>KYC Pending...</p>
+                          : <p>Save Changes</p>
+                        }
                     </Button>
                 </div>
               </form>

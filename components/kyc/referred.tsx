@@ -31,7 +31,11 @@ export function Referred({ profile, getProfileSync }: ReferredProps) {
                     <div className="flex flex-col w-full h-full items-center pt-36 max-md:pt-18 gap-4">
                         <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                         <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
-                        <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC options below to access P2P fleet financing.</p>
+                        {
+                            profile?.files.length > 0
+                            ? <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your KYC is pending verification. Please wait while we review your documents.</p>
+                            : <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC options below to access P2P fleet financing.</p>
+                        }
                         {
                             profile?.email ? <VerifyKYC address={address!} profile={profile} getProfileSync={getProfileSync} /> : <VerifyEmail address={address!} profile={profile} getProfileSync={getProfileSync} />
                         }
