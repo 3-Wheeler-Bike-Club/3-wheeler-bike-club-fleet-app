@@ -24,9 +24,11 @@ export const useGetProfile = (address: `0x${string}` | undefined) => {
                 if (address) {
                     const data = await getProfileAction(address)
                     setProfile(data)
+                    setLoading(false)
                 }
             } catch (error) {
                 setError(error)
+                setLoading(false)
             }
         }
         getProfile()
@@ -37,10 +39,12 @@ export const useGetProfile = (address: `0x${string}` | undefined) => {
             setLoading(true)
             if (address) {
                 const data = await getProfileAction(address)
-                setProfile(data)
+                setProfile(data )
+                setLoading(false)
             }
         } catch (error) {
             setError(error)
+            setLoading(false)
         }
     }
 

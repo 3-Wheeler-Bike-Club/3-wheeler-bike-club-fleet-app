@@ -2,14 +2,18 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DoorOpen, UserRoundSearch } from "lucide-react";
 import { VerifyKYC } from "./verifyKYC";
 import { useAccount } from "wagmi";
-import { useGetProfile } from "@/hooks/useGetProfile";
+import { Profile, useGetProfile } from "@/hooks/useGetProfile";
 import { VerifyEmail } from "./verifyEmail";
 
-export function Referred() {
+interface ReferredProps {
+    profile: Profile
+    getProfileSync: () => void
+}
+
+export function Referred({ profile, getProfileSync }: ReferredProps) {
 
     const { address } = useAccount()
-  const { profile, getProfileSync } = useGetProfile(address!)
-  console.log(profile);
+    
     return (
         <div className="flex flex-col h-full w-full gap-6">
             
