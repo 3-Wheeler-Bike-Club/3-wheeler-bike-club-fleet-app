@@ -34,7 +34,7 @@ export function Referrer({ profile, getProfileSync }: ReferrerProps) {
                         {
                             profile?.files.length > 0
                             ? <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your KYC is pending verification. Please wait while we review your documents.</p>
-                            : <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete  KYC options below to access P2P fleet financing.</p>
+                            : <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC options below to access P2P fleet financing.</p>
                         }
                         {
                             profile?.email ? <VerifyKYC address={address!} profile={profile} getProfileSync={getProfileSync} /> : <VerifyEmail address={address!} profile={profile} getProfileSync={getProfileSync} />

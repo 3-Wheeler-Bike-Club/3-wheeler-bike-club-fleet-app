@@ -14,13 +14,12 @@ const ProfileSchema = new mongoose.Schema({
     firstname: {
         type: String,
     },
-    lastname: {
-        type: String,
-    },
     othername: {
         type: String,
     },
-    
+    lastname: {
+        type: String,
+    },
     id: {
         type: String,
         enum: ["passport", "national"],

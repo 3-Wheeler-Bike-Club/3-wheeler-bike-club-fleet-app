@@ -5,8 +5,8 @@ import { useEffect, useState } from "react"
 export interface Profile {
     address: `0x${string}`
     firstname: string
-    lastname: string
     othername: string
+    lastname: string
     email: string
     id: string
     files: string[]

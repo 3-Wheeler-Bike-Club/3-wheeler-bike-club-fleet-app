@@ -14,13 +14,13 @@ export async function POST(
     try {
         await connectDB();
         
-        const { address, firstname, lastname, othername, id, files } = await req.json();
+        const { address, firstname, othername, lastname, id, files } = await req.json();
 
         const profile = await Profile.findOneAndUpdate({address: address}, {
             
             firstname: firstname,
-            lastname: lastname,
             othername: othername,
+            lastname: lastname,
             id: id,
             files: files
         }, { new: true });
