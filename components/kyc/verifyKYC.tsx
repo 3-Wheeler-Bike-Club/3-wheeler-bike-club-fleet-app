@@ -31,9 +31,10 @@ const FormSchema = z.object({
 interface VerifyKYCProps {
   address: `0x${string}`
   profile: Profile
+  getProfileSync: () => void
 }
 
-export function VerifyKYC({ address, profile }: VerifyKYCProps) {
+export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) {
 
   const [files, setFiles] = useState < File[] | null > (null);
   console.log(files);
@@ -89,6 +90,7 @@ export function VerifyKYC({ address, profile }: VerifyKYCProps) {
               description: "Our Team will review your KYC and get back to you shortly",
             })
             setLoading(false);
+            getProfileSync();
           } else {
             toast.error("KYC Failed", {
               description: `Something went wrong, please try again`,

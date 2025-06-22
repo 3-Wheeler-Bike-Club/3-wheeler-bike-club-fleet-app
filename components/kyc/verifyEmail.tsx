@@ -31,9 +31,10 @@ const codeFormSchema = z.object({
 interface VerifyEmailProps {
   address: `0x${string}`
   profile: Profile | null
+  getProfileSync: () => void
 }
 
-export function VerifyEmail({ address, profile }: VerifyEmailProps) {
+export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailProps) {
 
   const [email, setEmail] = useState<string | null>(null);
   const [tryAnotherEmail, setTryAnotherEmail] = useState(false);
@@ -107,6 +108,7 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
             toast.success("Email verified successfully", {
               description: `You can now complete your KYC`,
             })
+            getProfileSync();
           } else {
             toast.error("Failed to link email.", {
               description: `Something went wrong, please try again`,
@@ -156,16 +158,16 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
     <Drawer>
       <DrawerTrigger asChild>
           <Button className="max-w-fit h-12 rounded-2xl">
-              Complete KYC
+              Link Email
           </Button>
       </DrawerTrigger>
       <DrawerContent className="h-full">
         <div className="mx-auto w-full max-w-sm pb-6">
           <DrawerHeader>
               <DrawerTitle>
-                Verify Email
+                Verify Your Email
               </DrawerTitle>
-              <DrawerDescription className="max-md:text-[0.9rem]">{"Link your email account to your wallet"}</DrawerDescription>
+              <DrawerDescription className="max-md:text-[0.9rem]">{"Link verified email account to your wallet"}</DrawerDescription>
           </DrawerHeader>
           <div className="flex flex-col p-4 w-full pb-10">
             <Form {...emailForm}>

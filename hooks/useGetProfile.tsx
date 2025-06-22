@@ -32,5 +32,17 @@ export const useGetProfile = (address: `0x${string}` | undefined) => {
         getProfile()
     }, [address])
 
-    return { profile, loading, error }
+    const getProfileSync = async () => {
+        try {
+            setLoading(true)
+            if (address) {
+                const data = await getProfileAction(address)
+                setProfile(data)
+            }
+        } catch (error) {
+            setError(error)
+        }
+    }
+
+    return { profile, loading, error, getProfileSync }
 }

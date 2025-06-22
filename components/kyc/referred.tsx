@@ -8,7 +8,7 @@ import { VerifyEmail } from "./verifyEmail";
 export function Referred() {
 
     const { address } = useAccount()
-  const { profile } = useGetProfile(address!)
+  const { profile, getProfileSync } = useGetProfile(address!)
   console.log(profile);
     return (
         <div className="flex flex-col h-full w-full gap-6">
@@ -29,7 +29,7 @@ export function Referred() {
                         <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
                         <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC options below to access P2P fleet financing.</p>
                         {
-                            profile?.email ? <VerifyKYC address={address!} profile={profile} /> : <VerifyEmail address={address!} profile={profile} />
+                            profile?.email ? <VerifyKYC address={address!} profile={profile} getProfileSync={getProfileSync} /> : <VerifyEmail address={address!} profile={profile} getProfileSync={getProfileSync} />
                         }
                     </div>
                     
