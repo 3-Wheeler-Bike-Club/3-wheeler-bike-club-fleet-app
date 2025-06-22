@@ -24,13 +24,29 @@ export const useGetProfile = (address: `0x${string}` | undefined) => {
                 if (address) {
                     const data = await getProfileAction(address)
                     setProfile(data)
+                    setLoading(false)
                 }
             } catch (error) {
                 setError(error)
+                setLoading(false)
             }
         }
         getProfile()
     }, [address])
 
-    return { profile, loading, error }
+    const getProfileSync = async () => {
+        try {
+            setLoading(true)
+            if (address) {
+                const data = await getProfileAction(address)
+                setProfile(data )
+                setLoading(false)
+            }
+        } catch (error) {
+            setError(error)
+            setLoading(false)
+        }
+    }
+
+    return { profile, loading, error, getProfileSync }
 }

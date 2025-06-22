@@ -28,7 +28,7 @@ export const sendVerifyEmail = async (email: string) => {
                 <p>Hi there,</p>
 
                 <p>To verify your email, please use the following code:</p>
-                <p><b>123456</b></p>
+                <p><b>${code}</b></p>
 
                 <p>This code will expire in 10 minutes.</p>
                 <p>If you did not request this verification, please ignore this email.</p>
