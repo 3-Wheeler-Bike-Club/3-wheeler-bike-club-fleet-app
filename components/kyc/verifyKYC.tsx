@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { CloudUpload, Hourglass, Loader2, Paperclip, SaveAll } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from "@/components/ui/file-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -23,8 +23,8 @@ import { Label } from "../ui/label"
 
 const FormSchema = z.object({
     firstname: z.string(),
-    lastname: z.string(),
     othername: z.string(),
+    lastname: z.string(),
     id: z.string(),
 })
 
@@ -64,8 +64,8 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
     resolver: zodResolver(FormSchema),
     defaultValues: {
       firstname: undefined,
-      lastname: undefined,
       othername: undefined,
+      lastname: undefined,
       id: undefined,
     },
   })
@@ -159,6 +159,20 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                 />
                 <FormField
                     control={form.control}
+                    name="othername"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel className="text-yellow-600">Other Name(s)</FormLabel>
+                                <FormControl >
+                                    <Input disabled={ !!profile.othername || loading } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
+                                </FormControl>
+                            </div>
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
                     name="lastname"
                     render={({ field }) => (
                         <FormItem>
@@ -171,7 +185,6 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                         </FormItem>
                     )}
                 />
-                
                 <FormField
                   control={form.control}
                   name="id"
