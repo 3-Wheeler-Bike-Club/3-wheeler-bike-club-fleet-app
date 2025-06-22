@@ -139,7 +139,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                               <FormLabel className="text-yellow-600">First Name</FormLabel>
                               <FormControl >
-                                  <Input disabled={ !!profile } className="col-span-3" placeholder={""} {...field} />
+                                  <Input disabled={ !!profile.firstname } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
                               </FormControl>
                           </div>
                       </FormItem>
@@ -153,7 +153,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                 <FormLabel className="text-yellow-600">Last Name</FormLabel>
                                 <FormControl >
-                                    <Input disabled={ !!profile } className="col-span-3" placeholder={""} {...field} />
+                                    <Input disabled={ !!profile.lastname } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
                                 </FormControl>
                             </div>
                         </FormItem>
@@ -167,7 +167,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                 <FormLabel className="text-yellow-600">Other Name</FormLabel>
                                 <FormControl >
-                                    <Input disabled={ !!profile } className="col-span-3" placeholder={""} {...field} />
+                                    <Input disabled={ !!profile.othername } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
                                 </FormControl>
                             </div>
                         </FormItem>
@@ -181,7 +181,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                               <FormLabel className="text-yellow-600">ID</FormLabel>
                               {
-                                  !false
+                                  !profile.id
                                   ?(
                                       <>
                                           <Select 
@@ -212,7 +212,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                   :(
                                       <>
                                           <FormControl>
-                                              <Input disabled className="col-span-3" placeholder={""} {...field} />
+                                              <Input disabled className="col-span-3" placeholder={profile.id === "passport" ? "Passport" : "National ID" } {...field} />
                                           </FormControl>
                                       </>
                                   )
@@ -229,50 +229,64 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                         name="files"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></FormLabel>
-                            <FormControl>
-                              <FileUploader
-                                value={files}
-                                onValueChange={setFiles}
-                                dropzoneOptions={{
-                                  maxFiles: maxFiles,
-                                  maxSize: 1024 * 1024 * 1,
-                                  multiple: true,
-                                  accept: {
-                                    "image/*": [".png", ".jpg", ".jpeg"],
-                                  },
-                                }}
-                                className="relative bg-background rounded-lg p-2"
-                              >
-                                <FileInput
-                                  id="fileInput"
-                                  className="outline-dashed outline-1 outline-slate-500"
-                                >
-                                  <div className="flex items-center justify-center flex-col p-8 w-full ">
-                                    <CloudUpload className='text-gray-500 w-10 h-10' />
-                                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                                      <span className="font-semibold">Click to upload </span>
-                                      or drag and drop
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                      PNG, JPG or JPEG
-                                    </p>
-                                  </div>
-                                </FileInput>
-                                <FileUploaderContent>
-                                  {files &&
-                                    files.length > 0 &&
-                                    files.map((file, i) => (
-                                      <FileUploaderItem key={i} index={i}>
-                                        <Paperclip className="h-4 w-4 stroke-current" />
-                                        <span>{file.name}</span>
-                                      </FileUploaderItem>
-                                    ))}
-                                </FileUploaderContent>
-                              </FileUploader>
-                            </FormControl>
-                            <FormDescription className="text-xs text-muted-foreground text-center">{maxFiles === 1 ? "Upload the Front Photo of your Passport" : "Upload the Front and Back of your National ID"}</FormDescription>
-                            <FormMessage />
+                            {
+                              profile.files.length <= 0
+                              ?(
+                                <>
+                                  <FormLabel className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></FormLabel>
+                                  <FormControl>
+                                    <FileUploader
+                                      value={files}
+                                      onValueChange={setFiles}
+                                      dropzoneOptions={{
+                                        maxFiles: maxFiles,
+                                        maxSize: 1024 * 1024 * 1,
+                                        multiple: true,
+                                        accept: {
+                                          "image/*": [".png", ".jpg", ".jpeg"],
+                                        },
+                                      }}
+                                      className="relative bg-background rounded-lg p-2"
+                                    >
+                                      <FileInput
+                                        id="fileInput"
+                                        className="outline-dashed outline-1 outline-slate-500"
+                                      >
+                                        <div className="flex items-center justify-center flex-col p-8 w-full ">
+                                          <CloudUpload className='text-gray-500 w-10 h-10' />
+                                          <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                            <span className="font-semibold">Click to upload </span>
+                                            or drag and drop
+                                          </p>
+                                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            PNG, JPG or JPEG
+                                          </p>
+                                        </div>
+                                      </FileInput>
+                                      <FileUploaderContent>
+                                        {files &&
+                                          files.length > 0 &&
+                                          files.map((file, i) => (
+                                            <FileUploaderItem key={i} index={i}>
+                                              <Paperclip className="h-4 w-4 stroke-current" />
+                                              <span>{file.name}</span>
+                                            </FileUploaderItem>
+                                          ))}
+                                      </FileUploaderContent>
+                                    </FileUploader>
+                                  </FormControl>
+                                  <FormDescription className="text-xs text-muted-foreground text-center">{maxFiles === 1 ? "Upload the Front Photo of your Passport" : "Upload the Front and Back of your National ID"}</FormDescription>
+                                  
+                                </>
+                              ) 
+                              :(
+                                <>
+                                  <FormLabel className="text-yellow-600">Uploaded ID Scans</FormLabel>
+                                  <FormControl>
+                                  </FormControl>
+                                </>
+                              ) 
+                            }
                           </FormItem>
                         )}
                       />
@@ -280,6 +294,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                   )
                 }
                 <div className="flex justify-between">
+                    <div/>
                     <Button
                         className="w-36"
                         disabled={loading}
