@@ -16,6 +16,22 @@ export async function POST(
     
     try {
         await connectDB()
+        
+        // Check if profile already exists
+        const existingAddress = await Profile.findOne({ address })
+        if (existingAddress) {
+            return new Response(
+                JSON.stringify({ error: "Address already exists" }),
+                { status: 406 }
+            )
+        }
+        const existingEmail = await Profile.findOne({ email })
+        if (existingEmail) {
+            return new Response(
+                JSON.stringify({ error: "Email already exists" }),
+                { status: 409 }
+            )
+        }
         const profile = await Profile.create({ 
             address: address,
             email: email,

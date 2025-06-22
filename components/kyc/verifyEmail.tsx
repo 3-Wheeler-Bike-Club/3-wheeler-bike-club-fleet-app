@@ -103,9 +103,15 @@ export function VerifyEmail({ address, profile }: VerifyEmailProps) {
             address!,
             email!,
           );
-          toast.success("Email verified successfully", {
-            description: `You can now complete your KYC`,
-          })
+          if(postProfile) {
+            toast.success("Email verified successfully", {
+              description: `You can now complete your KYC`,
+            })
+          } else {
+            toast.error("Failed to link email.", {
+              description: `Something went wrong, please try again`,
+            })
+          }
           setLoadingLinking(false);
         } else {
           toast.error("Failed to verify email.", {
