@@ -2,7 +2,7 @@
 
 export async function getProfileByEmailAction(email: string) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getProfile`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getProfileByEmail`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -12,7 +12,6 @@ export async function getProfileByEmailAction(email: string) {
         })
         if (!response.ok) {
             throw new Error("Failed to get profile")
-            return null;
         }
         return response.json()
     } catch (error) {

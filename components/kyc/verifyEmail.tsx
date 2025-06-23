@@ -17,6 +17,9 @@ import { postProfileAction } from "@/app/actions/kyc/postProfileAction"
 import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
+import { Checkbox } from "../ui/checkbox"
+import { Label } from "../ui/label"
+import { getProfileByEmailAction } from "@/app/actions/kyc/getProfileByEmailAction"
 
   
 
@@ -26,6 +29,7 @@ const emailFormSchema = z.object({
 })
 const codeFormSchema = z.object({
   code: z.string().min(6).max(6),
+  terms: z.boolean(),
 })
 
 interface VerifyEmailProps {
@@ -56,6 +60,7 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
     resolver: zodResolver(codeFormSchema),
     defaultValues: {
       code: undefined,
+      terms: false,
     },
   })
 
@@ -63,7 +68,14 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
     sendEmailCode(values.email);
   }
   async function onSubmitCode(values: z.infer < typeof codeFormSchema > ) {
-    verifyEmailCode(values.code);
+    console.log(values);
+    if(values.terms) {  
+      verifyEmailCode(values.code);
+    } else {
+      toast.error("Please accept the terms and conditions", {
+        description: `You cannot use this service without accepting the terms`,
+      })
+    }
   }
 
   async function sendEmailCode(email: string) {
@@ -71,19 +83,29 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
 
       setLoadingCode(true);
 
-      //send email to validate return if email is invalid
-      const token = await sendVerifyEmail(email);
-
-      if(token) {
-        setEmail(email);
-        setToken(token);
-        toast.success("Email Verification code sent", {
-          description: `Check your email for the verification code`,
+      //check if email is already in use
+      const profile = await getProfileByEmailAction(email.toLowerCase());
+      if(profile) {
+        toast.error("Email already in use", {
+          description: `Please enter a different email address`,
         })
         setLoadingCode(false);
-        setIsDisabled(true);
-        setCountdown(60);
-      } 
+      } else {
+        //send email to validate return if email is invalid
+        const token = await sendVerifyEmail(email);
+
+        if(token) {
+          setEmail(email);
+          setToken(token);
+          toast.success("Email Verification code sent", {
+            description: `Check your email for the verification code`,
+          })
+          setLoadingCode(false);
+          setIsDisabled(true);
+          setCountdown(60);
+        } 
+      }
+      
     } catch (error) {
       console.error("Send email code error", error);
       toast.error("Email Verification failed", {
@@ -102,7 +124,7 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
           //post profile preupload
           const postProfile = await postProfileAction(
             address!,
-            email!,
+            email!.toLowerCase(),
           );
           if(postProfile) {
             toast.success("Email verified successfully", {
@@ -266,6 +288,35 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
                                     </InputOTPGroup>
                                   </InputOTP>
                                 </div>
+                              </FormControl>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={codeForm.control}
+                        name="terms"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                              <FormLabel></FormLabel>
+                              <FormControl>
+                                <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
+                                  <Checkbox
+                                    id="toggle-2"
+                                    defaultChecked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
+                                  />
+                                  <div className="grid gap-1.5 font-normal">
+                                    <p className="text-sm leading-none font-medium">
+                                      Accept terms and conditions
+                                    </p>
+                                    <p className="text-muted-foreground text-sm">
+                                      By clicking this checkbox, you agree to the <a href="https://www.google.com" target="_blank" className="text-yellow-600">terms and conditions</a>.
+                                    </p>
+                                  </div>
+                                </Label>
                               </FormControl>
                             </div>
                           </FormItem>
