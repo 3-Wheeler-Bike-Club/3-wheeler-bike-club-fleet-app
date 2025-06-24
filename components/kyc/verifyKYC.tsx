@@ -18,6 +18,7 @@ import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 import { Profile } from "@/hooks/useGetProfile"
 import { Label } from "../ui/label"
 import { PhoneInput } from "../ui/phone-input"
+import { getProfileByPhoneAction } from "@/app/actions/kyc/getProfileByPhoneAction"
 
   
 
@@ -68,6 +69,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
       firstname: undefined,
       othername: undefined,
       lastname: undefined,
+      phone: undefined,
       id: undefined,
     },
   })
@@ -75,6 +77,14 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
   async function onSubmit(values: z.infer < typeof FormSchema > ) {
     setLoading(true);
     try {
+      //check if phone is already in use
+      const profile = await getProfileByPhoneAction(values.phone);
+      if(profile) {
+        toast.error("Phone already in use", {
+          description: `Please enter a different phone number`,
+        })
+        setLoading(false);
+      } 
       console.log(values);
       if(files && files.length > 0) {
         if (values.id === "national" && files.length != 2) {
@@ -197,9 +207,11 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                         <FormLabel className="text-yellow-600">Phone number</FormLabel>
                         <FormControl className="w-full">
                           <PhoneInput
-                            placeholder="Enter your phone number"
-                            {...field}
+                            disabled={ !!profile.phone || loading } 
+                            placeholder={profile.phone ? profile.phone : "Enter your phone number"}
+                            className="col-span-3"
                             defaultCountry="GH"
+                            {...field}
                           />
                         </FormControl>
                       </div>
