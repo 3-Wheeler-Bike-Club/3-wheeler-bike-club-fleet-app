@@ -14,25 +14,9 @@ export async function POST(
     try {
         await connectDB();
         
-        const { address, firstname, othername, lastname, phone, id, files } = await req.json();
+        const { phone } = await req.json();
 
-        // Check if phone already exists
-        const existingPhone = await Profile.findOne({ phone })
-        if (existingPhone) {
-            return new Response(
-                JSON.stringify({ error: "Phone already exists" }),
-                { status: 409 }
-            )
-        }
-        const profile = await Profile.findOneAndUpdate({address: address}, {
-            
-            firstname: firstname,
-            othername: othername,
-            lastname: lastname,
-            phone: phone,
-            id: id,
-            files: files
-        }, { new: true });
+        const profile = await Profile.findOne({ phone: phone});
 
         if (!profile) {
             return new Response(
@@ -52,7 +36,7 @@ export async function POST(
     } catch (error) {
         return new Response(
             JSON.stringify({
-                error: "Failed to update profile",
+                error: "Failed to fetch profile",
                 details: error
             }),
             { status: 500 }
