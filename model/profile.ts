@@ -20,6 +20,10 @@ const ProfileSchema = new mongoose.Schema({
     lastname: {
         type: String,
     },
+    phone: {
+        type: String,
+        unique: true,
+    },
     id: {
         type: String,
         enum: ["passport", "national"],
