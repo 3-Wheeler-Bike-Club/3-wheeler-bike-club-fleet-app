@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { WagmiContext } from "@/context/wagmiContext";
 import { Toaster } from "@/components/ui/sonner";
+import { Footer } from "@/components/bottom/footer";
 
 
 
@@ -30,6 +31,7 @@ export default function RootLayout({
       >
         <WagmiContext>
           {children}
+          <Footer />
           <Toaster expand={true} richColors />
         </WagmiContext>
       </body>
