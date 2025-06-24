@@ -17,6 +17,7 @@ import { useUploadThing } from "@/hooks/useUploadThing"
 import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 import { Profile } from "@/hooks/useGetProfile"
 import { Label } from "../ui/label"
+import { PhoneInput } from "../ui/phone-input"
 
   
 
@@ -25,6 +26,7 @@ const FormSchema = z.object({
     firstname: z.string(),
     othername: z.string(),
     lastname: z.string(),
+    phone: z.string(),
     id: z.string(),
 })
 
@@ -90,6 +92,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
               values.firstname,
               values.lastname,
               values.othername,
+              values.phone,
               values.id,
               uploadFiles.map((file) => file.ufsUrl)
             );
@@ -184,6 +187,24 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             </div>
                         </FormItem>
                     )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col items-start">
+                      <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                        <FormLabel className="text-yellow-600">Phone number</FormLabel>
+                        <FormControl className="w-full">
+                          <PhoneInput
+                            placeholder="Enter your phone number"
+                            {...field}
+                            defaultCountry="GH"
+                          />
+                        </FormControl>
+                      </div>
+                    </FormItem>
+                  )}
                 />
                 <FormField
                   control={form.control}
