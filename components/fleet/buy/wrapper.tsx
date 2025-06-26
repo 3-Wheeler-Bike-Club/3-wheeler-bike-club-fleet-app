@@ -30,6 +30,7 @@ import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 import { fleetOrderTokenAbi } from "@/utils/abis/fleetOrderToken";
 import { useSwitchChain } from "wagmi";
+import { OnRamp } from "./onRamp";
 
 interface WrapperProps {
     referrer: string
@@ -47,6 +48,9 @@ export function Wrapper({ referrer }: WrapperProps) {
     const [fractions, setFractions] = useState(1)
     const [loadingCeloUSD, setLoadingCeloUSD] = useState(false)
     const [isFractionsMode, setIsFractionsMode] = useState(true)
+
+    const [openOnRamp, setOpenOnRamp] = useState(false)
+    const [reference, setReference] = useState("")
 
     const router = useRouter()
     
@@ -244,6 +248,12 @@ export function Wrapper({ referrer }: WrapperProps) {
         }
     }
 
+    const onRamp = () => {
+        setOpenOnRamp(true)
+        const ref = `${address}-${(new Date()).getTime().toString()}`
+        setReference(ref)
+    }
+
     return (
         <div className="flex flex-col w-full h-full items-center gap-8 p-24 max-md:p-6">
             <Drawer open={true}>
@@ -423,6 +433,13 @@ export function Wrapper({ referrer }: WrapperProps) {
 
                 </DrawerContent>
             </Drawer>
+            {openOnRamp && (
+                <OnRamp
+                    setOpenOnRamp={setOpenOnRamp}
+                    address={address!}
+                    reference={reference}
+                />
+            )}
         </div>
     );
 }
