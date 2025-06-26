@@ -11,6 +11,7 @@ export default function Privacy() {
       <ul className="list-disc pl-6 mb-4">
         <li>Full name</li>
         <li>Email address</li>
+        <li>Phone number</li>
         <li>Government-issued ID (e.g., passport or national ID)</li>
         <li>Wallet address or payment reference (if applicable)</li>
       </ul>
