@@ -9,7 +9,7 @@ export function Footer() {
                 <a href="https://finance.3wb.club/privacy" target="_blank" rel="noopener noreferrer">
                     <p className="text-yellow-600 underline">{"Privacy Policy"}</p>
                 </a>
-                <a href="https://finance.3wb.club/tos" target="_blank" rel="noopener noreferrer">
+                <a href="https://finance.3wb.club/legal" target="_blank" rel="noopener noreferrer">
                     <p className="text-yellow-600 underline">{"Terms of Service"}</p>
                 </a>
             </div>

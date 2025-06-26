@@ -313,7 +313,7 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
                                       Accept terms and conditions
                                     </p>
                                     <p className="text-muted-foreground text-sm">
-                                      By clicking this checkbox, you agree to the <a href="https://www.google.com" target="_blank" className="text-yellow-600">terms and conditions</a>.
+                                      By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/legal" target="_blank" className="text-yellow-600">terms and conditions</a>.
                                     </p>
                                   </div>
                                 </Label>

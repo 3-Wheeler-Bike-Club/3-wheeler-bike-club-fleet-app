@@ -268,6 +268,21 @@ export function Wrapper({ referrer }: WrapperProps) {
                                     {isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))} <span className="text-muted-foreground">USD</span>
                                 </div>
                             </div>  
+                            <div className="flex items-center justify-center gap-2 mt-2">
+                                <div className="text-sm text-muted-foreground">
+                                    Balance: {testTokenBalance ? Number(formatUnits(testTokenBalance, 18)).toLocaleString() : '0'} cUSD
+                                </div>
+                                <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    testTokenBalance && Number(formatUnits(testTokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                    ? "bg-green-100 text-green-800" 
+                                    : "bg-red-100 text-red-800"
+                                }`}>
+                                    {testTokenBalance && Number(formatUnits(testTokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                        ? "✓ Ready to buy" 
+                                        : "✗ Add more cUSD"
+                                    }
+                                </div>
+                            </div>
 
 
                         <div>
