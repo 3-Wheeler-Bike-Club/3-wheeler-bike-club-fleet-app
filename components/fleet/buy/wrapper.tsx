@@ -58,7 +58,7 @@ export function Wrapper({ referrer }: WrapperProps) {
     const fleetFractionPriceQueryClient = useQueryClient()
     const allowanceCeloDollarQueryClient = useQueryClient()
     const isUserReferredToProviderQueryClient = useQueryClient()
-    const testTokenBalanceQueryClient = useQueryClient()
+    const tokenBalanceQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
     const { sendTransactionAsync } = useSendTransaction();
@@ -120,7 +120,7 @@ export function Wrapper({ referrer }: WrapperProps) {
     }, [blockNumber, isUserReferredToProviderQueryClient, isUserReferredToProviderQueryKey]) 
     console.log(isUserReferredToProvider!)
 
-    const { data: testTokenBalance, queryKey: testTokenBalanceQueryKey } = useReadContract({
+    const { data: tokenBalance, queryKey: tokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
         address: fleetOrderToken,
         functionName: "balanceOf",
@@ -129,10 +129,10 @@ export function Wrapper({ referrer }: WrapperProps) {
 
     })
     useEffect(() => { 
-        testTokenBalanceQueryClient.invalidateQueries({ queryKey: testTokenBalanceQueryKey }) 
-    }, [blockNumber, testTokenBalanceQueryClient, testTokenBalanceQueryKey]) 
-    console.log(testTokenBalance!)
-
+        tokenBalanceQueryClient.invalidateQueries({ queryKey: tokenBalanceQueryKey }) 
+    }, [blockNumber, tokenBalanceQueryClient, tokenBalanceQueryKey]) 
+    console.log(tokenBalance!)
+/*
     async function getTestTokens() {
         try {
             setLoadingCeloUSD(true)
@@ -168,7 +168,7 @@ export function Wrapper({ referrer }: WrapperProps) {
             setLoadingCeloUSD(false)
         }
     }
-
+*/
 
     // order multiple fleet with celoUSD
     async function orderFleetWithCeloUSD() { 
@@ -280,14 +280,14 @@ export function Wrapper({ referrer }: WrapperProps) {
                             </div>  
                             <div className="flex items-center justify-center gap-2 mt-2">
                                 <div className="text-sm text-muted-foreground">
-                                    Balance: {testTokenBalance ? Number(formatUnits(testTokenBalance, 18)).toLocaleString() : '0'} cUSD
+                                    Balance: {tokenBalance ? Number(formatUnits(tokenBalance, 18)).toLocaleString() : '0'} cUSD
                                 </div>
                                 <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    testTokenBalance && Number(formatUnits(testTokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                    tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
                                     ? "bg-green-100 text-green-800" 
                                     : "bg-red-100 text-red-800"
                                 }`}>
-                                    {testTokenBalance && Number(formatUnits(testTokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                    {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
                                         ? "✓ Ready to buy" 
                                         : "✗ Add more cUSD"
                                     }
@@ -324,7 +324,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? increaseFractions : increase}
-                                        disabled={isFractionsMode ? fractions >= 50 : amount >= 10}
+                                        disabled={isFractionsMode ? fractions >= 50 : amount >= 3}
                                     >
                                         <Plus />
                                         <span className="sr-only">Increase</span>
@@ -350,8 +350,8 @@ export function Wrapper({ referrer }: WrapperProps) {
                                                 }
                                             } else {
 
-                                                if ( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) {
-                                                    getTestTokens()
+                                                if ( (Number(formatUnits(tokenBalance!, 18))) <= 0 ) {
+                                                    onRamp()
                                                 } else {
                                                     if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
                                                         registerUser(address!, fleetOrderToken)
@@ -392,7 +392,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                                                         : (
                                                             <>
                                                                 {
-                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) ? "Get Test cUSD" : "Approve cUSD"}`
+                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(tokenBalance!, 18))) <= 2000 ) ? "Get Test cUSD" : "Approve cUSD"}`
                                                                 }
                                                             </>
                                                         )
