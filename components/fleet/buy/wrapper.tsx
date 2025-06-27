@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ChartPie, Ellipsis, Minus, Plus, RefreshCw } from "lucide-react";
+import { BanknoteArrowDown, ChartPie, Ellipsis, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, /*cUSD,*/ fleetOrderBook, fleetOrderToken } from "@/utils/constants/addresses";
@@ -30,6 +30,7 @@ import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 import { fleetOrderTokenAbi } from "@/utils/abis/fleetOrderToken";
 import { useSwitchChain } from "wagmi";
+import { OnRamp } from "./onRamp";
 
 interface WrapperProps {
     referrer: string
@@ -46,7 +47,12 @@ export function Wrapper({ referrer }: WrapperProps) {
     const [amount, setAmount] = useState(1)
     const [fractions, setFractions] = useState(1)
     const [loadingCeloUSD, setLoadingCeloUSD] = useState(false)
+    const [loadingAddCeloDollar, setLoadingAddCeloDollar] = useState(false)
+        
     const [isFractionsMode, setIsFractionsMode] = useState(true)
+
+    const [openOnRamp, setOpenOnRamp] = useState(false)
+    const [reference, setReference] = useState("")
 
     const router = useRouter()
     
@@ -54,7 +60,7 @@ export function Wrapper({ referrer }: WrapperProps) {
     const fleetFractionPriceQueryClient = useQueryClient()
     const allowanceCeloDollarQueryClient = useQueryClient()
     const isUserReferredToProviderQueryClient = useQueryClient()
-    const testTokenBalanceQueryClient = useQueryClient()
+    const tokenBalanceQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
     const { sendTransactionAsync } = useSendTransaction();
@@ -116,7 +122,7 @@ export function Wrapper({ referrer }: WrapperProps) {
     }, [blockNumber, isUserReferredToProviderQueryClient, isUserReferredToProviderQueryKey]) 
     console.log(isUserReferredToProvider!)
 
-    const { data: testTokenBalance, queryKey: testTokenBalanceQueryKey } = useReadContract({
+    const { data: tokenBalance, queryKey: tokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
         address: fleetOrderToken,
         functionName: "balanceOf",
@@ -125,10 +131,10 @@ export function Wrapper({ referrer }: WrapperProps) {
 
     })
     useEffect(() => { 
-        testTokenBalanceQueryClient.invalidateQueries({ queryKey: testTokenBalanceQueryKey }) 
-    }, [blockNumber, testTokenBalanceQueryClient, testTokenBalanceQueryKey]) 
-    console.log(testTokenBalance!)
-
+        tokenBalanceQueryClient.invalidateQueries({ queryKey: tokenBalanceQueryKey }) 
+    }, [blockNumber, tokenBalanceQueryClient, tokenBalanceQueryKey]) 
+    console.log(tokenBalance!)
+/*
     async function getTestTokens() {
         try {
             setLoadingCeloUSD(true)
@@ -164,7 +170,7 @@ export function Wrapper({ referrer }: WrapperProps) {
             setLoadingCeloUSD(false)
         }
     }
-
+*/
 
     // order multiple fleet with celoUSD
     async function orderFleetWithCeloUSD() { 
@@ -244,6 +250,13 @@ export function Wrapper({ referrer }: WrapperProps) {
         }
     }
 
+    const onRamp = () => {
+        setLoadingAddCeloDollar(true)
+        setOpenOnRamp(true)
+        const ref = `${address}-${(new Date()).getTime().toString()}`
+        setReference(ref)
+    }
+
     return (
         <div className="flex flex-col w-full h-full items-center gap-8 p-24 max-md:p-6">
             <Drawer open={true}>
@@ -270,14 +283,14 @@ export function Wrapper({ referrer }: WrapperProps) {
                             </div>  
                             <div className="flex items-center justify-center gap-2 mt-2">
                                 <div className="text-sm text-muted-foreground">
-                                    Balance: {testTokenBalance ? Number(formatUnits(testTokenBalance, 18)).toLocaleString() : '0'} cUSD
+                                    Balance: {tokenBalance ? Number(formatUnits(tokenBalance, 18)).toLocaleString() : '0'} cUSD
                                 </div>
                                 <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    testTokenBalance && Number(formatUnits(testTokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                    tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
                                     ? "bg-green-100 text-green-800" 
                                     : "bg-red-100 text-red-800"
                                 }`}>
-                                    {testTokenBalance && Number(formatUnits(testTokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                    {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
                                         ? "✓ Ready to buy" 
                                         : "✗ Add more cUSD"
                                     }
@@ -314,7 +327,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? increaseFractions : increase}
-                                        disabled={isFractionsMode ? fractions >= 50 : amount >= 10}
+                                        disabled={isFractionsMode ? fractions >= 50 : amount >= 3}
                                     >
                                         <Plus />
                                         <span className="sr-only">Increase</span>
@@ -340,8 +353,8 @@ export function Wrapper({ referrer }: WrapperProps) {
                                                 }
                                             } else {
 
-                                                if ( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) {
-                                                    getTestTokens()
+                                                if ( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) {
+                                                    onRamp()
                                                 } else {
                                                     if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
                                                         registerUser(address!, fleetOrderToken)
@@ -356,42 +369,50 @@ export function Wrapper({ referrer }: WrapperProps) {
                                         }}
                                     >
                                         {
-                                            loadingCeloUSD || loading
+                                            loadingCeloUSD || loading || loadingAddCeloDollar
                                             ? (
-                                                <>
-                                                    <motion.div
-                                                        initial={{ rotate: 0 }}
-                                                        animate={{ rotate: 360 }}
-                                                        transition={{
-                                                            duration: 1,
-                                                            repeat: Infinity,
-                                                            ease: "linear",
-                                                        }}
-                                                    >
-                                                        <Ellipsis/>
-                                                    </motion.div>
-                                                </>
+                                                <Loader2 className="w-4 h-4 animate-spin" /> 
                                             )
                                             : (
                                                 <>
-                                                <>
-                                                    {
+                                                {
                                                         allowanceCeloDollarLoading ? (
                                                         <></>
                                                         )  
                                                         : (
                                                             <>
                                                                 {
-                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(testTokenBalance!, 18))) <= 2000 ) ? "Get Test cUSD" : "Approve cUSD"}`
+                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? (
+                                                                        <HandCoins />
+                                                                    ) : (
+                                                                        (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * (Number(fleetFractionPrice))) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ? (
+                                                                            <BanknoteArrowDown />
+                                                                        ) : (
+                                                                            <Signature />
+                                                                        )
+                                                                    )
                                                                 }
                                                             </>
                                                         )
                                                     }
-                                                </>
                                                     
                                                 </>
                                             )
                                         }
+                                        <p>
+                                            {
+                                                allowanceCeloDollarLoading ? (
+                                                <></>
+                                                )  
+                                                : (
+                                                    <>
+                                                        {
+                                                            allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) ? "Add cUSD" : "Approve cUSD"}`
+                                                        }
+                                                    </>
+                                                )
+                                            }
+                                        </p>
                                     </Button>
                                 </div>
                                 <DrawerClose asChild>
@@ -423,6 +444,14 @@ export function Wrapper({ referrer }: WrapperProps) {
 
                 </DrawerContent>
             </Drawer>
+            {openOnRamp && (
+                <OnRamp
+                    setOpenOnRamp={setOpenOnRamp}
+                    address={address!}
+                    reference={reference}
+                    setLoadingAddCeloDollar={setLoadingAddCeloDollar}
+                />
+            )}
         </div>
     );
 }

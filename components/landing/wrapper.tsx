@@ -79,10 +79,6 @@ export function Wrapper() {
                 </Button>
                 
             </div>
-
-            <footer className="w-full text-center py-4 text-sm">
-                {"© 2025 3WB LABS INC. <> 3WB GHANA LTD. All rights reserved."}
-            </footer>
         </div>
     );
 }
