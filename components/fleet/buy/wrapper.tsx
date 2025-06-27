@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ChartPie, Ellipsis, Minus, Plus, RefreshCw } from "lucide-react";
+import { BanknoteArrowDown, ChartPie, Ellipsis, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, /*cUSD,*/ fleetOrderBook, fleetOrderToken } from "@/utils/constants/addresses";
@@ -47,6 +47,8 @@ export function Wrapper({ referrer }: WrapperProps) {
     const [amount, setAmount] = useState(1)
     const [fractions, setFractions] = useState(1)
     const [loadingCeloUSD, setLoadingCeloUSD] = useState(false)
+    const [loadingAddCeloDollar, setLoadingAddCeloDollar] = useState(false)
+        
     const [isFractionsMode, setIsFractionsMode] = useState(true)
 
     const [openOnRamp, setOpenOnRamp] = useState(false)
@@ -249,6 +251,7 @@ export function Wrapper({ referrer }: WrapperProps) {
     }
 
     const onRamp = () => {
+        setLoadingAddCeloDollar(true)
         setOpenOnRamp(true)
         const ref = `${address}-${(new Date()).getTime().toString()}`
         setReference(ref)
@@ -366,42 +369,50 @@ export function Wrapper({ referrer }: WrapperProps) {
                                         }}
                                     >
                                         {
-                                            loadingCeloUSD || loading
+                                            loadingCeloUSD || loading || loadingAddCeloDollar
                                             ? (
-                                                <>
-                                                    <motion.div
-                                                        initial={{ rotate: 0 }}
-                                                        animate={{ rotate: 360 }}
-                                                        transition={{
-                                                            duration: 1,
-                                                            repeat: Infinity,
-                                                            ease: "linear",
-                                                        }}
-                                                    >
-                                                        <Ellipsis/>
-                                                    </motion.div>
-                                                </>
+                                                <Loader2 className="w-4 h-4 animate-spin" /> 
                                             )
                                             : (
                                                 <>
-                                                <>
-                                                    {
+                                                {
                                                         allowanceCeloDollarLoading ? (
                                                         <></>
                                                         )  
                                                         : (
                                                             <>
                                                                 {
-                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) ? "Add cUSD" : "Approve cUSD"}`
+                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? (
+                                                                        <HandCoins />
+                                                                    ) : (
+                                                                        (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * (Number(fleetFractionPrice))) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ? (
+                                                                            <BanknoteArrowDown />
+                                                                        ) : (
+                                                                            <Signature />
+                                                                        )
+                                                                    )
                                                                 }
                                                             </>
                                                         )
                                                     }
-                                                </>
                                                     
                                                 </>
                                             )
                                         }
+                                        <p>
+                                            {
+                                                allowanceCeloDollarLoading ? (
+                                                <></>
+                                                )  
+                                                : (
+                                                    <>
+                                                        {
+                                                            allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) ? "Add cUSD" : "Approve cUSD"}`
+                                                        }
+                                                    </>
+                                                )
+                                            }
+                                        </p>
                                     </Button>
                                 </div>
                                 <DrawerClose asChild>
@@ -438,6 +449,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                     setOpenOnRamp={setOpenOnRamp}
                     address={address!}
                     reference={reference}
+                    setLoadingAddCeloDollar={setLoadingAddCeloDollar}
                 />
             )}
         </div>

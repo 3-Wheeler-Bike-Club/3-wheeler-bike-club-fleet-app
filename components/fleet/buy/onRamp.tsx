@@ -4,10 +4,11 @@ import { Minimize2 } from "lucide-react";
 interface OnRampProps {
     setOpenOnRamp: (openOnRamp : boolean) => void
     address: `0x${string}`
-    reference: string
+    reference: string   
+    setLoadingAddCeloDollar: (loadingAddCeloDollar: boolean) => void
 }
 
-export function OnRamp({ setOpenOnRamp, address, reference } : OnRampProps) {
+export function OnRamp({ setOpenOnRamp, address, reference, setLoadingAddCeloDollar } : OnRampProps) {
 
     
     
@@ -21,6 +22,7 @@ export function OnRamp({ setOpenOnRamp, address, reference } : OnRampProps) {
                 <div
                     onClick={async()=>{
                         setOpenOnRamp(false)
+                        setLoadingAddCeloDollar(false)
                     }}
                     className="absolute cursor-pointer p-5 top-0 right-0"
                 >
