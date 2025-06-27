@@ -350,7 +350,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                                                 }
                                             } else {
 
-                                                if ( (Number(formatUnits(tokenBalance!, 18))) <= 0 ) {
+                                                if ( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) {
                                                     onRamp()
                                                 } else {
                                                     if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
@@ -392,7 +392,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                                                         : (
                                                             <>
                                                                 {
-                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(tokenBalance!, 18))) <= 2000 ) ? "Get Test cUSD" : "Approve cUSD"}`
+                                                                    allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) ? "Add cUSD" : "Approve cUSD"}`
                                                                 }
                                                             </>
                                                         )
