@@ -12,7 +12,7 @@ export function QR({ userId }: QRProps) {
     // Create the SelfApp configuration
     const selfApp = new SelfAppBuilder({
         appName: "3WB P2P Fleet Finance",
-        scope: "my-application-scope",
+        scope: "3wb-p2p-fleet-finance",
         endpoint: "https://finance.3wb.club/api/verify",
         endpointType: "https",
         userId,
@@ -23,10 +23,10 @@ export function QR({ userId }: QRProps) {
         <SelfQRcodeWrapper
             selfApp={selfApp}
             onSuccess={() => {
-            // Handle successful verification
-            console.log("Verification successful!");
-            // Redirect or update UI
-            router.push("/fleet");
+                // Handle successful verification
+                console.log("Verification successful!");
+                // Redirect or update UI
+                router.push("/fleet");
             }}
             size={360}
         />
