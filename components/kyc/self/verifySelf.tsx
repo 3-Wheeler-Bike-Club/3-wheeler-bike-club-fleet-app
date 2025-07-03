@@ -3,16 +3,16 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { v4 as uuidv4 } from "uuid";
-import { Drawer, DrawerContent, DrawerTitle, DrawerHeader, DrawerDescription, DrawerTrigger } from "../ui/drawer";
-import { Button } from "../ui/button";
 import { PersonStanding } from "lucide-react";
+import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 // Dynamically import the QR component with no SSR
 const QR = dynamic(() => import('./qr').then(mod => mod.QR), {
     ssr: false
 });
 
-export function Verification() {
+export function VerifySelf() {
     const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {

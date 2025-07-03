@@ -17,7 +17,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Progress } from "../ui/progress";
 import { Returns } from "./withdraw/returns";
-import { Verification } from "../self/verification";
 
 
 export function Garage() {
