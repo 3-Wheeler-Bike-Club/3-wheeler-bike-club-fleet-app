@@ -1,4 +1,4 @@
-import SelfQRcodeWrapper, { SelfAppBuilder } from "@selfxyz/qrcode";
+import SelfQRcodeWrapper, { countries, SelfAppBuilder } from "@selfxyz/qrcode";
 import { useRouter } from "next/navigation";
 
 interface QRProps {
@@ -16,7 +16,21 @@ export function QR({ userId }: QRProps) {
         endpoint: "https://finance.3wb.club/api/verify",
         endpointType: "https",
         userId,
-        userIdType: "uuid"
+        userIdType: "uuid",
+        disclosures: {
+            minimumAge: 18,
+            excludedCountries: [
+                countries.UNITED_STATES,
+                countries.CUBA,
+                countries.IRAN,
+                countries.NORTH_KOREA,
+                countries.RUSSIA,
+                countries.UKRAINE,
+            ],
+            ofac: true,
+            nationality: true,
+            expiry_date: true,
+        }
     }).build();
 
     return (
