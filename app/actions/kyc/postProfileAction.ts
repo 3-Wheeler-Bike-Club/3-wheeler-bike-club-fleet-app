@@ -4,6 +4,7 @@
 export async function postProfileAction(
     address: `0x${string}`,
     email: string,
+    phone: string,
 ) {
     try {
         const response = await fetch(`${process.env.BASE_URL}/api/kyc/postProfile`, {
@@ -15,6 +16,7 @@ export async function postProfileAction(
             body: JSON.stringify({ 
                 address: address,
                 email: email,
+                phone: phone,
             })
         })
         if (!response.ok) {

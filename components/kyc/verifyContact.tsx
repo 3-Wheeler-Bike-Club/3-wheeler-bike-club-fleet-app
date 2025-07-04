@@ -27,8 +27,18 @@ import { getProfileByEmailAction } from "@/app/actions/kyc/getProfileByEmailActi
 const emailFormSchema = z.object({
   email: z.string().email(),
 })
-const codeFormSchema = z.object({
-  code: z.string().min(6).max(6),
+const emailCodeFormSchema = z.object({
+  emailCode: z.string().min(6).max(6),
+})
+
+const phoneFormSchema = z.object({
+  phone: z.string()
+})
+const phoneCodeFormSchema = z.object({
+  phoneCode: z.string().min(6).max(6),
+})
+
+const termsFormSchema = z.object({
   terms: z.boolean(),
 })
 
@@ -47,6 +57,9 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
   const [loadingCode, setLoadingCode] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [countdown, setCountdown] = useState(0);
+
+  const [verifiedEmail, setVerifiedEmail] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState(false);
   
   
   const emailForm = useForm < z.infer < typeof emailFormSchema >> ({
@@ -56,26 +69,33 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     },
   })
 
-  const codeForm = useForm < z.infer < typeof codeFormSchema >> ({
-    resolver: zodResolver(codeFormSchema),
+  const emailCodeForm = useForm < z.infer < typeof emailCodeFormSchema >> ({
+    resolver: zodResolver(emailCodeFormSchema),
     defaultValues: {
-      code: undefined,
-      terms: false,
+      emailCode: undefined,
+    },
+  })
+
+  const phoneForm = useForm < z.infer < typeof phoneFormSchema >> ({
+    resolver: zodResolver(phoneFormSchema),
+    defaultValues: {
+      phone: undefined,
+    },
+  })
+
+  const phoneCodeForm = useForm < z.infer < typeof phoneCodeFormSchema >> ({
+    resolver: zodResolver(phoneCodeFormSchema),
+    defaultValues: {
+      phoneCode: undefined,
     },
   })
 
   async function onSubmitEmail(values: z.infer < typeof emailFormSchema > ) {
     sendEmailCode(values.email);
   }
-  async function onSubmitCode(values: z.infer < typeof codeFormSchema > ) {
+  async function onSubmitEmailCode(values: z.infer < typeof emailCodeFormSchema > ) {
     console.log(values);
-    if(values.terms) {  
-      verifyEmailCode(values.code);
-    } else {
-      toast.error("Please accept the terms and conditions", {
-        description: `You cannot use this service without accepting the terms`,
-      })
-    }
+    verifyEmailCode(values.emailCode);
   }
 
   async function sendEmailCode(email: string) {
@@ -122,18 +142,21 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
         const verifiedEmail = await verifyMailCode(token, code);
         if(verifiedEmail) {
           //post profile preupload
+          /*
           const postProfile = await postProfileAction(
             address!,
             email!.toLowerCase(),
           );
-          if(postProfile) {
+          */
+          setVerifiedEmail(true);
+          if(verifiedEmail) {
             toast.success("Email verified successfully", {
               description: `You can now complete your KYC`,
             })
             getProfileSync();
           } else {
-            toast.error("Failed to link email.", {
-              description: `Something went wrong, please try again`,
+            toast.error("Failed to verify email.", {
+              description: `Invalid code or expired, please try again`,
             })
           }
           setLoadingLinking(false);
@@ -152,6 +175,9 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
       setLoadingLinking(false);
     }
   }
+
+  async function sendPhoneCode(phone: string) {}
+  async function verifyPhoneCode(code: string) {}
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -187,9 +213,31 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
         <div className="mx-auto w-full max-w-sm pb-6">
           <DrawerHeader>
               <DrawerTitle>
-                Verify Your Email & Phone Number
+                Verify Contact Information 
               </DrawerTitle>
-              <DrawerDescription className="max-md:text-[0.9rem]">{"Link verified email account & phone number to your wallet"}</DrawerDescription>
+              <DrawerDescription className="max-md:text-[0.9rem]">
+                {
+                  !verifiedEmail && !verifiedPhone && (
+                    <p>
+                      Step 1 of 3: Email Verification
+                    </p>
+                  )
+                }
+                {
+                  verifiedEmail && !verifiedPhone && (
+                    <p>
+                      Step 2 of 3: Phone Verification
+                    </p>
+                  )
+                }
+                {
+                  verifiedEmail && verifiedPhone && (
+                    <p>
+                      Step 3 of 3: Terms and Conditions
+                    </p>
+                  ) 
+                }
+              </DrawerDescription>
           </DrawerHeader>
           <div className="flex flex-col p-4 w-full pb-10">
             <Form {...emailForm}>
@@ -202,6 +250,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel>Enter your email address</FormLabel>
                                     <FormControl >
                                         <Input disabled={ !!profile || !!email || loadingCode} className="col-span-3" placeholder={""} {...field} />
                                     </FormControl>
@@ -210,7 +259,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                         )}
                     />
                   </div>
-                  <div className="flex justify-between w-2/10">
+                  <div className="flex items-end justify-center w-2/10">
                       <Button
                         className="w-12"
                         disabled={loadingCode || isDisabled}
@@ -236,7 +285,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                           setEmail(null);
                           setTryAnotherEmail(false);
                           setToken(null);
-                          codeForm.reset();
+                          emailCodeForm.reset();
                           setLoadingLinking(false);
                         }} 
                         className="text-yellow-600"
@@ -258,16 +307,13 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
               }
             </Form>
           </div> 
-          
-          {
-            email && (
-              <>
+          <>
                 <div className="flex flex-col p-4 w-full">
-                  <Form {...codeForm}>
-                    <form onSubmit={codeForm.handleSubmit(onSubmitCode)} className="space-y-6">
+                  <Form {...emailCodeForm}>
+                    <form onSubmit={emailCodeForm.handleSubmit(onSubmitEmailCode)} className="space-y-6">
                       <FormField
-                        control={codeForm.control}
-                        name="code"
+                        control={emailCodeForm.control}
+                        name="emailCode"
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
@@ -293,40 +339,12 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={codeForm.control}
-                        name="terms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                              <FormLabel></FormLabel>
-                              <FormControl>
-                                <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
-                                  <Checkbox
-                                    id="toggle-2"
-                                    defaultChecked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
-                                  />
-                                  <div className="grid gap-1.5 font-normal">
-                                    <p className="text-sm leading-none font-medium">
-                                      Accept terms and conditions
-                                    </p>
-                                    <p className="text-muted-foreground text-sm">
-                                      By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/legal" target="_blank" className="text-yellow-600">terms and conditions</a>.
-                                    </p>
-                                  </div>
-                                </Label>
-                              </FormControl>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
+                      
                       <div className="flex justify-between">
                         <div/>
                         <Button
                             className="w-36"
-                            disabled={loadingLinking || codeForm.getValues("code")?.length < 6 || !email}
+                            disabled={loadingLinking || emailCodeForm.getValues("emailCode")?.length < 6 || !email}
                             type="submit"
                         >
                             {
@@ -341,8 +359,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                   </Form>
                 </div>  
               </>
-            )
-          }          
+                  
         </div>
       </DrawerContent>
     </Drawer>
@@ -369,5 +386,37 @@ render={({ field }) => (
     </div>
   </FormItem>
 )}
+/>
+*/
+
+/*
+<FormField
+  control={codeForm.control}
+  name="terms"
+  render={({ field }) => (
+    <FormItem>
+      <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+        <FormLabel></FormLabel>
+        <FormControl>
+          <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
+            <Checkbox
+              id="toggle-2"
+              defaultChecked={field.value}
+              onCheckedChange={field.onChange}
+              className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
+            />
+            <div className="grid gap-1.5 font-normal">
+              <p className="text-sm leading-none font-medium">
+                Accept terms and conditions
+              </p>
+              <p className="text-muted-foreground text-sm">
+                By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/legal" target="_blank" className="text-yellow-600">terms and conditions</a>.
+              </p>
+            </div>
+          </Label>
+        </FormControl>
+      </div>
+    </FormItem>
+  )}
 />
 */
