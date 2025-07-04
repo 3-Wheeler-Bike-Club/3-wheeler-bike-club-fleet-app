@@ -38,7 +38,7 @@ interface VerifyEmailProps {
   getProfileSync: () => void
 }
 
-export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailProps) {
+export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailProps) {
 
   const [email, setEmail] = useState<string | null>(null);
   const [tryAnotherEmail, setTryAnotherEmail] = useState(false);
@@ -180,16 +180,16 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
     <Drawer>
       <DrawerTrigger asChild>
           <Button className="max-w-fit h-12 rounded-2xl">
-              Link Email
+              Link Contacts
           </Button>
       </DrawerTrigger>
       <DrawerContent className="h-full">
         <div className="mx-auto w-full max-w-sm pb-6">
           <DrawerHeader>
               <DrawerTitle>
-                Verify Your Email
+                Verify Your Email & Phone Number
               </DrawerTitle>
-              <DrawerDescription className="max-md:text-[0.9rem]">{"Link verified email account to your wallet"}</DrawerDescription>
+              <DrawerDescription className="max-md:text-[0.9rem]">{"Link verified email account & phone number to your wallet"}</DrawerDescription>
           </DrawerHeader>
           <div className="flex flex-col p-4 w-full pb-10">
             <Form {...emailForm}>
@@ -348,3 +348,26 @@ export function VerifyEmail({ address, profile, getProfileSync }: VerifyEmailPro
     </Drawer>
   );
 }
+
+/*
+<FormField
+control={form.control}
+name="phone"
+render={({ field }) => (
+  <FormItem className="flex flex-col items-start">
+    <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+      <FormLabel className="text-yellow-600">Phone number</FormLabel>
+      <FormControl className="w-full">
+        <PhoneInput
+          disabled={ !!profile.phone || loading } 
+          placeholder={profile.phone ? profile.phone : "Enter your phone number"}
+          className="col-span-3"
+          defaultCountry="GH"
+          {...field}
+        />
+      </FormControl>
+    </div>
+  </FormItem>
+)}
+/>
+*/
