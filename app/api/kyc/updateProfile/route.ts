@@ -14,22 +14,13 @@ export async function POST(
     try {
         await connectDB();
         
-        const { address, firstname, othername, lastname, phone, id, files } = await req.json();
+        const { address, firstname, othername, lastname, id, files } = await req.json();
 
-        // Check if phone already exists
-        const existingPhone = await Profile.findOne({ phone })
-        if (existingPhone) {
-            return new Response(
-                JSON.stringify({ error: "Phone already exists" }),
-                { status: 409 }
-            )
-        }
         const profile = await Profile.findOneAndUpdate({address: address}, {
             
             firstname: firstname,
             othername: othername,
             lastname: lastname,
-            phone: phone,
             id: id,
             files: files
         }, { new: true });

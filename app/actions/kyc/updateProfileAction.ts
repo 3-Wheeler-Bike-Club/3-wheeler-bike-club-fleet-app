@@ -6,7 +6,6 @@ export async function updateProfileAction(
     firstname: string,
     othername: string,
     lastname: string,
-    phone: string,
     id: string,
     files: string[]
 ) {
@@ -22,7 +21,6 @@ export async function updateProfileAction(
                 firstname: firstname,
                 othername: othername,
                 lastname: lastname,
-                phone: phone,
                 id: id,
                 files: files
             })
