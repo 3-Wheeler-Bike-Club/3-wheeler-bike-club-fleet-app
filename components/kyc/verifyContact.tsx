@@ -20,6 +20,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Checkbox } from "../ui/checkbox"
 import { Label } from "../ui/label"
 import { getProfileByEmailAction } from "@/app/actions/kyc/getProfileByEmailAction"
+import { PhoneInput } from "../ui/phone-input"
 
   
 
@@ -51,12 +52,16 @@ interface VerifyEmailProps {
 export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailProps) {
 
   const [email, setEmail] = useState<string | null>(null);
-  const [tryAnotherEmail, setTryAnotherEmail] = useState(false);
+  const [phone, setPhone] = useState<string | null>(null);
+  const [tryAnotherEmail, setTryAnotherEmail] = useState(false)
+  const [tryAnotherPhone, setTryAnotherPhone] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [loadingLinking, setLoadingLinking] = useState(false);
   const [loadingCode, setLoadingCode] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+  const [isDisabledEmail, setIsDisabledEmail] = useState(false);
+  const [isDisabledPhone, setIsDisabledPhone] = useState(false);
+  const [countdownEmail, setCountdownEmail] = useState(0);
+  const [countdownPhone, setCountdownPhone] = useState(0);
 
   const [verifiedEmail, setVerifiedEmail] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState(false);
@@ -97,6 +102,13 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     console.log(values);
     verifyEmailCode(values.emailCode);
   }
+  async function onSubmitPhone(values: z.infer < typeof phoneFormSchema > ) {
+    sendPhoneCode(values.phone);
+  }
+  async function onSubmitPhoneCode(values: z.infer < typeof phoneCodeFormSchema > ) {
+    console.log(values);
+    verifyPhoneCode(values.phoneCode);
+  }
 
   async function sendEmailCode(email: string) {
     try {
@@ -121,8 +133,8 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
             description: `Check your email for the verification code`,
           })
           setLoadingCode(false);
-          setIsDisabled(true);
-          setCountdown(60);
+          setIsDisabledEmail(true);
+          setCountdownEmail(60);
         } 
       }
       
@@ -153,7 +165,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
             toast.success("Email verified successfully", {
               description: `You can now complete your KYC`,
             })
-            getProfileSync();
+            //getProfileSync();
           } else {
             toast.error("Failed to verify email.", {
               description: `Invalid code or expired, please try again`,
@@ -176,18 +188,34 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     }
   }
 
-  async function sendPhoneCode(phone: string) {}
+  async function sendPhoneCode(phone: string) {
+    setIsDisabledPhone(true);
+    setCountdownPhone(60);
+  }
   async function verifyPhoneCode(code: string) {}
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let intervalEmail: NodeJS.Timeout;
+    let intervalPhone: NodeJS.Timeout;
     
-    if (countdown > 0) {
-      interval = setInterval(() => {
-        setCountdown((prev) => {
+    if (countdownEmail > 0) {
+      intervalEmail = setInterval(() => {
+        setCountdownEmail((prev) => {
           if (prev <= 1) {
-            setIsDisabled(false);
+            setIsDisabledEmail(false);
             setTryAnotherEmail(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    if (countdownPhone > 0) {
+      intervalPhone = setInterval(() => {
+        setCountdownPhone((prev) => {
+          if (prev <= 1) {
+            setIsDisabledPhone(false);
+            setTryAnotherPhone(true);
             return 0;
           }
           return prev - 1;
@@ -196,11 +224,14 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     }
 
     return () => {
-      if (interval) {
-        clearInterval(interval);
+      if (intervalEmail) {
+        clearInterval(intervalEmail);
+      }
+      if (intervalPhone) {
+        clearInterval(intervalPhone);
       }
     };
-  }, [countdown]);
+  }, [countdownEmail, countdownPhone]);
 
   return (
     <Drawer>
@@ -239,126 +270,272 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                 }
               </DrawerDescription>
           </DrawerHeader>
-          <div className="flex flex-col p-4 w-full pb-10">
-            <Form {...emailForm}>
-              <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-6">
-                <div className="flex w-full justify-between gap-2">
-                  <div className="flex flex-col w-full">
-                    <FormField
-                        control={emailForm.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                <FormLabel>Enter your email address</FormLabel>
-                                    <FormControl >
-                                        <Input disabled={ !!profile || !!email || loadingCode} className="col-span-3" placeholder={""} {...field} />
-                                    </FormControl>
-                                </div>
-                            </FormItem>
-                        )}
-                    />
-                  </div>
-                  <div className="flex items-end justify-center w-2/10">
-                      <Button
-                        className="w-12"
-                        disabled={loadingCode || isDisabled}
-                        type="submit"
-                      >
-                        {
-                          loadingCode
-                          ? <Loader2 className="w-4 h-4 animate-spin" />
-                          : <Send className="w-4 h-4" />
-                        }
-                      </Button>
-                  </div>
-                </div>
-                
-              </form>
-              {
-                tryAnotherEmail && (
-                  <div className="flex flex-col w-full">
-                    <p className="text-[0.6rem] text-gray-500">
-                      Did you enter the wrong email? 
-                      <span 
-                        onClick={() => {
-                          setEmail(null);
-                          setTryAnotherEmail(false);
-                          setToken(null);
-                          emailCodeForm.reset();
-                          setLoadingLinking(false);
-                        }} 
-                        className="text-yellow-600"
-                      >
-                        Try another email
-                      </span>.
-                    </p>
-                  </div>
-                )
-              }
-              {
-                isDisabled && (
-                  <div className="flex flex-col w-full">
-                    <p className="text-[0.6rem] text-gray-500">
-                      You can only send a new code in <span className="text-yellow-600">{countdown}</span> seconds.
-                    </p>
-                  </div>
-                )
-              }
-            </Form>
-          </div> 
-          <>
-                <div className="flex flex-col p-4 w-full">
-                  <Form {...emailCodeForm}>
-                    <form onSubmit={emailCodeForm.handleSubmit(onSubmitEmailCode)} className="space-y-6">
-                      <FormField
-                        control={emailCodeForm.control}
-                        name="emailCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                              <FormLabel>Enter One-Time Password</FormLabel>
-                              <FormControl>
-                                <div className="flex justify-center">
-                                  <InputOTP pattern={REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinking || !email} {...field} className="w-full ">
-                                    <InputOTPGroup>
-                                      <InputOTPSlot index={0} />
-                                      <InputOTPSlot index={1} />
-                                      <InputOTPSlot index={2} />
-                                    </InputOTPGroup>
-                                    <InputOTPSeparator />
-                                    <InputOTPGroup>
-                                      <InputOTPSlot index={3} />
-                                      <InputOTPSlot index={4} />
-                                      <InputOTPSlot index={5} />
-                                    </InputOTPGroup>
-                                  </InputOTP>
-                                </div>
-                              </FormControl>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="flex justify-between">
-                        <div/>
-                        <Button
-                            className="w-36"
-                            disabled={loadingLinking || emailCodeForm.getValues("emailCode")?.length < 6 || !email}
-                            type="submit"
-                        >
-                            {
-                                    loadingLinking
-                                    ? <Loader2 className="w-4 h-4 animate-spin" />
-                                    : <Link />
-                                }
-                                <p>Link Email</p>
-                        </Button>
+          {
+            !verifiedEmail && !verifiedPhone && (
+              <>
+                <div className="flex flex-col p-4 w-full pb-10">
+                  <Form {...emailForm}>
+                    <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-6">
+                      <div className="flex w-full justify-between gap-2">
+                        <div className="flex flex-col w-full">
+                          <FormField
+                              control={emailForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                  <FormItem>
+                                      <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                      <FormLabel>Enter your email address</FormLabel>
+                                          <FormControl >
+                                              <Input disabled={ !!profile || !!email || loadingCode} className="col-span-3" placeholder={""} {...field} />
+                                          </FormControl>
+                                      </div>
+                                  </FormItem>
+                              )}
+                          />
+                        </div>
+                        <div className="flex items-end justify-center w-2/10">
+                            <Button
+                              className="w-12"
+                              disabled={loadingCode || isDisabledEmail}
+                              type="submit"
+                            >
+                              {
+                                loadingCode
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Send className="w-4 h-4" />
+                              }
+                            </Button>
+                        </div>
                       </div>
+                      
                     </form>
+                    {
+                      tryAnotherEmail && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            Did you enter the wrong email? 
+                            <span 
+                              onClick={() => {
+                                setEmail(null);
+                                setTryAnotherEmail(false);
+                                setToken(null);
+                                emailCodeForm.reset();
+                                setLoadingLinking(false);
+                              }} 
+                              className="text-yellow-600"
+                            >
+                              Try another email
+                            </span>.
+                          </p>
+                        </div>
+                      )
+                    }
+                    {
+                      isDisabledEmail && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            You can only send a new code in <span className="text-yellow-600">{countdownEmail}</span> seconds.
+                          </p>
+                        </div>
+                      )
+                    }
                   </Form>
-                </div>  
+                </div> 
+                <>
+                  <div className="flex flex-col p-4 w-full">
+                    <Form {...emailCodeForm}>
+                      <form onSubmit={emailCodeForm.handleSubmit(onSubmitEmailCode)} className="space-y-6">
+                        <FormField
+                          control={emailCodeForm.control}
+                          name="emailCode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel>Enter One-Time Password</FormLabel>
+                                <FormControl>
+                                  <div className="flex justify-center">
+                                    <InputOTP pattern={REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinking || !email} {...field} className="w-full ">
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={0} />
+                                        <InputOTPSlot index={1} />
+                                        <InputOTPSlot index={2} />
+                                      </InputOTPGroup>
+                                      <InputOTPSeparator />
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={3} />
+                                        <InputOTPSlot index={4} />
+                                        <InputOTPSlot index={5} />
+                                      </InputOTPGroup>
+                                    </InputOTP>
+                                  </div>
+                                </FormControl>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="flex justify-between">
+                          <div/>
+                          <Button
+                              className="w-36"
+                              disabled={loadingLinking || emailCodeForm.getValues("emailCode")?.length < 6 || !email}
+                              type="submit"
+                          >
+                              {
+                                      loadingLinking
+                                      ? <Loader2 className="w-4 h-4 animate-spin" />
+                                      : <Link />
+                                  }
+                                  <p>Link Email</p>
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>  
+                </>
               </>
+            )
+          }
+          {
+            verifiedEmail && !verifiedPhone && (
+              <>
+                <div className="flex flex-col p-4 w-full pb-10">
+                  <Form {...phoneForm}>
+                    <form onSubmit={phoneForm.handleSubmit(onSubmitPhone)} className="space-y-6">
+                      <div className="flex w-full justify-between gap-2">
+                        <div className="flex flex-col w-full">
+                        <FormField
+                          control={phoneForm.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col items-start">
+                              <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel>Enter your phone number</FormLabel>
+                                <FormControl className="w-full">
+                                  <PhoneInput
+                                    disabled={ !!profile?.phone || loadingCode } 
+                                    placeholder={profile?.phone ? profile.phone : "Enter your phone number"}
+                                    className="col-span-3"
+                                    defaultCountry="GH"
+                                    {...field}
+                                  />
+                                </FormControl>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        </div>
+                        <div className="flex items-end justify-center w-2/10">
+                            <Button
+                              className="w-12"
+                              disabled={loadingCode || isDisabledPhone}
+                              type="submit"
+                            >
+                              {
+                                loadingCode
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Send className="w-4 h-4" />
+                              }
+                            </Button>
+                        </div>
+                      </div>
+                      
+                    </form>
+                    {
+                      tryAnotherPhone && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            Did you enter the wrong phone number? 
+                            <span 
+                              onClick={() => {
+                                setPhone(null);
+                                setTryAnotherPhone(false);
+                                setToken(null);
+                                phoneCodeForm.reset();
+                                setLoadingLinking(false);
+                              }} 
+                              className="text-yellow-600"
+                            >
+                              Try another phone number
+                            </span>.
+                          </p>
+                        </div>
+                      )
+                    }
+                    {
+                      isDisabledPhone && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            You can only send a new code in <span className="text-yellow-600">{countdownPhone}</span> seconds.
+                          </p>
+                        </div>
+                      )
+                    }
+                  </Form>
+                </div> 
+                <>
+                  <div className="flex flex-col p-4 w-full">
+                    <Form {...phoneCodeForm}>
+                      <form onSubmit={phoneCodeForm.handleSubmit(onSubmitPhoneCode)} className="space-y-6">
+                        <FormField
+                          control={phoneCodeForm.control}
+                          name="phoneCode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel>Enter One-Time Password</FormLabel>
+                                <FormControl>
+                                  <div className="flex justify-center">
+                                    <InputOTP pattern={ REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinking || !phone} {...field} className="w-full ">
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={0} />
+                                        <InputOTPSlot index={1} />
+                                        <InputOTPSlot index={2} />
+                                      </InputOTPGroup>
+                                      <InputOTPSeparator />
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={3} />
+                                        <InputOTPSlot index={4} />
+                                        <InputOTPSlot index={5} />
+                                      </InputOTPGroup>
+                                    </InputOTP>
+                                  </div>
+                                </FormControl>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="flex justify-between">
+                          <div/>
+                          <Button
+                              className="w-36"
+                              disabled={loadingLinking || phoneCodeForm.getValues("phoneCode")?.length < 6 || !phone}
+                              type="submit"
+                          >
+                              {
+                                      loadingLinking
+                                      ? <Loader2 className="w-4 h-4 animate-spin" />
+                                      : <Link />
+                                  }
+                                  <p>Link Phone</p>
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>  
+                </>
+              </>
+            )
+          }
+          {
+            verifiedEmail && verifiedPhone && (
+              <>
+                Step 3 of 3: Terms and Conditions
+              </>
+            ) 
+          }
+          
                   
         </div>
       </DrawerContent>
@@ -367,26 +544,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
 }
 
 /*
-<FormField
-control={form.control}
-name="phone"
-render={({ field }) => (
-  <FormItem className="flex flex-col items-start">
-    <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-      <FormLabel className="text-yellow-600">Phone number</FormLabel>
-      <FormControl className="w-full">
-        <PhoneInput
-          disabled={ !!profile.phone || loading } 
-          placeholder={profile.phone ? profile.phone : "Enter your phone number"}
-          className="col-span-3"
-          defaultCountry="GH"
-          {...field}
-        />
-      </FormControl>
-    </div>
-  </FormItem>
-)}
-/>
+
 */
 
 /*
