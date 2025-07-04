@@ -27,7 +27,6 @@ const FormSchema = z.object({
     firstname: z.string(),
     othername: z.string(),
     lastname: z.string(),
-    phone: z.string(),
     id: z.string(),
 })
 
@@ -69,7 +68,6 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
       firstname: undefined,
       othername: undefined,
       lastname: undefined,
-      phone: undefined,
       id: undefined,
     },
   })
@@ -77,6 +75,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
   async function onSubmit(values: z.infer < typeof FormSchema > ) {
     setLoading(true);
     try {
+      /*
       //check if phone is already in use
       const profile = await getProfileByPhoneAction(values.phone);
       if(profile) {
@@ -85,6 +84,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
         })
         setLoading(false);
       } 
+      */
       console.log(values);
       if(files && files.length > 0) {
         if (values.id === "national" && files.length != 2) {
@@ -102,7 +102,6 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
               values.firstname,
               values.lastname,
               values.othername,
-              values.phone,
               values.id,
               uploadFiles.map((file) => file.ufsUrl)
             );
@@ -197,26 +196,6 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             </div>
                         </FormItem>
                     )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col items-start">
-                      <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                        <FormLabel className="text-yellow-600">Phone number</FormLabel>
-                        <FormControl className="w-full">
-                          <PhoneInput
-                            disabled={ !!profile.phone || loading } 
-                            placeholder={profile.phone ? profile.phone : "Enter your phone number"}
-                            className="col-span-3"
-                            defaultCountry="GH"
-                            {...field}
-                          />
-                        </FormControl>
-                      </div>
-                    </FormItem>
-                  )}
                 />
                 <FormField
                   control={form.control}

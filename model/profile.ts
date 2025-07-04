@@ -11,6 +11,11 @@ const ProfileSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    phone: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     firstname: {
         type: String,
     },
@@ -20,13 +25,9 @@ const ProfileSchema = new mongoose.Schema({
     lastname: {
         type: String,
     },
-    phone: {
-        type: String,
-        unique: true,
-    },
     id: {
         type: String,
-        enum: ["passport", "national"],
+        enum: ["passport", "national", "self.xyz"],
     },
     files: {
         type: Array,

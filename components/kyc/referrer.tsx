@@ -3,7 +3,7 @@ import { DoorOpen, UserRoundSearch } from "lucide-react";
 import { VerifyKYC } from "./verifyKYC";
 import { useAccount } from "wagmi";
 import { Profile } from "@/hooks/useGetProfile";
-import { VerifyEmail } from "./verifyEmail";
+import { VerifyContact } from "./verifyContact";
 
 interface ReferrerProps {
     profile: Profile
@@ -37,7 +37,7 @@ export function Referrer({ profile, getProfileSync }: ReferrerProps) {
                             : <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC options below to access P2P fleet financing.</p>
                         }
                         {
-                            profile?.email ? <VerifyKYC address={address!} profile={profile} getProfileSync={getProfileSync} /> : <VerifyEmail address={address!} profile={profile} getProfileSync={getProfileSync} />
+                            profile?.email ? <VerifyKYC address={address!} profile={profile} getProfileSync={getProfileSync} /> : <VerifyContact address={address!} profile={profile} getProfileSync={getProfileSync} />
                         }
                     </div>
                     

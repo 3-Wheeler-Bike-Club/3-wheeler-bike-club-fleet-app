@@ -12,7 +12,7 @@ export async function POST(
         return authResponse
     }
 
-    const { address, email } = await req.json()
+    const { address, email, phone } = await req.json()
     
     try {
         await connectDB()
@@ -32,9 +32,17 @@ export async function POST(
                 { status: 409 }
             )
         }
+        const existingPhone = await Profile.findOne({ phone })
+        if (existingPhone) {
+            return new Response(
+                JSON.stringify({ error: "Phone already exists" }),
+                { status: 409 }
+            )
+        }
         const profile = await Profile.create({ 
             address: address,
             email: email,
+            phone: phone,
         })
         return new Response(JSON.stringify(profile))
     } catch (error) {
