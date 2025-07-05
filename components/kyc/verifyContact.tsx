@@ -21,6 +21,9 @@ import { Checkbox } from "../ui/checkbox"
 import { Label } from "../ui/label"
 import { getProfileByEmailAction } from "@/app/actions/kyc/getProfileByEmailAction"
 import { PhoneInput } from "../ui/phone-input"
+import { sendVerifyPhone } from "@/app/actions/phone/sendVerifyPhone"
+import { getProfileByPhoneAction } from "@/app/actions/kyc/getProfileByPhoneAction"
+import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
 
   
 
@@ -103,11 +106,33 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     verifyEmailCode(values.emailCode);
   }
   async function onSubmitPhone(values: z.infer < typeof phoneFormSchema > ) {
-    sendPhoneCode(values.phone);
+    setLoadingCode(true);
+    try {
+      //check if phone is already in use
+      const profile = await getProfileByPhoneAction(values.phone);
+      if(profile) {
+        toast.error("Phone already in use", {
+          description: `Please enter a different phone number`,
+        })
+        setLoadingCode(false);
+      } 
+      setPhone(values.phone);
+      sendVerifyPhone(values.phone);
+      setIsDisabledPhone(true);
+      setCountdownPhone(60);
+      setLoadingCode(false);
+    } catch (error) {
+      console.error("Send phone code error", error);
+      toast.error("Phone Verification failed", {
+        description: `Something went wrong, Enter a valid phone number`,
+      })
+      setLoadingCode(false);
+
+    }
   }
   async function onSubmitPhoneCode(values: z.infer < typeof phoneCodeFormSchema > ) {
     console.log(values);
-    verifyPhoneCode(values.phoneCode);
+    verifyPhoneCode(values.phoneCode, phone!);
   }
 
   async function sendEmailCode(email: string) {
@@ -187,13 +212,13 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
       setLoadingLinking(false);
     }
   }
-
+/*
   async function sendPhoneCode(phone: string) {
     setIsDisabledPhone(true);
     setCountdownPhone(60);
   }
   async function verifyPhoneCode(code: string) {}
-
+*/
   useEffect(() => {
     let intervalEmail: NodeJS.Timeout;
     let intervalPhone: NodeJS.Timeout;

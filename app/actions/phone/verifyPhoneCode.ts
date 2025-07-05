@@ -1,3 +1,5 @@
+"use server";
+
 // Download the helper library from https://www.twilio.com/docs/node/install
 import twilio from "twilio";
 

@@ -10,12 +10,13 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
 
 export async function sendVerifyPhone( phoneNumber: string ) {
-  const verification = await client.verify.v2
-    .services(process.env.TWILIO_SERVICE_SID)
-    .verifications.create({
-      channel: "whatsapp",
-      to: phoneNumber,
-    });
+    console.log(phoneNumber);
+    const verification = await client.verify.v2
+        .services(process.env.TWILIO_SERVICE_SID)
+        .verifications.create({
+            channel: "whatsapp",
+            to: phoneNumber,
+        });
 
   console.log(verification.status);
 }
