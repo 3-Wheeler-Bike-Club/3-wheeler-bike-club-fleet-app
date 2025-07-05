@@ -49,6 +49,7 @@
     "react-phone-number-input": "^3.4.12",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.3.0",
+    "twilio": "^5.7.2",
     "uploadthing": "^7.7.2",
     "vaul": "^1.1.2",
     "viem": "^2.29.4",
