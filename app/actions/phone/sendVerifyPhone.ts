@@ -2,6 +2,7 @@
 
 // Download the helper library from https://www.twilio.com/docs/node/install
 import twilio from "twilio";
+import jwt from "jsonwebtoken"
 
 // Find your Account SID and Auth Token at twilio.com/console
 // and set the environment variables. See http://twil.io/secure
@@ -9,14 +10,21 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
 
-export async function sendVerifyPhone( phoneNumber: string ) {
-    console.log(phoneNumber);
-    const verification = await client.verify.v2
-        .services(process.env.TWILIO_SERVICE_SID)
-        .verifications.create({
-            channel: "whatsapp",
-            to: phoneNumber,
-        });
+export async function sendVerifyPhone( phone: string ) {
+    const code = Math.floor(100000 + Math.random() * 900000).toString()
+    const token = jwt.sign({ phone, code }, process.env.JWT_SECRET, { expiresIn: "10m" })
 
-  console.log(verification.status);
+    console.log(phone);
+    try {
+        const message = await client.messages.create({
+            from: 'whatsapp:+233504052815',
+            contentSid: 'HX0ca4b8dd289261ca7af771b1220cb503',
+            contentVariables: `{"1":"${code}"}`,
+            to: `whatsapp:${phone}`
+        });
+        console.log(message);
+        return token;
+    } catch (error) {
+        console.log(error);
+    }
 }
