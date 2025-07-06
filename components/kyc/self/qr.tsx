@@ -1,5 +1,5 @@
 import { getUniversalLink } from '@selfxyz/core';
-import { SelfAppBuilder, SelfQRcodeWrapper } from "@selfxyz/qrcode";
+import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode";
 import { useRouter } from "next/navigation";
 
 interface QRProps {
@@ -26,18 +26,21 @@ export function QR({ userId }: QRProps) {
         }
     }).build();
 
+    const deeplink = getUniversalLink(selfApp);
+    console.log(deeplink);
+
     return (
-        <SelfQRcodeWrapper
+        <SelfQRcode
             selfApp={selfApp}
-            onError={() => {
-                // Handle verification error
-                console.log("Verification error!");
-            }}
             onSuccess={() => {
                 // Handle successful verification
                 console.log("Verification successful!");
                 // Redirect or update UI
                 //router.push("/fleet");
+            }}
+            onError={() => {
+                // Handle verification error
+                console.log("Verification error!");
             }}
             size={360}
         />
