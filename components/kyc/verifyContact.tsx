@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { Link, Loader2, Send } from "lucide-react"
+import { Link, Loader2, Save, Send } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -17,10 +17,13 @@ import { postProfileAction } from "@/app/actions/kyc/postProfileAction"
 import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
-import { Checkbox } from "../ui/checkbox"
-import { Label } from "../ui/label"
 import { getProfileByEmailAction } from "@/app/actions/kyc/getProfileByEmailAction"
 import { PhoneInput } from "../ui/phone-input"
+import { sendVerifyPhone } from "@/app/actions/phone/sendVerifyPhone"
+import { getProfileByPhoneAction } from "@/app/actions/kyc/getProfileByPhoneAction"
+import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
+import { Checkbox } from "../ui/checkbox"
+import { Label } from "../ui/label"
 
   
 
@@ -55,8 +58,11 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
   const [phone, setPhone] = useState<string | null>(null);
   const [tryAnotherEmail, setTryAnotherEmail] = useState(false)
   const [tryAnotherPhone, setTryAnotherPhone] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [loadingLinking, setLoadingLinking] = useState(false);
+  const [tokenEmail, setTokenEmail] = useState<string | null>(null);
+  const [tokenPhone, setTokenPhone] = useState<string | null>(null);
+  const [loadingLinkingEmail, setLoadingLinkingEmail] = useState(false);
+  const [loadingLinkingPhone, setLoadingLinkingPhone] = useState(false);
+  const [loadingLinkingTerms, setLoadingLinkingTerms] = useState(false);
   const [loadingCode, setLoadingCode] = useState(false);
   const [isDisabledEmail, setIsDisabledEmail] = useState(false);
   const [isDisabledPhone, setIsDisabledPhone] = useState(false);
@@ -95,28 +101,18 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     },
   })
 
+  const termsForm = useForm < z.infer < typeof termsFormSchema >> ({
+    resolver: zodResolver(termsFormSchema),
+    defaultValues: {
+      terms: false,
+    },
+  })
+
   async function onSubmitEmail(values: z.infer < typeof emailFormSchema > ) {
-    sendEmailCode(values.email);
-  }
-  async function onSubmitEmailCode(values: z.infer < typeof emailCodeFormSchema > ) {
-    console.log(values);
-    verifyEmailCode(values.emailCode);
-  }
-  async function onSubmitPhone(values: z.infer < typeof phoneFormSchema > ) {
-    sendPhoneCode(values.phone);
-  }
-  async function onSubmitPhoneCode(values: z.infer < typeof phoneCodeFormSchema > ) {
-    console.log(values);
-    verifyPhoneCode(values.phoneCode);
-  }
-
-  async function sendEmailCode(email: string) {
     try {
-
       setLoadingCode(true);
-
       //check if email is already in use
-      const profile = await getProfileByEmailAction(email.toLowerCase());
+      const profile = await getProfileByEmailAction(values.email.toLowerCase());
       if(profile) {
         toast.error("Email already in use", {
           description: `Please enter a different email address`,
@@ -124,11 +120,11 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
         setLoadingCode(false);
       } else {
         //send email to validate return if email is invalid
-        const token = await sendVerifyEmail(email);
+        const token = await sendVerifyEmail(values.email);
 
         if(token) {
-          setEmail(email);
-          setToken(token);
+          setEmail(values.email);
+          setTokenEmail(token);
           toast.success("Email Verification code sent", {
             description: `Check your email for the verification code`,
           })
@@ -146,37 +142,29 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
       setLoadingCode(false);
     }
   }
-
-  async function verifyEmailCode(code: string) {
+  async function onSubmitEmailCode(values: z.infer < typeof emailCodeFormSchema > ) {
     try {
-      setLoadingLinking(true);
-      if(token) {
-        const verifiedEmail = await verifyMailCode(token, code);
-        if(verifiedEmail) {
-          //post profile preupload
-          /*
-          const postProfile = await postProfileAction(
-            address!,
-            email!.toLowerCase(),
-          );
-          */
+      setLoadingLinkingEmail(true);
+      if(tokenEmail) {
+        const verifiedEmailCode = await verifyMailCode(tokenEmail, values.emailCode);
+        if(verifiedEmailCode) {
           setVerifiedEmail(true);
-          if(verifiedEmail) {
+          if(verifiedEmailCode) {
             toast.success("Email verified successfully", {
               description: `You can now complete your KYC`,
             })
-            //getProfileSync();
+            setLoadingLinkingEmail(false)
           } else {
             toast.error("Failed to verify email.", {
               description: `Invalid code or expired, please try again`,
             })
           }
-          setLoadingLinking(false);
+          setLoadingLinkingEmail(false);
         } else {
           toast.error("Failed to verify email.", {
             description: `Invalid code or expired, please try again`,
           })
-          setLoadingLinking(false);
+          setLoadingLinkingEmail(false);
         }
       }
     } catch (error) {
@@ -184,15 +172,109 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
       toast.error("Failed to verify email.", {
         description: `Invalid code or expired, please try again`,
       })
-      setLoadingLinking(false);
+      setLoadingLinkingEmail(false);
+    }
+  }
+  async function onSubmitPhone(values: z.infer < typeof phoneFormSchema > ) {
+    setLoadingCode(true);
+    try {
+      //check if phone is already in use
+      const profile = await getProfileByPhoneAction(values.phone);
+      if(profile) {
+        toast.error("Phone already in use", {
+          description: `Please enter a different phone number`,
+        })
+        setLoadingCode(false);
+      } 
+      setPhone(values.phone);
+      const token = await sendVerifyPhone(values.phone);
+      if(token) {
+        setTokenPhone(token);
+        toast.success("Phone Verification code sent", {
+          description: `Check your phone for the verification code`,
+        })
+        setLoadingCode(false);
+        setIsDisabledPhone(true);
+        setCountdownPhone(60);
+      }
+      
+    } catch (error) {
+      console.error("Send phone code error", error);
+      toast.error("Phone Verification failed", {
+        description: `Something went wrong, Enter a valid phone number`,
+      })
+      setLoadingCode(false);
+
+    }
+  }
+  async function onSubmitPhoneCode(values: z.infer < typeof phoneCodeFormSchema > ) {
+    try {
+      setLoadingLinkingPhone(true);
+      if(tokenPhone) {
+        const verifiedPhoneCode = await verifyPhoneCode(values.phoneCode, tokenPhone!);
+        if(verifiedPhoneCode) {
+          setVerifiedPhone(true);
+          toast.success("Phone verified successfully", {
+            description: `You can now complete your KYC`,
+          })
+          setLoadingLinkingPhone(false)
+        } else {
+          toast.error("Failed to verify phone.", {
+            description: `Invalid code or expired, please try again`,
+          })
+        }
+        setLoadingLinkingPhone(false);
+      }
+    } catch (error) {
+      console.error("Verify phone error", error);
+      toast.error("Failed to verify phone.", {
+        description: `Invalid code or expired, please try again`,
+      })
+      setLoadingLinkingPhone(false);
     }
   }
 
-  async function sendPhoneCode(phone: string) {
-    setIsDisabledPhone(true);
-    setCountdownPhone(60);
+  async function onSubmitTerms(values: z.infer < typeof termsFormSchema > ) {
+    setLoadingLinkingTerms(true);
+    try {
+      console.log(values);
+      if (values.terms) {
+        //post profile preupload
+        
+        const postProfile = await postProfileAction(
+          address!,
+          email!.toLowerCase(),
+          phone!,
+        );
+        getProfileSync();
+        if (postProfile) {
+          toast.success("Contact saved successfully", {
+            description: `You can now complete your KYC`,
+          })
+          setLoadingLinkingTerms(false);
+        } else {
+          toast.error("Failed to save contact.", {
+            description: `Something went wrong, please try again`,
+          })
+          setLoadingLinkingTerms(false);
+        }
+      } else {
+        toast.error("You must agree to the terms and conditions", {
+          description: `Please read and agree to the terms and conditions`,
+        })  
+        setLoadingLinkingTerms(false);
+      }
+    } catch (error) {
+      console.error("Submit terms error", error);
+      toast.error("Failed to submit terms.", {
+        description: `Something went wrong, please try again`,
+      })
+      setLoadingLinkingTerms(false);
+    }
   }
-  async function verifyPhoneCode(code: string) {}
+
+  
+
 
   useEffect(() => {
     let intervalEmail: NodeJS.Timeout;
@@ -202,7 +284,6 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
       intervalEmail = setInterval(() => {
         setCountdownEmail((prev) => {
           if (prev <= 1) {
-            setIsDisabledEmail(false);
             setTryAnotherEmail(true);
             return 0;
           }
@@ -214,7 +295,6 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
       intervalPhone = setInterval(() => {
         setCountdownPhone((prev) => {
           if (prev <= 1) {
-            setIsDisabledPhone(false);
             setTryAnotherPhone(true);
             return 0;
           }
@@ -232,6 +312,9 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
       }
     };
   }, [countdownEmail, countdownPhone]);
+
+  
+  
 
   return (
     <Drawer>
@@ -286,7 +369,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                       <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                       <FormLabel>Enter your email address</FormLabel>
                                           <FormControl >
-                                              <Input disabled={ !!profile || !!email || loadingCode} className="col-span-3" placeholder={""} {...field} />
+                                              <Input disabled={ !!profile || !!email || loadingCode || isDisabledEmail } className="col-span-3" placeholder={""} {...field} />
                                           </FormControl>
                                       </div>
                                   </FormItem>
@@ -313,25 +396,26 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                       tryAnotherEmail && (
                         <div className="flex flex-col w-full">
                           <p className="text-[0.6rem] text-gray-500">
-                            Did you enter the wrong email? 
+                            Did you enter the wrong email?{" "}
                             <span 
                               onClick={() => {
                                 setEmail(null);
                                 setTryAnotherEmail(false);
-                                setToken(null);
-                                emailCodeForm.reset();
-                                setLoadingLinking(false);
+                                setTokenEmail(null);
+                                setIsDisabledEmail(false);
+                                emailForm.reset();
+                                setLoadingLinkingEmail(false);
                               }} 
-                              className="text-yellow-600"
+                              className="text-yellow-600 font-bold"
                             >
-                              Try another email
+                              Try another one
                             </span>.
                           </p>
                         </div>
                       )
                     }
                     {
-                      isDisabledEmail && (
+                      countdownEmail > 0 && (
                         <div className="flex flex-col w-full">
                           <p className="text-[0.6rem] text-gray-500">
                             You can only send a new code in <span className="text-yellow-600">{countdownEmail}</span> seconds.
@@ -354,7 +438,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                 <FormLabel>Enter One-Time Password</FormLabel>
                                 <FormControl>
                                   <div className="flex justify-center">
-                                    <InputOTP pattern={REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinking || !email} {...field} className="w-full ">
+                                    <InputOTP pattern={REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinkingEmail || !email} {...field} className="w-full ">
                                       <InputOTPGroup>
                                         <InputOTPSlot index={0} />
                                         <InputOTPSlot index={1} />
@@ -378,11 +462,11 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                           <div/>
                           <Button
                               className="w-36"
-                              disabled={loadingLinking || emailCodeForm.getValues("emailCode")?.length < 6 || !email}
+                              disabled={loadingLinkingEmail || emailCodeForm.getValues("emailCode")?.length < 6 || !email}
                               type="submit"
                           >
                               {
-                                      loadingLinking
+                                      loadingLinkingEmail
                                       ? <Loader2 className="w-4 h-4 animate-spin" />
                                       : <Link />
                                   }
@@ -413,7 +497,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                 <FormLabel>Enter your phone number</FormLabel>
                                 <FormControl className="w-full">
                                   <PhoneInput
-                                    disabled={ !!profile?.phone || loadingCode } 
+                                    disabled={ !!profile?.phone || loadingCode || isDisabledPhone } 
                                     placeholder={profile?.phone ? profile.phone : "Enter your phone number"}
                                     className="col-span-3"
                                     defaultCountry="GH"
@@ -445,25 +529,26 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                       tryAnotherPhone && (
                         <div className="flex flex-col w-full">
                           <p className="text-[0.6rem] text-gray-500">
-                            Did you enter the wrong phone number? 
+                            Entered the wrong phone number?{" "}
                             <span 
                               onClick={() => {
                                 setPhone(null);
                                 setTryAnotherPhone(false);
-                                setToken(null);
-                                phoneCodeForm.reset();
-                                setLoadingLinking(false);
+                                setTokenPhone(null);
+                                setIsDisabledPhone(false);
+                                phoneForm.reset();
+                                setLoadingLinkingPhone(false);
                               }} 
-                              className="text-yellow-600"
+                              className="text-yellow-600 font-bold"
                             >
-                              Try another phone number
+                              Try another one
                             </span>.
                           </p>
                         </div>
                       )
                     }
                     {
-                      isDisabledPhone && (
+                      countdownPhone > 0 && (
                         <div className="flex flex-col w-full">
                           <p className="text-[0.6rem] text-gray-500">
                             You can only send a new code in <span className="text-yellow-600">{countdownPhone}</span> seconds.
@@ -486,7 +571,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                 <FormLabel>Enter One-Time Password</FormLabel>
                                 <FormControl>
                                   <div className="flex justify-center">
-                                    <InputOTP pattern={ REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinking || !phone} {...field} className="w-full ">
+                                    <InputOTP pattern={ REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinkingPhone || !phone} {...field} className="w-full ">
                                       <InputOTPGroup>
                                         <InputOTPSlot index={0} />
                                         <InputOTPSlot index={1} />
@@ -510,11 +595,11 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                           <div/>
                           <Button
                               className="w-36"
-                              disabled={loadingLinking || phoneCodeForm.getValues("phoneCode")?.length < 6 || !phone}
+                              disabled={loadingLinkingPhone || phoneCodeForm.getValues("phoneCode")?.length < 6 || !phone}
                               type="submit"
                           >
                               {
-                                      loadingLinking
+                                      loadingLinkingPhone
                                       ? <Loader2 className="w-4 h-4 animate-spin" />
                                       : <Link />
                                   }
@@ -531,8 +616,58 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
           {
             verifiedEmail && verifiedPhone && (
               <>
-                Step 3 of 3: Terms and Conditions
-              </>
+                  <div className="flex flex-col p-4 w-full">
+                    <Form {...termsForm}>
+                      <form onSubmit={termsForm.handleSubmit(onSubmitTerms)} className="space-y-6">
+                      <FormField
+                      control={termsForm.control}
+                      name="terms"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                            <FormLabel></FormLabel>
+                            <FormControl>
+                              <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
+                                <Checkbox
+                                  id="toggle-2"
+                                  defaultChecked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
+                                />
+                                <div className="grid gap-1.5 font-normal">
+                                  <p className="text-sm leading-none font-medium">
+                                    Accept terms and conditions
+                                  </p>
+                                  <p className="text-muted-foreground text-sm">
+                                    By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/privacy" target="_blank" className="text-yellow-600">privacy policy</a>.
+                                  </p>
+                                </div>
+                              </Label>
+                            </FormControl>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                        
+                        <div className="flex justify-between">
+                          <div/>
+                          <Button
+                            className="w-36"
+                            disabled={loadingLinkingTerms || !termsForm.getValues("terms")}
+                            type="submit"
+                          >
+                            {
+                              loadingLinkingTerms
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <Save />
+                            }
+                            <p>Save Contact</p>
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>  
+                </>
             ) 
           }
           
@@ -548,33 +683,5 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
 */
 
 /*
-<FormField
-  control={codeForm.control}
-  name="terms"
-  render={({ field }) => (
-    <FormItem>
-      <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-        <FormLabel></FormLabel>
-        <FormControl>
-          <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
-            <Checkbox
-              id="toggle-2"
-              defaultChecked={field.value}
-              onCheckedChange={field.onChange}
-              className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
-            />
-            <div className="grid gap-1.5 font-normal">
-              <p className="text-sm leading-none font-medium">
-                Accept terms and conditions
-              </p>
-              <p className="text-muted-foreground text-sm">
-                By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/legal" target="_blank" className="text-yellow-600">terms and conditions</a>.
-              </p>
-            </div>
-          </Label>
-        </FormControl>
-      </div>
-    </FormItem>
-  )}
-/>
+
 */

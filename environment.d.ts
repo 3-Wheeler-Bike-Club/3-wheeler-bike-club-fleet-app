@@ -9,6 +9,9 @@ declare global {
             FINANCE_3WB_PASS: string;
             BASE_URL: string;
             JWT_SECRET: string;
+            TWILIO_ACCOUNT_SID: string;
+            TWILIO_AUTH_TOKEN: string;
+            THREEWB_WHATSAPP_BUSINESS_NUMBER: string;
         }
     }
 }

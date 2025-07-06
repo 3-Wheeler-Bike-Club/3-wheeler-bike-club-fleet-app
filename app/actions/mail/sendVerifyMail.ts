@@ -20,7 +20,7 @@ export const sendVerifyEmail = async (email: string) => {
             },
         });
     
-        const welcomeEmail = {
+        const verifyEmail = {
             from: `Finance @ 3wb.club <${process.env.FINANCE_3WB_USER}>`,
             to: email, // Dynamic recipient email address
             subject: "Verify your email",
@@ -36,7 +36,7 @@ export const sendVerifyEmail = async (email: string) => {
                 <p>Warm regards,<br/>3wb.club</p>
             `,
         };
-        const result = await transporter.sendMail(welcomeEmail);
+        const result = await transporter.sendMail(verifyEmail);
         console.log(result);
         if(result.accepted) {
             return token;
