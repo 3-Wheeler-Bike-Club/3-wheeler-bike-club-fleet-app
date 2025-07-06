@@ -40,7 +40,7 @@ export function QR({ userId }: QRProps) {
                 // Handle successful verification
                 console.log("Verification successful!");
                 // Redirect or update UI
-                router.push("/fleet");
+                //router.push("/fleet");
             }}
             size={360}
         />
