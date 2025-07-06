@@ -11,7 +11,7 @@ declare global {
             JWT_SECRET: string;
             TWILIO_ACCOUNT_SID: string;
             TWILIO_AUTH_TOKEN: string;
-            TWILIO_SERVICE_SID: string;
+            THREEWB_WHATSAPP_BUSINESS_NUMBER: string;
         }
     }
 }

@@ -98,6 +98,8 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     },
   })
 
+  
+
   async function onSubmitEmail(values: z.infer < typeof emailFormSchema > ) {
     try {
       setLoadingCode(true);

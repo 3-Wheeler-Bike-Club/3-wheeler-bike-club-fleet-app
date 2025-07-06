@@ -17,7 +17,7 @@ export async function sendVerifyPhone( phone: string ) {
     console.log(phone);
     try {
         const message = await client.messages.create({
-            from: 'whatsapp:+233504052815',
+            from: `whatsapp:${process.env.THREEWB_WHATSAPP_BUSINESS_NUMBER}`,
             contentSid: 'HX0ca4b8dd289261ca7af771b1220cb503',
             contentVariables: `{"1":"${code}"}`,
             to: `whatsapp:${phone}`
