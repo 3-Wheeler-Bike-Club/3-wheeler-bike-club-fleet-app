@@ -39,21 +39,25 @@ const selfBackendVerifier = new SelfBackendVerifier(
 
 export async function POST(request: Request) {
     try {
-        const { attestationId, proof, pubSignals, userContextData } = await request.json();
+        const { attestationId, proof, publicSignals, userContextData } = await request.json();
         console.log("attestationId", attestationId);
         console.log("proof", proof);
-        console.log("pubSignals", pubSignals);
+        console.log("publicSignals", publicSignals);
         console.log("userContextData", userContextData);
 
-        if (!proof || !pubSignals) {
-            return new Response("Proof and publicSignals are required", { status: 400 });
+        if (!attestationId || !proof || !publicSignals || !userContextData) {
+            return Response.json({
+                status: 'error',
+                result: false,
+                message: 'Missing required fields'
+            }, { status: 400 });
         }
 
         // Verify the proof
         const result = await selfBackendVerifier.verify(
             attestationId,
             proof,
-            pubSignals,
+            publicSignals,
             userContextData
         );
         
@@ -71,7 +75,7 @@ export async function POST(request: Request) {
                 result: false,
                 message: 'Verification failed',
                 details: result.isValidDetails
-            }, { status: 400 });
+            }, { status: 401 });
         }
     } catch (error) {
         console.error('Error verifying proof:', error);
