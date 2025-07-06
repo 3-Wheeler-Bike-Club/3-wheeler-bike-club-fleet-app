@@ -56,6 +56,9 @@
     "wagmi": "^2.15.4",
     "zod": "^3.25.64"
   },
+  "overrides": {
+    "@selfxyz/qrcode": "^1.0.10-beta.1"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
