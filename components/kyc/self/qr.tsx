@@ -1,4 +1,5 @@
-import SelfQRcodeWrapper, { countries, SelfAppBuilder } from "@selfxyz/qrcode";
+import { getUniversalLink } from '@selfxyz/core';
+import { SelfAppBuilder, SelfQRcodeWrapper } from "@selfxyz/qrcode";
 import { useRouter } from "next/navigation";
 
 interface QRProps {
@@ -11,31 +12,27 @@ export function QR({ userId }: QRProps) {
 
     // Create the SelfApp configuration
     const selfApp = new SelfAppBuilder({
-        appName: "3WB P2P Fleet Finance",
-        scope: "3wb-p2p-fleet-finance",
+        appName: "3 Wheeler Bike Club",
+        scope: "finance-3wb-club",
         endpoint: "https://finance.3wb.club/api/verify",
         endpointType: "https",
+        logoBase64: "https://finance.3wb.club/icons/logo.png",
         userId,
         userIdType: "uuid",
+        version: 2,
+        userDefinedData: "0x" + Buffer.from("default").toString('hex').padEnd(128, '0'),
         disclosures: {
             minimumAge: 18,
-            excludedCountries: [
-                countries.UNITED_STATES,
-                countries.CUBA,
-                countries.IRAN,
-                countries.NORTH_KOREA,
-                countries.RUSSIA,
-                countries.UKRAINE,
-            ],
-            ofac: true,
-            nationality: true,
-            expiry_date: true,
         }
     }).build();
 
     return (
         <SelfQRcodeWrapper
             selfApp={selfApp}
+            onError={() => {
+                // Handle verification error
+                console.log("Verification error!");
+            }}
             onSuccess={() => {
                 // Handle successful verification
                 console.log("Verification successful!");
