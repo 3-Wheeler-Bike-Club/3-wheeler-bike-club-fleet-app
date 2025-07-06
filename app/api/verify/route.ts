@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     
     try {
         const { attestationId, proof, pubSignals, userContextData } = await req.json();
+        console.log(attestationId, proof, pubSignals, userContextData);
 
         if (!proof || !pubSignals) {
             return new Response("Proof and publicSignals are required", { status: 400 });
@@ -70,7 +71,7 @@ export async function POST(req: Request) {
                 result: result.isValidDetails.isValid,
                 message: "Verification failed",
                 details: result.isValidDetails
-            }), { status: 400 });
+            }), { status: 401 });
         }
     } catch (error) {
         console.error("Error verifying proof:", error);

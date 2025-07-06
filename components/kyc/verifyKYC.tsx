@@ -17,8 +17,8 @@ import { useUploadThing } from "@/hooks/useUploadThing"
 import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 import { Profile } from "@/hooks/useGetProfile"
 import { Label } from "../ui/label"
-import dynamic from "next/dynamic"
 import { v4 as uuidv4 } from 'uuid';
+import { QR } from "./self/qr"
 
   
 
@@ -35,11 +35,6 @@ interface VerifyKYCProps {
   profile: Profile
   getProfileSync: () => void
 }
-
-// Dynamically import the QR component with no SSR
-const QR = dynamic(() => import('./self/qr').then(mod => mod.QR), {
-  ssr: false
-});
 
 export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) {
 
