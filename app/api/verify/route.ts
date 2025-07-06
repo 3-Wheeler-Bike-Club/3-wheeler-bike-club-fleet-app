@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { IConfigStorage, VerificationConfig, SelfBackendVerifier, AttestationId } from "@selfxyz/core";
 
 class ConfigStorage implements IConfigStorage {
@@ -38,24 +37,17 @@ const selfBackendVerifier = new SelfBackendVerifier(
 );
   
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-    
-    
+export async function POST(request: Request) {
     try {
-        const { attestationId, proof, pubSignals, userContextData } = req.body;
+        const { attestationId, proof, pubSignals, userContextData } = await request.json();
         console.log("attestationId", attestationId);
         console.log("proof", proof);
         console.log("pubSignals", pubSignals);
         console.log("userContextData", userContextData);
 
-
         if (!proof || !pubSignals) {
             return new Response("Proof and publicSignals are required", { status: 400 });
         }
-
-        
-
-       
 
         // Verify the proof
         const result = await selfBackendVerifier.verify(
@@ -67,27 +59,26 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
         
         if (result.isValidDetails.isValid) {
             // Return successful verification response
-            return res.status(200).json({
-            status: 'success',
-            result: true,
-            credentialSubject: result.discloseOutput
+            return Response.json({
+                status: 'success',
+                result: true,
+                credentialSubject: result.discloseOutput
             });
         } else {
             // Return failed verification response
-            return res.status(400).json({
-            status: 'error',
-            result: false,
-            message: 'Verification failed',
-            details: result.isValidDetails
-            });
+            return Response.json({
+                status: 'error',
+                result: false,
+                message: 'Verification failed',
+                details: result.isValidDetails
+            }, { status: 400 });
         }
     } catch (error) {
-          
         console.error('Error verifying proof:', error);
-        return res.status(500).json({
+        return Response.json({
             status: 'error',
             result: false,
             message: error instanceof Error ? error.message : 'Unknown error'
-        });
+        }, { status: 500 });
     }
 }
