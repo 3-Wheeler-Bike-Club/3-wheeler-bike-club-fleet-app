@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { Link, Loader2, Send } from "lucide-react"
+import { Link, Loader2, Save, Send } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -22,6 +22,8 @@ import { PhoneInput } from "../ui/phone-input"
 import { sendVerifyPhone } from "@/app/actions/phone/sendVerifyPhone"
 import { getProfileByPhoneAction } from "@/app/actions/kyc/getProfileByPhoneAction"
 import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
+import { Checkbox } from "../ui/checkbox"
+import { Label } from "../ui/label"
 
   
 
@@ -60,6 +62,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
   const [tokenPhone, setTokenPhone] = useState<string | null>(null);
   const [loadingLinkingEmail, setLoadingLinkingEmail] = useState(false);
   const [loadingLinkingPhone, setLoadingLinkingPhone] = useState(false);
+  const [loadingLinkingTerms, setLoadingLinkingTerms] = useState(false);
   const [loadingCode, setLoadingCode] = useState(false);
   const [isDisabledEmail, setIsDisabledEmail] = useState(false);
   const [isDisabledPhone, setIsDisabledPhone] = useState(false);
@@ -98,7 +101,12 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     },
   })
 
-  
+  const termsForm = useForm < z.infer < typeof termsFormSchema >> ({
+    resolver: zodResolver(termsFormSchema),
+    defaultValues: {
+      terms: false,
+    },
+  })
 
   async function onSubmitEmail(values: z.infer < typeof emailFormSchema > ) {
     try {
@@ -226,14 +234,46 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     }
   }
 
-  //post profile preupload
-  /*
-  const postProfile = await postProfileAction(
-    address!,
-    email!.toLowerCase(),
-  );
-  //getProfileSync();
-  */
+  async function onSubmitTerms(values: z.infer < typeof termsFormSchema > ) {
+    setLoadingLinkingTerms(true);
+    try {
+      console.log(values);
+      if (values.terms) {
+        //post profile preupload
+        
+        const postProfile = await postProfileAction(
+          address!,
+          email!.toLowerCase(),
+          phone!,
+        );
+        getProfileSync();
+        if (postProfile) {
+          toast.success("Contact saved successfully", {
+            description: `You can now complete your KYC`,
+          })
+          setLoadingLinkingTerms(false);
+        } else {
+          toast.error("Failed to save contact.", {
+            description: `Something went wrong, please try again`,
+          })
+          setLoadingLinkingTerms(false);
+        }
+      } else {
+        toast.error("You must agree to the terms and conditions", {
+          description: `Please read and agree to the terms and conditions`,
+        })  
+        setLoadingLinkingTerms(false);
+      }
+    } catch (error) {
+      console.error("Submit terms error", error);
+      toast.error("Failed to submit terms.", {
+        description: `Something went wrong, please try again`,
+      })
+      setLoadingLinkingTerms(false);
+    }
+  }
+
+  
 
 
   useEffect(() => {
@@ -576,8 +616,58 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
           {
             verifiedEmail && verifiedPhone && (
               <>
-                Step 3 of 3: Terms and Conditions
-              </>
+                  <div className="flex flex-col p-4 w-full">
+                    <Form {...termsForm}>
+                      <form onSubmit={termsForm.handleSubmit(onSubmitTerms)} className="space-y-6">
+                      <FormField
+                      control={termsForm.control}
+                      name="terms"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                            <FormLabel></FormLabel>
+                            <FormControl>
+                              <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
+                                <Checkbox
+                                  id="toggle-2"
+                                  defaultChecked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
+                                />
+                                <div className="grid gap-1.5 font-normal">
+                                  <p className="text-sm leading-none font-medium">
+                                    Accept terms and conditions
+                                  </p>
+                                  <p className="text-muted-foreground text-sm">
+                                    By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/privacy" target="_blank" className="text-yellow-600">privacy policy</a>.
+                                  </p>
+                                </div>
+                              </Label>
+                            </FormControl>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                        
+                        <div className="flex justify-between">
+                          <div/>
+                          <Button
+                            className="w-36"
+                            disabled={loadingLinkingTerms || !termsForm.getValues("terms")}
+                            type="submit"
+                          >
+                            {
+                              loadingLinkingTerms
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <Save />
+                            }
+                            <p>Save Contact</p>
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>  
+                </>
             ) 
           }
           
@@ -593,33 +683,5 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
 */
 
 /*
-<FormField
-  control={codeForm.control}
-  name="terms"
-  render={({ field }) => (
-    <FormItem>
-      <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-        <FormLabel></FormLabel>
-        <FormControl>
-          <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
-            <Checkbox
-              id="toggle-2"
-              defaultChecked={field.value}
-              onCheckedChange={field.onChange}
-              className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
-            />
-            <div className="grid gap-1.5 font-normal">
-              <p className="text-sm leading-none font-medium">
-                Accept terms and conditions
-              </p>
-              <p className="text-muted-foreground text-sm">
-                By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/legal" target="_blank" className="text-yellow-600">terms and conditions</a>.
-              </p>
-            </div>
-          </Label>
-        </FormControl>
-      </div>
-    </FormItem>
-  )}
-/>
+
 */
