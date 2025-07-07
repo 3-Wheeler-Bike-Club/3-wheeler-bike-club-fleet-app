@@ -23,7 +23,7 @@ export function QR({ userId }: QRProps) {
         userDefinedData: "0x" + Buffer.from("default").toString('hex').padEnd(128, '0'),
         disclosures: {
             minimumAge: 18,
-            excludedCountries: ["IRN", "USA"],
+            excludedCountries: ["USA", "CUB", "IRN", "PRK", "RUS"],
             ofac: true,
         }
     }).build();

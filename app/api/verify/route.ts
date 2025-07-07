@@ -4,7 +4,7 @@ class ConfigStorage implements IConfigStorage {
     async getConfig(configId: string): Promise<VerificationConfig> {
         return {
             minimumAge: 18,
-            excludedCountries: ["IRN", "USA"],
+            excludedCountries: ["USA", "CUB", "IRN", "PRK", "RUS"],
             ofac: true,
         };
     }
