@@ -1,8 +1,12 @@
 import { IConfigStorage, VerificationConfig, SelfBackendVerifier, AttestationId } from "@selfxyz/core";
 
 class ConfigStorage implements IConfigStorage {
-    async getConfig(configId: string) {
-        return {};
+    async getConfig(configId: string): Promise<VerificationConfig> {
+        return {
+            minimumAge: 18,
+            excludedCountries: ["IRN", "USA"],
+            ofac: true,
+        };
     }
   
     async setConfig(id: string, config: VerificationConfig): Promise<boolean> {
