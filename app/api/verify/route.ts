@@ -67,6 +67,7 @@ export async function POST(request: Request) {
         
         if (result.isValidDetails.isValid) {
             // Return successful verification response
+            console.log("result", result.discloseOutput);
             return Response.json({
                 status: 'success',
                 result: true,
