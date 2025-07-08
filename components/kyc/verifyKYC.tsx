@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { CloudUpload, Hourglass, Loader2, Paperclip, SaveAll, Undo2 } from "lucide-react"
+import { Camera, CloudUpload, Hourglass, Loader2, Paperclip, SaveAll, Undo2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
@@ -22,8 +22,13 @@ import { QR } from "./self/qr"
 
   
 
+const SelfFormSchema = z.object({
+  firstname: z.string(),
+  othername: z.string(),
+  lastname: z.string(),
+})
 
-const FormSchema = z.object({
+const ManualFormSchema = z.object({
     firstname: z.string(),
     othername: z.string(),
     lastname: z.string(),
@@ -43,6 +48,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
   const [maxFiles, setMaxFiles] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [manualVerification, setManualVerification] = useState(false);
+  const [qr, setQR] = useState<boolean>(false);
 
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -70,8 +76,16 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
     },
   });
   
-  const form = useForm < z.infer < typeof FormSchema >> ({
-    resolver: zodResolver(FormSchema),
+  const selfForm = useForm < z.infer < typeof SelfFormSchema >> ({
+    resolver: zodResolver(SelfFormSchema),
+    defaultValues: {
+      firstname: undefined,
+      othername: undefined,
+      lastname: undefined,
+    },
+  })
+  const manualForm = useForm < z.infer < typeof ManualFormSchema >> ({
+    resolver: zodResolver(ManualFormSchema),
     defaultValues: {
       firstname: undefined,
       othername: undefined,
@@ -80,7 +94,17 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
     },
   })
 
-  async function onSubmit(values: z.infer < typeof FormSchema > ) {
+  async function onSubmitSelf(values: z.infer < typeof SelfFormSchema > ) {
+    setLoading(true);
+    setQR(true);
+    try {
+      console.log(values);
+    } catch (error) {
+      console.error("Form submission error", error);
+    }
+  }
+
+  async function onSubmitManual(values: z.infer < typeof ManualFormSchema > ) {
     setLoading(true);
     try {
       
@@ -153,7 +177,20 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                 {
                   manualVerification
                   ?<>{ "Enter Full Name, Scan & Upload your ID."}</>
-                  :<>{"Scan this QR from your Self.xyz app"}</>
+                  :(
+                    <>
+                      {
+                        qr && (
+                          <p>Step 2 of 2: Scan QR w/ Self.xyz app</p>
+                        )
+                      }
+                      {
+                        !qr && (
+                          <p>Step 1 of 2: Enter Full Name</p>
+                        )
+                      }
+                    </>
+                  )
                 }
               </DrawerDescription>
           </DrawerHeader>
@@ -162,10 +199,10 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
             ?(
               <>
                 <div className="flex flex-col p-4">
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <Form {...manualForm}>
+                    <form onSubmit={manualForm.handleSubmit(onSubmitManual)} className="space-y-6">
                       <FormField
-                        control={form.control}
+                        control={manualForm.control}
                         name="firstname"
                         render={({ field }) => (
                             <FormItem>
@@ -179,7 +216,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                         )}
                       />
                       <FormField
-                          control={form.control}
+                          control={manualForm.control}
                           name="othername"
                           render={({ field }) => (
                               <FormItem>
@@ -193,7 +230,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           )}
                       />
                       <FormField
-                          control={form.control}
+                          control={manualForm.control}
                           name="lastname"
                           render={({ field }) => (
                               <FormItem>
@@ -207,7 +244,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           )}
                       />
                       <FormField
-                        control={form.control}
+                        control={manualForm.control}
                         name="id"
                         render={({ field }) => (
                             <FormItem>
@@ -324,7 +361,14 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           <Button
                             variant="secondary"
                             className="max-w-sm"
-                            onClick={() => setManualVerification(false)}
+                            onClick={() => {
+                              setManualVerification(false);
+                              setLoading(false);
+                              setFiles(null);
+                              setMaxFiles(null);
+                              setQR(false);
+                              selfForm.reset();
+                            }}
                           >
                             <Undo2   />
                           </Button>
@@ -358,7 +402,101 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
               <>
                 <div className="flex flex-col gap-2 p-4 pb-0">
                     <div>
-                        <QR userId={userId!} />
+                        {qr && (
+                          <>
+                            <div className="flex flex-col items-center gap-8">
+                            <QR userId={userId!} />
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => {
+                                setQR(false);
+                                setLoading(false);
+                              }}
+                            >
+                                <Undo2   />
+                                <p>Edit Name</p>
+                              </Button>
+                            </div>
+                          </>
+                        )}
+                        {
+                          !qr && (
+                            <>
+                              <div className="flex flex-col p-4">
+                                <Form {...selfForm}>
+                                  <form onSubmit={selfForm.handleSubmit(onSubmitSelf)} className="space-y-6">
+                                    <FormField
+                                      control={selfForm.control}
+                                      name="firstname"
+                                      render={({ field }) => (
+                                          <FormItem>
+                                              <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                                  <FormLabel className="text-yellow-600">First Name</FormLabel>
+                                                  <FormControl >
+                                                      <Input disabled={ !!profile.firstname || loading } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
+                                                  </FormControl>
+                                              </div>
+                                          </FormItem>
+                                      )}
+                                    />
+                                    <FormField
+                                        control={selfForm.control}
+                                        name="othername"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                                    <FormLabel className="text-yellow-600">Other Name(s)</FormLabel>
+                                                    <FormControl >
+                                                        <Input disabled={ !!profile.othername || loading } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
+                                                    </FormControl>
+                                                </div>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={selfForm.control}
+                                        name="lastname"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                                    <FormLabel className="text-yellow-600">Last Name</FormLabel>
+                                                    <FormControl >
+                                                        <Input disabled={ !!profile.lastname || loading } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
+                                                    </FormControl>
+                                                </div>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    
+                                    <div className="flex">
+                                        <Button
+                                            className="w-full"
+                                            disabled={loading || profile.files.length > 0}
+                                            type="submit"
+                                        >
+                                            {
+                                                loading
+                                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                                : (
+                                                  profile.files.length > 0
+                                                  ? <Hourglass />
+                                                  : <Camera />
+                                                )
+                                            }
+                                            {
+                                              profile.files.length > 0
+                                              ? <p>KYC Pending...</p>
+                                              : <p>Scan Self.xyz QR</p>
+                                            }
+                                        </Button>
+                                    </div>
+                                  </form>
+                                </Form>
+                              </div>  
+                            </>
+                          )
+                        }
                         <div className="flex flex-col items-center gap-2 mt-6 mb-2">
                             <div className="text-center text-sm text-muted-foreground">
                                 ━━━━━━━━━ OR ━━━━━━━━━
@@ -366,7 +504,10 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             <Button 
                                 variant="secondary"
                                 className="w-full max-w-sm"
-                                onClick={() => setManualVerification(true)}
+                                onClick={() => {
+                                  setManualVerification(true);
+                                  manualForm.reset();
+                                }}
                             >
                                 Upload ID Documents Instead
                             </Button>
