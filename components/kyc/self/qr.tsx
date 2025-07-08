@@ -22,10 +22,14 @@ export function QR({ userId }: QRProps) {
         version: 2,
         userDefinedData: "0x" + Buffer.from("default").toString('hex').padEnd(128, '0'),
         disclosures: {
+            name: true,
+            expiry_date: true,
+            nationality: true,
             minimumAge: 18,
             excludedCountries: ["USA", "CUB", "IRN", "PRK", "RUS"],
             ofac: true,
         }
+        
     }).build();
 
     const deeplink = getUniversalLink(selfApp);
