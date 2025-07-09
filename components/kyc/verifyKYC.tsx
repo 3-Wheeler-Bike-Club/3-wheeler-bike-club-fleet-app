@@ -104,13 +104,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
   })
 
   async function onSubmitSelf(values: z.infer < typeof SelfFormSchema > ) {
-    setLoading(true);
     setQR(true);
-    try {
-      console.log(values);
-    } catch (error) {
-      console.error("Form submission error", error);
-    }
   }
 
   async function onSubmitManual(values: z.infer < typeof ManualFormSchema > ) {
@@ -119,7 +113,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
 
   async function onSubmitManualUpload(values: z.infer < typeof ManualUploadFormSchema > ) {
     console.log(values);
-    const manualFormValues = await manualForm.getValues();
+    const manualFormValues = manualForm.getValues();
     setLoading(true);
     try {
       
@@ -138,8 +132,8 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
             const updateProfile = await updateProfileAction(
               address!,
               manualFormValues.firstname,
-              manualFormValues.lastname,
               manualFormValues.othername,
+              manualFormValues.lastname,
               values.id,
               uploadFiles.map((file) => file.ufsUrl)
             );
@@ -383,10 +377,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           <Undo2   />
                         </Button>
                         <Button
-                          className=""
-                          onClick={() => {
-                            //setUpload(false);
-                          }}
+                          type="submit"
                         >
                           {
                             loading
@@ -488,7 +479,8 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                       className="w-full max-w-sm"
                       onClick={() => {
                         setManualVerification(false);
-                        manualForm.reset();
+                        selfForm.reset();
+                        setQR(false);
                       }}
                   >
                       Scan Self.xyz app QR Code
@@ -609,6 +601,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                   setManualVerification(true);
                                   manualForm.reset();
                                   manualUploadForm.reset();
+                                  setUpload(false);
                                 }}
                             >
                                 Upload ID Documents Instead
