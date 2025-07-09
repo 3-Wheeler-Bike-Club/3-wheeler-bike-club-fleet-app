@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { Camera, CloudUpload, Hourglass, Loader2, Paperclip, SaveAll, Undo2 } from "lucide-react"
+import { Camera, CloudUpload, FileWarning, Hourglass, Loader2, Paperclip, Save, SaveAll, Scan, Undo2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
@@ -32,7 +32,10 @@ const ManualFormSchema = z.object({
     firstname: z.string(),
     othername: z.string(),
     lastname: z.string(),
-    id: z.string(),
+    
+})
+const ManualUploadFormSchema = z.object({
+  id: z.string(),
 })
 
 interface VerifyKYCProps {
@@ -49,6 +52,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
   const [loading, setLoading] = useState(false);
   const [manualVerification, setManualVerification] = useState(false);
   const [qr, setQR] = useState<boolean>(false);
+  const [upload, setUpload] = useState<boolean>(false);
 
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -90,6 +94,11 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
       firstname: undefined,
       othername: undefined,
       lastname: undefined,
+    },
+  })
+  const manualUploadForm = useForm < z.infer < typeof ManualUploadFormSchema >> ({
+    resolver: zodResolver(ManualUploadFormSchema),
+    defaultValues: {
       id: undefined,
     },
   })
@@ -105,6 +114,12 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
   }
 
   async function onSubmitManual(values: z.infer < typeof ManualFormSchema > ) {
+    setUpload(true);
+  }
+
+  async function onSubmitManualUpload(values: z.infer < typeof ManualUploadFormSchema > ) {
+    console.log(values);
+    const manualFormValues = await manualForm.getValues();
     setLoading(true);
     try {
       
@@ -122,9 +137,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
             //update profile with files
             const updateProfile = await updateProfileAction(
               address!,
-              values.firstname,
-              values.lastname,
-              values.othername,
+              manualFormValues.firstname,
+              manualFormValues.lastname,
+              manualFormValues.othername,
               values.id,
               uploadFiles.map((file) => file.ufsUrl)
             );
@@ -154,6 +169,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
       })
       setLoading(false);
     }
+
   }
 
   return (
@@ -176,7 +192,20 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
               <DrawerDescription className="max-md:text-[0.9rem]">
                 {
                   manualVerification
-                  ?<>{ "Enter Full Name, Scan & Upload your ID."}</>
+                  ?(
+                    <>
+                      {
+                        upload && (
+                          <p>Step 2 of 2: Scan & Upload ID</p>
+                        )
+                      }
+                      {
+                        !upload && (
+                          <p>Step 1 of 2: Enter Full Name</p>
+                        )
+                      }
+                    </>
+                  )
                   :(
                     <>
                       {
@@ -198,53 +227,14 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
             manualVerification
             ?(
               <>
-                <div className="flex flex-col p-4">
-                  <Form {...manualForm}>
-                    <form onSubmit={manualForm.handleSubmit(onSubmitManual)} className="space-y-6">
+              {
+                upload && (
+                  <>
+                  <div className="flex flex-col p-4">
+                  <Form {...manualUploadForm}>
+                    <form onSubmit={manualUploadForm.handleSubmit(onSubmitManualUpload)} className="space-y-6">
                       <FormField
-                        control={manualForm.control}
-                        name="firstname"
-                        render={({ field }) => (
-                            <FormItem>
-                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                    <FormLabel className="text-yellow-600">First Name</FormLabel>
-                                    <FormControl >
-                                        <Input disabled={ !!profile.firstname || loading } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
-                                    </FormControl>
-                                </div>
-                            </FormItem>
-                        )}
-                      />
-                      <FormField
-                          control={manualForm.control}
-                          name="othername"
-                          render={({ field }) => (
-                              <FormItem>
-                                  <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                      <FormLabel className="text-yellow-600">Other Name(s)</FormLabel>
-                                      <FormControl >
-                                          <Input disabled={ !!profile.othername || loading } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
-                                      </FormControl>
-                                  </div>
-                              </FormItem>
-                          )}
-                      />
-                      <FormField
-                          control={manualForm.control}
-                          name="lastname"
-                          render={({ field }) => (
-                              <FormItem>
-                                  <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                      <FormLabel className="text-yellow-600">Last Name</FormLabel>
-                                      <FormControl >
-                                          <Input disabled={ !!profile.lastname || loading } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
-                                      </FormControl>
-                                  </div>
-                              </FormItem>
-                          )}
-                      />
-                      <FormField
-                        control={manualForm.control}
+                        control={manualUploadForm.control}
                         name="id"
                         render={({ field }) => (
                             <FormItem>
@@ -291,89 +281,179 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             </FormItem>
                         )}
                       />
-                      {
-                        maxFiles  && ( 
-                          <>
-                            <div>
-                                  {
-                                    profile.files.length <= 0
-                                    ?(
-                                      <>
-                                        <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></Label>
-                                        <div>
-                                          <FileUploader
-                                            value={files}
-                                            onValueChange={setFiles}
-                                            dropzoneOptions={{
-                                              maxFiles: maxFiles,
-                                              maxSize: 1024 * 1024 * 1,
-                                              multiple: true,
-                                              accept: {
-                                                "image/*": [".png", ".jpg", ".jpeg"],
-                                              },
-                                            }}
-                                            className="relative bg-background rounded-lg p-2"
+                      <>
+                        {
+                          maxFiles && (
+                            <>
+                              <div>
+                                {
+                                  profile.files.length <= 0
+                                  ?(
+                                    <>
+                                      <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></Label>
+                                      <div>
+                                        <FileUploader
+                                          value={files}
+                                          onValueChange={setFiles}
+                                          dropzoneOptions={{
+                                            maxFiles: maxFiles!,
+                                            maxSize: 1024 * 1024 * 1,
+                                            multiple: true,
+                                            accept: {
+                                              "image/*": [".png", ".jpg", ".jpeg"],
+                                            },
+                                          }}
+                                          className="relative bg-background rounded-lg p-2"
+                                        >
+                                          <FileInput
+                                            id="fileInput"
+                                            className="outline-dashed outline-1 outline-slate-500"
                                           >
-                                            <FileInput
-                                              id="fileInput"
-                                              className="outline-dashed outline-1 outline-slate-500"
-                                            >
-                                              <div className="flex items-center justify-center flex-col p-8 w-full ">
-                                                <CloudUpload className='text-gray-500 w-10 h-10' />
-                                                <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                                                  <span className="font-semibold">Click to upload </span>
-                                                  or drag and drop
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                  PNG, JPG or JPEG
-                                                </p>
-                                              </div>
-                                            </FileInput>
-                                            <FileUploaderContent>
-                                              {files &&
-                                                files.length > 0 &&
-                                                files.map((file, i) => (
-                                                  <FileUploaderItem key={i} index={i}>
-                                                    <Paperclip className="h-4 w-4 stroke-current" />
-                                                    <span>{file.name}</span>
-                                                  </FileUploaderItem>
-                                                ))}
-                                            </FileUploaderContent>
-                                          </FileUploader>
-                                        </div>
-                                        <div className="text-xs text-muted-foreground text-center">{maxFiles === 1 ? "Upload the Front Photo of your Passport" : "Upload the Front and Back of your National ID"}</div>
-                                        
-                                      </>
-                                    ) 
-                                    :(
-                                      <>
-                                        <Label className="text-yellow-600">Uploaded ID Scans</Label>
-                                        <div>
-                                        </div>
-                                      </>
-                                    ) 
-                                  }
+                                            <div className="flex items-center justify-center flex-col py-2 w-full ">
+                                              <CloudUpload className='text-gray-500 w-10 h-10' />
+                                              <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="font-semibold">Click to upload </span>
+                                                or drag and drop
+                                              </p>
+                                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                PNG, JPG or JPEG
+                                              </p>
+                                            </div>
+                                          </FileInput>
+                                          <FileUploaderContent>
+                                            {files &&
+                                              files.length > 0 &&
+                                              files.map((file, i) => (
+                                                <FileUploaderItem key={i} index={i}>
+                                                  <Paperclip className="h-4 w-4 stroke-current" />
+                                                  <span>{file.name}</span>
+                                                </FileUploaderItem>
+                                              ))}
+                                          </FileUploaderContent>
+                                        </FileUploader>
+                                      </div>
+                                      <div className="text-xs text-muted-foreground text-center">{maxFiles === 1 ? "Upload the Front Photo of your Passport" : "Upload the Front and Back of your National ID"}</div>
+                                      
+                                    </>
+                                  ) 
+                                  :(
+                                    <>
+                                      <Label className="text-yellow-600">Uploaded ID Scans</Label>
+                                      <div>
+                                      </div>
+                                    </>
+                                  ) 
+                                }
+                              </div>
+                            </>
+                          )
+                        }
+                        {
+                          !maxFiles && (
+                            <div>
+                            <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></Label>
+                            <div>
+                              <div
+                                className="relative bg-background rounded-lg p-2"
+                              >
+                                <div
+                                  className="outline-dashed outline-1 outline-slate-500 rounded-lg"
+                                >
+                                  <div className="flex items-center justify-center flex-col py-2 w-full ">
+                                    <FileWarning className='text-gray-500 w-10 h-10' />
+                                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                      <span className="font-semibold">Select an ID type to upload </span>
+                                    </p>
+                                  </div>
                                 </div>
-                          </> 
-                        )
-                      }
+                              </div>
+                            </div>
+                            </div>
+                          )
+                        }
+                      </> 
                       <div className="flex justify-between">
+                        <Button
+                          className="w-1/2"
+                          variant="outline"
+                          onClick={() => {
+                            setUpload(false);
+                          }}
+                        >
+                          <Undo2   />
+                        </Button>
+                        <Button
+                          className=""
+                          onClick={() => {
+                            //setUpload(false);
+                          }}
+                        >
+                          {
+                            loading
+                            ? <Loader2 className="w-4 h-4 animate-spin" />
+                            : <Save />
+                          }
+                          <p>Save & Submit</p>
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>  
+                  </>
+                )
+              }
+              {
+                !upload && (
+                  <>
+                  <div className="flex flex-col p-4">
+                  <Form {...manualForm}>
+                    <form onSubmit={manualForm.handleSubmit(onSubmitManual)} className="space-y-6">
+                      <FormField
+                        control={manualForm.control}
+                        name="firstname"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                    <FormLabel className="text-yellow-600">First Name</FormLabel>
+                                    <FormControl >
+                                        <Input disabled={ !!profile.firstname || loading } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
+                                    </FormControl>
+                                </div>
+                            </FormItem>
+                        )}
+                      />
+                      <FormField
+                          control={manualForm.control}
+                          name="othername"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                      <FormLabel className="text-yellow-600">Other Name(s)</FormLabel>
+                                      <FormControl >
+                                          <Input disabled={ !!profile.othername || loading } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
+                                      </FormControl>
+                                  </div>
+                              </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={manualForm.control}
+                          name="lastname"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                      <FormLabel className="text-yellow-600">Last Name</FormLabel>
+                                      <FormControl >
+                                          <Input disabled={ !!profile.lastname || loading } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
+                                      </FormControl>
+                                  </div>
+                              </FormItem>
+                          )}
+                      />
+                      <div className="flex">
+                          
                           <Button
-                            variant="secondary"
-                            className="max-w-sm"
-                            onClick={() => {
-                              setManualVerification(false);
-                              setLoading(false);
-                              setFiles(null);
-                              setMaxFiles(null);
-                              setQR(false);
-                              selfForm.reset();
-                            }}
-                          >
-                            <Undo2   />
-                          </Button>
-                          <Button
-                              //className="w-36"
+                              className="w-full"
                               disabled={loading || profile.files.length > 0}
                               type="submit"
                           >
@@ -383,19 +463,40 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                   : (
                                     profile.files.length > 0
                                     ? <Hourglass />
-                                    : <SaveAll />
+                                    : <Scan />
                                   )
                               }
                               {
                                 profile.files.length > 0
                                 ? <p>KYC Pending...</p>
-                                : <p>Save Changes</p>
+                                : <p>Scan & Upload ID</p>
                               }
                           </Button>
                       </div>
                     </form>
                   </Form>
                 </div>  
+                  </>
+                )
+              }
+              <div className="flex flex-col items-center gap-2 mt-4 mb-2">
+                  <div className="text-center text-sm text-muted-foreground">
+                      ━━━━━━━━━ OR ━━━━━━━━━
+                  </div>
+                  <Button 
+                      variant="secondary"
+                      className="w-full max-w-sm"
+                      onClick={() => {
+                        setManualVerification(false);
+                        manualForm.reset();
+                      }}
+                  >
+                      Scan Self.xyz app QR Code
+                  </Button>
+                  <div className="text-xs text-muted-foreground text-center">
+                      Switch to self.xyz verification
+                  </div>
+              </div>
               </>
             )
             :(
@@ -497,7 +598,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             </>
                           )
                         }
-                        <div className="flex flex-col items-center gap-2 mt-6 mb-2">
+                        <div className="flex flex-col items-center gap-2 mt-4 mb-2">
                             <div className="text-center text-sm text-muted-foreground">
                                 ━━━━━━━━━ OR ━━━━━━━━━
                             </div>
@@ -507,6 +608,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                 onClick={() => {
                                   setManualVerification(true);
                                   manualForm.reset();
+                                  manualUploadForm.reset();
                                 }}
                             >
                                 Upload ID Documents Instead

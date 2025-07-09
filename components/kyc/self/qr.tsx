@@ -48,7 +48,7 @@ export function QR({ userId }: QRProps) {
                 // Handle verification error
                 console.log("Verification error!");
             }}
-            size={360}
+            size={200}
         />
     )
 }
