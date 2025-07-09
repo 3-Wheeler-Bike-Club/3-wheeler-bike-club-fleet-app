@@ -16,21 +16,10 @@ export function Wrapper() {
     const router = useRouter()
 
 
-    const invitedQueryClient = useQueryClient() 
     const compliantQueryClient = useQueryClient()
-    const referrerQueryClient = useQueryClient()
     
     const { data: blockNumber } = useBlockNumber({ watch: true })  
 
-    const { data: whitelisted, isLoading: whitelistedLoading, queryKey: whitelistedQueryKey } = useReadContract({
-        address: fleetOrderBook,
-        abi: fleetOrderBookAbi,
-        functionName: "isWhitelisted",
-        args: [address!],
-    })
-    useEffect(() => { 
-        invitedQueryClient.invalidateQueries({ queryKey: whitelistedQueryKey }) 
-    }, [blockNumber, invitedQueryClient, whitelistedQueryKey]) 
 
     const { data: compliant, isLoading: compliantLoading, queryKey: compliantQueryKey } = useReadContract({
         address: fleetOrderBook,
@@ -42,21 +31,12 @@ export function Wrapper() {
         compliantQueryClient.invalidateQueries({ queryKey: compliantQueryKey }) 
     }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
 
-    const { data: referrer, isLoading: referrerLoading, queryKey: referrerQueryKey } = useReadContract({
-        address: fleetOrderBook,
-        abi: fleetOrderBookAbi,
-        functionName: "isReferrer",
-        args: [address!],
-    })
-    useEffect(() => { 
-        referrerQueryClient.invalidateQueries({ queryKey: referrerQueryKey }) 
-    }, [blockNumber, referrerQueryClient, referrerQueryKey]) 
 
 
     useEffect(() => {
         console.log(compliant)
 
-        if (!compliant) {
+        if (compliant === false) {
             router.replace("/kyc")
         }
     }, [compliant])
@@ -65,7 +45,7 @@ export function Wrapper() {
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
             {
-                whitelistedLoading || compliantLoading || referrerLoading
+                compliantLoading
                 ? (
                     <div className="flex h-full justify-center items-center text-2xl font-bold">
                         <p>Loading...</p>
@@ -74,7 +54,7 @@ export function Wrapper() {
                 : (
                     <>
                         {
-                            whitelisted && !referrer && compliant
+                            compliant
                             && (
                                 <Garage />
                             )

@@ -1,7 +1,6 @@
 "use client"
 
 import { Caravan, HandCoins, OctagonMinus, Warehouse } from "lucide-react";
-import { Menu } from "../top/menu"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 
@@ -43,14 +42,11 @@ export function Garage() {
     
     const { address, isConnected } = useAccount()
 
-
-
     const fleetOwnedQueryClient = useQueryClient() 
     const maxFleetOrderQueryClient = useQueryClient() 
     const totalFleetQueryClient = useQueryClient()
     const lastFleetFractionQuerClient = useQueryClient()
     const totalFractionsQueryClient = useQueryClient()
-    const referralQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
     // read balance of fleet owned
@@ -106,17 +102,6 @@ export function Garage() {
         totalFractionsQueryClient.invalidateQueries({ queryKey: totalFractionsQueryKey }) 
     }, [blockNumber, totalFractionsQueryClient, totalFractionsQueryKey]) 
 
-    // read referral data
-    const { data: referral, queryKey: referralQueryKey } = useReadContract({
-        address: fleetOrderBook,
-        abi: fleetOrderBookAbi,
-        functionName: "referral",
-        args: [address!]
-    });
-    useEffect(() => { 
-        referralQueryClient.invalidateQueries({ queryKey: referralQueryKey }) 
-    }, [blockNumber, referralQueryClient, referralQueryKey]) 
-    console.log(referral)
     
     useEffect(() => {
         if (totalFractions) {
@@ -157,7 +142,7 @@ export function Garage() {
                             <Button 
                                 disabled={!isConnected}
                                 className="max-w-fit h-12 rounded-xl"
-                                onClick={() => router.push(`/fleet/buy/${referral}`)}
+                                onClick={() => router.push(`/fleet/buy`)}
                             >
                                 <HandCoins />
                                 <p>Buy 3-Wheeler</p>

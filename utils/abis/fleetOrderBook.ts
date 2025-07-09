@@ -5,27 +5,33 @@ export const fleetOrderBookAbi = [
     "stateMutability": "nonpayable"
   },
   {
+    "name": "AccessControlBadConfirmation",
+    "type": "error",
+    "inputs": []
+  },
+  {
+    "name": "AccessControlUnauthorizedAccount",
+    "type": "error",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "neededRole",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
     "name": "AlreadyCompliant",
     "type": "error",
     "inputs": []
   },
   {
-    "name": "AlreadyReferred",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "AlreadyWhitelisted",
-    "type": "error",
-    "inputs": []
-  },
-  {
     "name": "BulkUpdateLimitExceeded",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "CannotWhitelistReferrer",
     "type": "error",
     "inputs": []
   },
@@ -80,11 +86,6 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
-    "name": "InvalidReferrer",
-    "type": "error",
-    "inputs": []
-  },
-  {
     "name": "InvalidStateTransition",
     "type": "error",
     "inputs": []
@@ -133,38 +134,6 @@ export const fleetOrderBookAbi = [
     "name": "NotEnoughTokens",
     "type": "error",
     "inputs": []
-  },
-  {
-    "name": "NotReferrer",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "NotWhitelisted",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "OwnableInvalidOwner",
-    "type": "error",
-    "inputs": [
-      {
-        "name": "owner",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
-  },
-  {
-    "name": "OwnableUnauthorizedAccount",
-    "type": "error",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
   },
   {
     "name": "ReentrancyGuardReentrantCall",
@@ -437,25 +406,6 @@ export const fleetOrderBookAbi = [
     "anonymous": false
   },
   {
-    "name": "OwnershipTransferred",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "previousOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "newOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
-    ],
-    "anonymous": false
-  },
-  {
     "name": "Paused",
     "type": "event",
     "inputs": [
@@ -469,26 +419,76 @@ export const fleetOrderBookAbi = [
     "anonymous": false
   },
   {
-    "name": "Referrered",
+    "name": "RoleAdminChanged",
     "type": "event",
     "inputs": [
       {
-        "name": "referrer",
+        "name": "role",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "previousAdminRole",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "newAdminRole",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "RoleGranted",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
         "type": "address",
         "indexed": true,
         "internalType": "address"
       },
       {
-        "name": "referred",
+        "name": "sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "RoleRevoked",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
         "type": "address",
         "indexed": true,
         "internalType": "address"
       },
       {
-        "name": "shares",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "name": "sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       }
     ],
     "anonymous": false
@@ -544,27 +544,34 @@ export const fleetOrderBookAbi = [
     "anonymous": false
   },
   {
-    "name": "Whitelisted",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "referrer",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "owner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
-    ],
-    "anonymous": false
-  },
-  {
     "type": "fallback",
     "stateMutability": "payable"
+  },
+  {
+    "name": "COMPLIANCE_ROLE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "DEFAULT_ADMIN_ROLE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "name": "MAX_FLEET_FRACTION",
@@ -606,6 +613,32 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "SUPER_ADMIN_ROLE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "WITHDRAWAL_ROLE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "addERC20",
     "type": "function",
     "inputs": [
@@ -613,32 +646,6 @@ export const fleetOrderBookAbi = [
         "name": "erc20Contract",
         "type": "address",
         "internalType": "address"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "name": "addReferrer",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "referrers",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "name": "addWhitelisted",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "owners",
-        "type": "address[]",
-        "internalType": "address[]"
       }
     ],
     "outputs": [],
@@ -854,6 +861,125 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "getRoleAdmin",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "grantComplianceRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "grantRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "grantSuperAdminRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "grantWithdrawalRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "hasRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "isCompliance",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "isCompliant",
     "type": "function",
     "inputs": [
@@ -897,11 +1023,11 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
-    "name": "isReferrer",
+    "name": "isSuperAdmin",
     "type": "function",
     "inputs": [
       {
-        "name": "",
+        "name": "account",
         "type": "address",
         "internalType": "address"
       }
@@ -916,11 +1042,11 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
-    "name": "isWhitelisted",
+    "name": "isWithdrawal",
     "type": "function",
     "inputs": [
       {
-        "name": "",
+        "name": "account",
         "type": "address",
         "internalType": "address"
       }
@@ -973,11 +1099,6 @@ export const fleetOrderBookAbi = [
         "name": "erc20Contract",
         "type": "address",
         "internalType": "address"
-      },
-      {
-        "name": "referrer",
-        "type": "address",
-        "internalType": "address"
       }
     ],
     "outputs": [],
@@ -996,28 +1117,10 @@ export const fleetOrderBookAbi = [
         "name": "erc20Contract",
         "type": "address",
         "internalType": "address"
-      },
-      {
-        "name": "referrer",
-        "type": "address",
-        "internalType": "address"
       }
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
-  },
-  {
-    "name": "owner",
-    "type": "function",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
   },
   {
     "name": "pause",
@@ -1040,45 +1143,7 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
-    "name": "referral",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "referralPoolShares",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "referrerPoolShares",
+    "name": "poolShares",
     "type": "function",
     "inputs": [
       {
@@ -1110,9 +1175,77 @@ export const fleetOrderBookAbi = [
     "stateMutability": "nonpayable"
   },
   {
-    "name": "renounceOwnership",
+    "name": "renounceRole",
     "type": "function",
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "callerConfirmation",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "revokeComplianceRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "revokeRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "revokeSuperAdminRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "revokeWithdrawalRole",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
@@ -1309,19 +1442,6 @@ export const fleetOrderBookAbi = [
         "internalType": "bool"
       }
     ],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "name": "transferOwnership",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "newOwner",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [],
     "stateMutability": "nonpayable"
   },
   {

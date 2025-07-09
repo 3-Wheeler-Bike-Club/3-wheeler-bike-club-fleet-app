@@ -18,7 +18,7 @@ import { motion } from "framer-motion"
 import { BanknoteArrowDown, ChartPie, Ellipsis, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { divvi, /*cUSD,*/ fleetOrderBook, fleetOrderToken } from "@/utils/constants/addresses";
+import { divvi, fleetOrderBook, cUSD } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
 import { encodeFunctionData, erc20Abi, formatUnits, parseUnits } from "viem";
 import { celo, optimism } from "viem/chains";
@@ -28,20 +28,16 @@ import { divviAbi } from "@/utils/abis/divvi";
 import { useDivvi } from "@/hooks/useDivvi";
 import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
-import { fleetOrderTokenAbi } from "@/utils/abis/fleetOrderToken";
 import { useSwitchChain } from "wagmi";
 import { OnRamp } from "./onRamp";
 
-interface WrapperProps {
-    referrer: string
-}
 
-export function Wrapper({ referrer }: WrapperProps) {
+export function Wrapper() {
 
     const { address, chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
     console.log(chainId)
-    console.log(referrer)
+
 
     
     const [amount, setAmount] = useState(1)
@@ -99,7 +95,7 @@ export function Wrapper({ referrer }: WrapperProps) {
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: fleetOrderToken/*cUSD*/,
+        address: cUSD,
         functionName: "allowance",
         args: [address!, fleetOrderBook],
     })
@@ -124,7 +120,7 @@ export function Wrapper({ referrer }: WrapperProps) {
 
     const { data: tokenBalance, queryKey: tokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: fleetOrderToken,
+        address: cUSD,
         functionName: "balanceOf",
         chainId: celo.id,
         args: [address!],
@@ -142,7 +138,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                 await switchChainAsync({ chainId: celo.id })
             }
             const hash = await sendTransactionAsync({
-                to: fleetOrderToken,
+                to: cUSD,
                 data: encodeFunctionData({
                     abi: fleetOrderTokenAbi,
                     functionName: "dripPayeeFromPSP",
@@ -184,7 +180,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleet",
-                    args: [BigInt(amount), fleetOrderToken/*cUSD*/, referrer as `0x${string}`],
+                    args: [BigInt(amount), cUSD],
                 }),
                 chainId: celo.id,
             })
@@ -223,7 +219,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                 data: encodeFunctionData({
                     abi: fleetOrderBookAbi,
                     functionName: "orderFleetFraction",
-                    args: [BigInt(shares), fleetOrderToken/*cUSD*/, referrer as `0x${string}`],
+                    args: [BigInt(shares), cUSD],
                 }),
                 chainId: celo.id,
             })
@@ -357,7 +353,7 @@ export function Wrapper({ referrer }: WrapperProps) {
                                                     onRamp()
                                                 } else {
                                                     if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
-                                                        registerUser(address!, fleetOrderToken)
+                                                        registerUser(address!, cUSD)
                                                     } else {
                                                         toast.error("Already approved!", {
                                                             description: "You are have already approved & registered to a provider",
