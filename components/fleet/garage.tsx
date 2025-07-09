@@ -1,7 +1,6 @@
 "use client"
 
 import { Caravan, HandCoins, OctagonMinus, Warehouse } from "lucide-react";
-import { Menu } from "../top/menu"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 
@@ -42,8 +41,6 @@ export function Garage() {
 
     
     const { address, isConnected } = useAccount()
-
-
 
     const fleetOwnedQueryClient = useQueryClient() 
     const maxFleetOrderQueryClient = useQueryClient() 
