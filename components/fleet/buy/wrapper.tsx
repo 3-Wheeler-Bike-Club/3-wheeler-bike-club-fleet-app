@@ -18,7 +18,7 @@ import { motion } from "framer-motion"
 import { BanknoteArrowDown, ChartPie, Ellipsis, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { divvi, /*cUSD,*/ fleetOrderBook, cUSD } from "@/utils/constants/addresses";
+import { divvi, fleetOrderBook, cUSD } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
 import { encodeFunctionData, erc20Abi, formatUnits, parseUnits } from "viem";
 import { celo, optimism } from "viem/chains";
@@ -31,16 +31,13 @@ import { publicClient } from "@/utils/client";
 import { useSwitchChain } from "wagmi";
 import { OnRamp } from "./onRamp";
 
-interface WrapperProps {
-    referrer: string
-}
 
-export function Wrapper({ referrer }: WrapperProps) {
+export function Wrapper() {
 
     const { address, chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
     console.log(chainId)
-    console.log(referrer)
+
 
     
     const [amount, setAmount] = useState(1)
@@ -98,7 +95,7 @@ export function Wrapper({ referrer }: WrapperProps) {
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: cUSD/*cUSD*/,
+        address: cUSD,
         functionName: "allowance",
         args: [address!, fleetOrderBook],
     })
