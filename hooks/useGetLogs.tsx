@@ -15,11 +15,11 @@ export const useGetLogs = (address: `0x${string}` | undefined) => {
         if (address) {
             const eventLogs = await publicClient.getLogs({
                 address: fleetOrderBook,
-                event: fleetOrderBookAbi[39],
+                event: fleetOrderBookAbi[33],
                 args: {
                     buyer: address,
                 },
-                fromBlock: BigInt(35233309), 
+                fromBlock: BigInt(40158362), 
                 toBlock: 'latest'
             })   
             return eventLogs
@@ -29,11 +29,11 @@ export const useGetLogs = (address: `0x${string}` | undefined) => {
         if (address) {
             const eventLogs = await publicClient.getLogs({
                 address: fleetOrderBook,
-                event: fleetOrderBookAbi[40],
+                event: fleetOrderBookAbi[34],
                 args: {
                     buyer: address,
                 },
-                fromBlock: BigInt(35233309), 
+                fromBlock: BigInt(40158362), 
                 toBlock: 'latest'
             })   
             return eventLogs
@@ -43,11 +43,11 @@ export const useGetLogs = (address: `0x${string}` | undefined) => {
         if (address) {
             const eventLogs = await publicClient.getLogs({
                 address: fleetOrderBook,
-                event: fleetOrderBookAbi[43],
+                event: fleetOrderBookAbi[37],
                 args: {
                     buyer: address,
                 },
-                fromBlock: BigInt(35233309), 
+                fromBlock: BigInt(40158362), 
                 toBlock: 'latest'
             })
             return eventLogs
