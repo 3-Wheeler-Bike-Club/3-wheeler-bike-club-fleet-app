@@ -284,14 +284,14 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                   profile.files.length <= 0
                                   ?(
                                     <>
-                                      <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></Label>
+                                      <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
                                       <div>
                                         <FileUploader
                                           value={files}
                                           onValueChange={setFiles}
                                           dropzoneOptions={{
                                             maxFiles: maxFiles!,
-                                            maxSize: 1024 * 1024 * 1,
+                                            maxSize: 1024 * 1024 * 4,
                                             multiple: true,
                                             accept: {
                                               "image/*": [".png", ".jpg", ".jpeg"],
@@ -345,7 +345,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                         {
                           !maxFiles && (
                             <div>
-                            <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 1MB)</span></Label>
+                            <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
                             <div>
                               <div
                                 className="relative bg-background rounded-lg p-2"
