@@ -369,7 +369,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                       <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                       <FormLabel>Enter your email address</FormLabel>
                                           <FormControl >
-                                              <Input disabled={ !!profile || !!email || loadingCode || isDisabledEmail } className="col-span-3" placeholder={""} {...field} />
+                                              <Input autoComplete="off" disabled={ !!profile || !!email || loadingCode || isDisabledEmail } className="col-span-3" placeholder={""} {...field} />
                                           </FormControl>
                                       </div>
                                   </FormItem>
@@ -497,6 +497,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                 <FormLabel>Enter your phone number</FormLabel>
                                 <FormControl className="w-full">
                                   <PhoneInput
+                                    autoComplete="off"
                                     disabled={ !!profile?.phone || loadingCode || isDisabledPhone } 
                                     placeholder={profile?.phone ? profile.phone : "Enter your phone number"}
                                     className="col-span-3"
