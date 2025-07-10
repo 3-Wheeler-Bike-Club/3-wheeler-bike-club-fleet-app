@@ -130,43 +130,7 @@ export function Wrapper() {
         tokenBalanceQueryClient.invalidateQueries({ queryKey: tokenBalanceQueryKey }) 
     }, [blockNumber, tokenBalanceQueryClient, tokenBalanceQueryKey]) 
     console.log(tokenBalance!)
-/*
-    async function getTestTokens() {
-        try {
-            setLoadingCeloUSD(true)
-            if (chainId !== celo.id) {
-                await switchChainAsync({ chainId: celo.id })
-            }
-            const hash = await sendTransactionAsync({
-                to: cUSD,
-                data: encodeFunctionData({
-                    abi: fleetOrderTokenAbi,
-                    functionName: "dripPayeeFromPSP",
-                    args: [address!, parseUnits("1500000", 18)],
-                }),
-                chainId: celo.id,
-            })
-            const transaction = await publicClient.waitForTransactionReceipt({
-                confirmations: 1,
-                hash: hash
-            })
 
-            if (transaction) {
-                toast.success("Test Tokens Received", {
-                    description: `You can now make orders to your fleet with test tokens`,
-                })
-                setLoadingCeloUSD(false)
-            }
-            
-        } catch (error) {
-            console.log(error)
-            toast.error("Transaction failed", {
-                description: `Something went wrong, please try again`,
-            })
-            setLoadingCeloUSD(false)
-        }
-    }
-*/
 
     // order multiple fleet with celoUSD
     async function orderFleetWithCeloUSD() { 
@@ -343,23 +307,31 @@ export function Wrapper() {
                                         onClick={() => {
                                             if (allowanceCeloUSD && allowanceCeloUSD > 0) {
                                                 if (isFractionsMode) {
-                                                    orderFleetFractionsWithCeloUSD(fractions)
-                                                } else {
-                                                    orderFleetWithCeloUSD()
-                                                }
-                                            } else {
-
-                                                if ( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) {
-                                                    onRamp()
-                                                } else {
-                                                    if (!isUserReferredToProvider  || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
-                                                        registerUser(address!, cUSD)
+                                                    if ( (Number(formatUnits(tokenBalance!, 18))) < Math.ceil(fractions * ( Number(fleetFractionPrice) )) ) {
+                                                        onRamp()
                                                     } else {
-                                                        toast.error("Already approved!", {
-                                                            description: "You are have already approved & registered to a provider",
-                                                        })
+                                                        orderFleetFractionsWithCeloUSD(fractions)
                                                     }
+                                                    
+                                                } else {
+                                                    if ( (Number(formatUnits(tokenBalance!, 18))) < Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) {
+                                                        onRamp()
+                                                    } else {
+                                                        orderFleetWithCeloUSD()
+                                                    }
+                                                    
                                                 }
+                                                
+                                                
+                                            } else {
+                                                if (!isUserReferredToProvider || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
+                                                    registerUser(address!, cUSD)
+                                                } else {
+                                                    toast.error("Already approved!", {
+                                                        description: "You are have already approved & registered to a provider",
+                                                    })
+                                                }
+                                                
                                                 
                                             }
                                         }}
@@ -379,13 +351,16 @@ export function Wrapper() {
                                                             <>
                                                                 {
                                                                     allowanceCeloUSD && allowanceCeloUSD > 0 ? (
-                                                                        <HandCoins />
+                                                                    <>
+                                                                        {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                                                            ? <HandCoins />
+                                                                            : <BanknoteArrowDown />
+                                                                        }
+                                                                    </>
                                                                     ) : (
-                                                                        (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * (Number(fleetFractionPrice))) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ? (
-                                                                            <BanknoteArrowDown />
-                                                                        ) : (
+                                                                        <>
                                                                             <Signature />
-                                                                        )
+                                                                        </>
                                                                     )
                                                                 }
                                                             </>
@@ -403,7 +378,18 @@ export function Wrapper() {
                                                 : (
                                                     <>
                                                         {
-                                                            allowanceCeloUSD && allowanceCeloUSD > 0 ? "Pay with cUSD" : `${( (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(fractions * ( Number(fleetFractionPrice) )) || (Number(formatUnits(tokenBalance!, 18))) <= Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) ? "Add cUSD" : "Approve cUSD"}`
+                                                            allowanceCeloUSD && allowanceCeloUSD > 0 ? (
+                                                            <>
+                                                                {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                                                    ? "Pay with cUSD" 
+                                                                    : "Add more cUSD"
+                                                                }
+                                                            </>
+                                                            ) : (
+                                                                <>
+                                                                    <p>Approve cUSD</p>
+                                                                </>
+                                                            )
                                                         }
                                                     </>
                                                 )
