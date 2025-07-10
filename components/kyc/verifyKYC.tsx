@@ -18,7 +18,7 @@ import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 import { Profile } from "@/hooks/useGetProfile"
 import { Label } from "../ui/label"
 import { v4 as uuidv4 } from 'uuid';
-import { QR } from "./self/qr"
+import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode"
 
   
 
@@ -61,7 +61,26 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
         setUserId(uuidv4());
     }, []);
 
-
+    // Create the SelfApp configuration
+    const selfApp = new SelfAppBuilder({
+      appName: "3 Wheeler Bike Club",
+      scope: "finance-3wb-club",
+      endpoint: "https://finance.3wb.club/api/verify",
+      endpointType: "https",
+      logoBase64: "https://finance.3wb.club/icons/logo.png",
+      userId: userId!,
+      userIdType: "uuid",
+      version: 2,
+      userDefinedData: "0x" + Buffer.from("default").toString('hex').padEnd(128, '0'),
+      disclosures: {
+          name: true,
+          expiry_date: true,
+          nationality: true,
+          minimumAge: 18,
+          excludedCountries: ["USA", "CUB", "IRN", "PRK", "RUS"],
+          ofac: true,
+      }
+  }).build();
 
   const { startUpload, routeConfig } = useUploadThing("imageUploader", {
     onClientUploadComplete: () => {
@@ -498,15 +517,57 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                         {qr && (
                           <>
                             <div className="flex flex-col items-center gap-8">
-                            <QR userId={userId!} />
-                            <Button
-                              variant="outline"
-                              className="w-full"
-                              onClick={() => {
-                                setQR(false);
-                                setLoading(false);
-                              }}
-                            >
+                              <SelfQRcode
+                                  selfApp={selfApp}
+                                  onSuccess={async () => {
+                                      // Handle successful verification
+                                      console.log("Verification successful!");
+                                      // Redirect or update UI
+                                      //router.push("/fleet");
+                                      try {
+                                        setLoading(true);
+                                        const values = selfForm.getValues();
+                                        const updateProfile = await updateProfileAction(
+                                          address!,
+                                          values.firstname,
+                                          values.othername,
+                                          values.lastname,
+                                          "self.xyz",
+                                          []
+                                        );
+                                        if (updateProfile) {
+                                          toast.success("KYC Completed", {
+                                            description: "Our Team will review your KYC and get back to you shortly",
+                                          })
+                                          setLoading(false);
+                                          getProfileSync();
+                                        } else {
+                                          toast.error("KYC Failed", {
+                                            description: `Something went wrong, please try again`,
+                                          })
+                                          setLoading(false);
+                                        }
+                                      } catch (error) {
+                                        toast.error("KYC Failed", {
+                                          description: `Something went wrong, please try again`,
+                                        })
+                                        setLoading(false);
+                                      }
+                                  }}
+                                  onError={() => {
+                                      // Handle verification error
+                                      console.log("Verification error!");
+                                  }}
+                                  size={200}
+                              />
+                              <Button
+                                variant="outline"
+                                className="w-full"
+                                onClick={() => {
+                                  setQR(false);
+                                  setLoading(false);
+                                }}
+                              >
                                 <Undo2   />
                                 <p>Edit Name</p>
                               </Button>
