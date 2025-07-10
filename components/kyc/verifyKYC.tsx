@@ -54,32 +54,26 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
   const [qr, setQR] = useState<boolean>(false);
   const [upload, setUpload] = useState<boolean>(false);
 
-  const [userId, setUserId] = useState<string | null>(null);
 
-    useEffect(() => {
-        // Generate a user ID when the component mounts
-        setUserId(uuidv4());
-    }, []);
-
-    // Create the SelfApp configuration
-    const selfApp = new SelfAppBuilder({
-      appName: "3 Wheeler Bike Club",
-      scope: "finance-3wb-club",
-      endpoint: "https://finance.3wb.club/api/verify",
-      endpointType: "https",
-      logoBase64: "https://finance.3wb.club/icons/logo.png",
-      userId: userId!,
-      userIdType: "uuid",
-      version: 2,
-      userDefinedData: "0x" + Buffer.from("default").toString('hex').padEnd(128, '0'),
-      disclosures: {
-          name: true,
-          expiry_date: true,
-          nationality: true,
-          minimumAge: 18,
-          excludedCountries: ["USA", "CUB", "IRN", "PRK", "RUS"],
-          ofac: true,
-      }
+  // Create the SelfApp configuration
+  const selfApp = new SelfAppBuilder({
+    appName: "3 Wheeler Bike Club",
+    scope: "finance-3wb-club",
+    endpoint: "https://finance.3wb.club/api/verify",
+    endpointType: "https",
+    logoBase64: "https://finance.3wb.club/icons/logo.png",
+    userId: address,
+    userIdType: "hex",
+    version: 2,
+    userDefinedData: "0x" + Buffer.from("default").toString('hex').padEnd(128, '0'),
+    disclosures: {
+        name: true,
+        expiry_date: true,
+        nationality: true,
+        minimumAge: 18,
+        excludedCountries: ["USA", "CUB", "IRN", "PRK", "RUS"],
+        ofac: true,
+    }
   }).build();
 
   const { startUpload, routeConfig } = useUploadThing("imageUploader", {
