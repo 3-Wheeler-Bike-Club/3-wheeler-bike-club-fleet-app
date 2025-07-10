@@ -37,7 +37,7 @@ const selfBackendVerifier = new SelfBackendVerifier(
     false,                             // false = real passports, true = mock for testing
     allowedIds,                        // Allowed document types
     configStorage,                    // Configuration storage implementation
-    "uuid"                  // UUID for off-chain, HEX for on-chain addresses
+    "hex"                  // UUID for off-chain, HEX for on-chain addresses
 );
   
 
