@@ -57,6 +57,7 @@ export function Wrapper() {
     const allowanceCeloDollarQueryClient = useQueryClient()
     const isUserReferredToProviderQueryClient = useQueryClient()
     const tokenBalanceQueryClient = useQueryClient()
+    const compliantQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
     const { sendTransactionAsync } = useSendTransaction();
@@ -130,6 +131,17 @@ export function Wrapper() {
         tokenBalanceQueryClient.invalidateQueries({ queryKey: tokenBalanceQueryKey }) 
     }, [blockNumber, tokenBalanceQueryClient, tokenBalanceQueryKey]) 
     console.log(tokenBalance!)
+
+      
+    const { data: compliant, isLoading: compliantLoading, queryKey: compliantQueryKey } = useReadContract({
+        address: fleetOrderBook,
+        abi: fleetOrderBookAbi,
+        functionName: "isCompliant",
+        args: [address!],
+    })
+    useEffect(() => { 
+        compliantQueryClient.invalidateQueries({ queryKey: compliantQueryKey }) 
+    }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
 
 
     // order multiple fleet with celoUSD
@@ -216,6 +228,14 @@ export function Wrapper() {
         const ref = `${address}-${(new Date()).getTime().toString()}`
         setReference(ref)
     }
+
+    useEffect(() => {
+        console.log(compliant)
+
+        if (compliant === false) {
+            router.replace("/kyc")
+        }
+    }, [compliant])
 
     return (
         <div className="flex flex-col w-full h-full items-center gap-8 p-24 max-md:p-6">
