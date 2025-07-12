@@ -390,7 +390,7 @@ export function Wrapper() {
                                                 </>
                                             )
                                         }
-                                        <p>
+                                        <>
                                             {
                                                 allowanceCeloDollarLoading ? (
                                                 <></>
@@ -407,14 +407,14 @@ export function Wrapper() {
                                                             </>
                                                             ) : (
                                                                 <>
-                                                                    <p>Approve cUSD</p>
+                                                                    Approve cUSD
                                                                 </>
                                                             )
                                                         }
                                                     </>
                                                 )
                                             }
-                                        </p>
+                                        </>
                                     </Button>
                                 </div>
                                 <DrawerClose asChild>
