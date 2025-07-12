@@ -494,7 +494,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                           render={({ field }) => (
                             <FormItem className="flex flex-col items-start">
                               <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                <FormLabel>Enter your phone number</FormLabel>
+                                <FormLabel>Enter your WhatsApp number</FormLabel>
                                 <FormControl className="w-full">
                                   <PhoneInput
                                     autoComplete="off"
