@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { Camera, CloudUpload, FileWarning, Hourglass, Loader2, Paperclip, Save, SaveAll, Scan, Undo2 } from "lucide-react"
+import { Camera, CloudUpload, FileWarning, Hourglass, Loader2, Paperclip, Save, Scan, Undo2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
@@ -17,8 +17,8 @@ import { useUploadThing } from "@/hooks/useUploadThing"
 import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 import { Profile } from "@/hooks/useGetProfile"
 import { Label } from "../ui/label"
-import { v4 as uuidv4 } from 'uuid';
 import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode"
+import { sendVerifySelfMail } from "@/app/actions/mail/sendVerifySelfMail"
 
   
 
@@ -151,6 +151,10 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
               uploadFiles.map((file) => file.ufsUrl)
             );
             if (updateProfile) {
+              await sendVerifySelfMail(
+                profile.email,
+                manualFormValues.firstname
+              )
               toast.success("KYC Completed", {
                 description: "Our Team will review your KYC and get back to you shortly",
               })
@@ -530,6 +534,10 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                           []
                                         );
                                         if (updateProfile) {
+                                          await sendVerifySelfMail(
+                                            profile.email,
+                                            values.firstname
+                                          )
                                           toast.success("KYC Completed", {
                                             description: "Our Team will review your KYC and get back to you shortly",
                                           })
