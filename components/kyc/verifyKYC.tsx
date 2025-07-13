@@ -19,6 +19,7 @@ import { Profile } from "@/hooks/useGetProfile"
 import { Label } from "../ui/label"
 import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode"
 import { sendVerifySelfMail } from "@/app/actions/mail/sendVerifySelfMail"
+import { sendVerifySelfAdminMail } from "@/app/actions/mail/sendVerifySelfAdminMail"
 
   
 
@@ -154,6 +155,11 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
               await sendVerifySelfMail(
                 profile.email,
                 manualFormValues.firstname
+              )
+              await sendVerifySelfAdminMail(
+                manualFormValues.firstname,
+                manualFormValues.othername,
+                manualFormValues.lastname
               )
               toast.success("KYC Completed", {
                 description: "Our Team will review your KYC and get back to you shortly",
@@ -385,6 +391,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                       </> 
                       <div className="flex justify-between">
                         <Button
+                          disabled={loading}
                           className="w-1/2"
                           variant="outline"
                           onClick={() => {
@@ -537,6 +544,11 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                           await sendVerifySelfMail(
                                             profile.email,
                                             values.firstname
+                                          )
+                                          await sendVerifySelfAdminMail(
+                                            values.firstname,
+                                            values.othername,
+                                            values.lastname
                                           )
                                           toast.success("KYC Completed", {
                                             description: "Our Team will review your KYC and get back to you shortly",
