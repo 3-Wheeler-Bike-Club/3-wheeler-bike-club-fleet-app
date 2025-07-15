@@ -38,7 +38,7 @@ export function Wrapper() {
     const { switchChainAsync } = useSwitchChain()
     console.log(chainId)
 
-
+    const [openDrawer, setOpenDrawer] = useState(true)
     
     const [amount, setAmount] = useState(1)
     const [fractions, setFractions] = useState(1)
@@ -227,19 +227,20 @@ export function Wrapper() {
         setOpenOnRamp(true)
         const ref = `${address}-${(new Date()).getTime().toString()}`
         setReference(ref)
+        setOpenDrawer(false)
     }
 
     useEffect(() => {
         console.log(compliant)
 
         if (compliant === false) {
-            router.replace("/kyc")
+            //router.replace("/kyc")
         }
     }, [compliant])
 
     return (
         <div className="flex flex-col w-full h-full items-center gap-8 p-24 max-md:p-6">
-            <Drawer open={true}>
+            <Drawer open={openDrawer}>
                 <DrawerContent>
                     <div className="mx-auto w-full max-w-sm pb-6">
                         <DrawerHeader className="max-md:gap-[0.1rem]">
@@ -452,6 +453,7 @@ export function Wrapper() {
                     address={address!}
                     reference={reference}
                     setLoadingAddCeloDollar={setLoadingAddCeloDollar}
+                    setOpenDrawer={setOpenDrawer}
                 />
             )}
         </div>
