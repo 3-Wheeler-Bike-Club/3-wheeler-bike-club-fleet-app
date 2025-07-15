@@ -6,9 +6,10 @@ interface OnRampProps {
     address: `0x${string}`
     reference: string   
     setLoadingAddCeloDollar: (loadingAddCeloDollar: boolean) => void
+    setOpenDrawer: (openDrawer: boolean) => void
 }
 
-export function OnRamp({ setOpenOnRamp, address, reference, setLoadingAddCeloDollar } : OnRampProps) {
+export function OnRamp({ setOpenOnRamp, address, reference, setLoadingAddCeloDollar, setOpenDrawer } : OnRampProps) {
 
     
     
@@ -16,13 +17,14 @@ export function OnRamp({ setOpenOnRamp, address, reference, setLoadingAddCeloDol
 
  
     return (
-        <main className="fixed flex flex-col z-150 bg-gray-900/25 w-screen h-screen items-center justify-center top-0 left-0 right-0 bottom-0 backdrop-blur-[0.666px]">
+        <main className="fixed flex flex-col bg-gray-900/25 w-screen h-screen items-center justify-center top-0 left-0 right-0 bottom-0 backdrop-blur-[0.666px]">
 
             <div className="w-full h-full relative">
                 <div
                     onClick={async()=>{
                         setOpenOnRamp(false)
                         setLoadingAddCeloDollar(false)
+                        setOpenDrawer(true)
                     }}
                     className="absolute cursor-pointer p-5 top-0 right-0"
                 >
