@@ -402,6 +402,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                         </Button>
                         <Button
                           type="submit"
+                          disabled={loading}
                         >
                           {
                             loading
@@ -576,13 +577,23 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                               <Button
                                 variant="outline"
                                 className="w-full"
+                                disabled={loading}
                                 onClick={() => {
                                   setQR(false);
                                   setLoading(false);
                                 }}
                               >
-                                <Undo2   />
-                                <p>Edit Name</p>
+                                {
+                                  loading
+                                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                                  : <Undo2   />
+                                }
+                                {
+                                  loading
+                                  ? <p>Saving...</p>
+                                  : <p>Edit Name</p>
+                                }
+                                
                               </Button>
                             </div>
                           </>
