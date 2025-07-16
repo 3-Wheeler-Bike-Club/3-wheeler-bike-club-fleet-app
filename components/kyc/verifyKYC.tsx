@@ -528,7 +528,6 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                       // Handle successful verification
                                       console.log("Verification successful!");
                                       // Redirect or update UI
-                                      //router.push("/fleet");
                                       try {
                                         setLoading(true);
                                         const values = selfForm.getValues();
@@ -538,7 +537,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                           values.othername,
                                           values.lastname,
                                           "self.xyz",
-                                          []
+                                          ["self.xyz"]
                                         );
                                         if (updateProfile) {
                                           await sendVerifySelfMail(
