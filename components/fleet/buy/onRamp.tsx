@@ -1,5 +1,5 @@
 
-import { Minimize2 } from "lucide-react";
+import { X } from "lucide-react";
 
 interface OnRampProps {
     setOpenOnRamp: (openOnRamp : boolean) => void
@@ -28,7 +28,7 @@ export function OnRamp({ setOpenOnRamp, address, reference, setLoadingAddCeloDol
                     }}
                     className="absolute cursor-pointer p-5 top-0 right-0"
                 >
-                    <Minimize2 className="text-yellow-600"/>
+                    <X className="text-gray-700 h-8 w-8 hover:text-gray-900 hover:ring-2 hover:ring-yellow-600 hover:border-2 hover:border-yellow-600 hover:bg-yellow-500 transition-all bg-yellow-400 rounded-full p-1.5"/>
                 </div>
                 <div className="h-full w-full">
                     <iframe
