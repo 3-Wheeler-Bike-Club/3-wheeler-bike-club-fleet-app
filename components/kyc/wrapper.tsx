@@ -60,7 +60,7 @@ export function Wrapper() {
                 ) 
                 : (
                     <>
-                        <div className="flex flex-col h-full w-full gap-6">
+                        <div className="flex flex-col h-full w-full">
                             
                             <div className="flex w-full justify-center">
                                 <Alert className="w-full max-w-[66rem]">
@@ -73,7 +73,7 @@ export function Wrapper() {
                             </div>
                             <div className="flex w-full h-full justify-center">
                                 <div className="flex w-full h-full max-w-[66rem] gap-4">
-                                    <div className="flex flex-col w-full h-full items-center pt-36 max-md:pt-18 gap-4">
+                                    <div className="flex flex-col w-full h-full items-center justify-center max-md:pt-18 gap-4">
                                         <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                                         <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
                                         {
