@@ -2,6 +2,7 @@
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
+            ALCHEMY_RPC_URL: string;
             UPLOADTHING_TOKEN: string;
             MONGO: string;
             THREEWB_API_KEY: string;
