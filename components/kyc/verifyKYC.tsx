@@ -432,7 +432,16 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                 <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                     <FormLabel className="text-yellow-600">First Name</FormLabel>
                                     <FormControl >
-                                        <Input autoComplete="off" disabled={ !!profile.firstname || loading } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
+                                        <Input 
+                                          autoComplete="off" 
+                                          disabled={ !!profile.firstname || loading } 
+                                          className="col-span-3" 
+                                          placeholder={profile.firstname ? profile.firstname.toUpperCase() : "VITALIK"} 
+                                          {...field}
+                                          onChange={(e) => {
+                                            field.onChange(e.target.value.toUpperCase())
+                                          }}
+                                        />
                                     </FormControl>
                                 </div>
                             </FormItem>
@@ -446,7 +455,16 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                   <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                       <FormLabel className="text-yellow-600">Other Name(s)</FormLabel>
                                       <FormControl >
-                                          <Input autoComplete="off" disabled={ !!profile.othername || loading } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
+                                          <Input 
+                                            autoComplete="off" 
+                                            disabled={ !!profile.othername || loading } 
+                                            className="col-span-3" 
+                                            placeholder={profile.othername ? profile.othername.toUpperCase() : "DOTETH"} 
+                                            {...field}
+                                            onChange={(e) => {
+                                              field.onChange(e.target.value.toUpperCase())
+                                            }}
+                                          />
                                       </FormControl>
                                   </div>
                               </FormItem>
@@ -460,7 +478,16 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                   <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                       <FormLabel className="text-yellow-600">Last Name</FormLabel>
                                       <FormControl >
-                                          <Input autoComplete="off" disabled={ !!profile.lastname || loading } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
+                                          <Input 
+                                            autoComplete="off" 
+                                            disabled={ !!profile.lastname || loading } 
+                                            className="col-span-3" 
+                                            placeholder={profile.lastname ? profile.lastname.toUpperCase() : "BUTERIN"} 
+                                            {...field}
+                                            onChange={(e) => {
+                                              field.onChange(e.target.value.toUpperCase())
+                                            }}
+                                          />
                                       </FormControl>
                                   </div>
                               </FormItem>
@@ -612,7 +639,16 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                               <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                                   <FormLabel className="text-yellow-600">First Name</FormLabel>
                                                   <FormControl >
-                                                      <Input autoComplete="off" disabled={ !!profile.firstname || loading } className="col-span-3" placeholder={profile.firstname ? profile.firstname : "Vitalik"} {...field} />
+                                                      <Input 
+                                                        autoComplete="off" 
+                                                        disabled={ !!profile.firstname || loading } 
+                                                        className="col-span-3" 
+                                                        placeholder={profile.firstname ? profile.firstname.toUpperCase() : "VITALIK"}
+                                                        {...field}
+                                                        onChange={(e) => {
+                                                          field.onChange(e.target.value.toUpperCase())
+                                                        }}
+                                                      />
                                                   </FormControl>
                                               </div>
                                           </FormItem>
@@ -626,7 +662,16 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                                 <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                                     <FormLabel className="text-yellow-600">Other Name(s)</FormLabel>
                                                     <FormControl >
-                                                        <Input autoComplete="off" disabled={ !!profile.othername || loading } className="col-span-3" placeholder={profile.othername ? profile.othername : "DeSantis"} {...field} />
+                                                        <Input 
+                                                          autoComplete="off" 
+                                                          disabled={ !!profile.othername || loading } 
+                                                          className="col-span-3" 
+                                                          placeholder={profile.othername ? profile.othername.toUpperCase() : "DOTETH"} 
+                                                          {...field}
+                                                          onChange={(e) => {
+                                                            field.onChange(e.target.value.toUpperCase())
+                                                          }}
+                                                        />
                                                     </FormControl>
                                                 </div>
                                             </FormItem>
@@ -640,7 +685,16 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                                 <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                                     <FormLabel className="text-yellow-600">Last Name</FormLabel>
                                                     <FormControl >
-                                                        <Input autoComplete="off" disabled={ !!profile.lastname || loading } className="col-span-3" placeholder={profile.lastname ? profile.lastname : "Buterin"} {...field} />
+                                                        <Input 
+                                                          autoComplete="off" 
+                                                          disabled={ !!profile.lastname || loading } 
+                                                          className="col-span-3" 
+                                                          placeholder={profile.lastname ? profile.lastname.toUpperCase() : "BUTERIN"} 
+                                                          {...field}
+                                                          onChange={(e) => {
+                                                            field.onChange(e.target.value.toUpperCase())
+                                                          }}
+                                                        />
                                                     </FormControl>
                                                 </div>
                                             </FormItem>
