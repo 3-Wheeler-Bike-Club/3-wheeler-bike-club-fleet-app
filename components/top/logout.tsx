@@ -13,10 +13,16 @@ import {
 import { Button } from "../ui/button"
 import { LogOut } from "lucide-react"
 import { useDisconnect } from "wagmi"
+import { useLogout } from "@privy-io/react-auth"
 
 export function Logout () {
-    
-    const { disconnect } = useDisconnect()
+    const { logout } = useLogout({
+        onSuccess: () => {
+            console.log('User successfully logged out');
+            // Redirect to landing page or perform other post-logout actions
+            router.push("/")
+        }
+    })
     const router = useRouter()
 
     
@@ -41,8 +47,7 @@ export function Logout () {
                 <AlertDialogAction asChild>
                     <Button
                         onClick={async ()=>{
-                            disconnect()
-                            router.push("/")
+                            logout()
                         }}
                         className="gap-2"
                     >
