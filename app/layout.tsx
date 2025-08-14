@@ -4,6 +4,7 @@ import "./globals.css";
 import { WagmiContext } from "@/context/wagmiContext";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/bottom/footer";
+import PrivyContext from "@/context/privyContext";
 
 
 
@@ -29,11 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistMono.className}`}
       >
-        <WagmiContext>
-          {children}
-          <Footer />
-          <Toaster expand={true} richColors />
-        </WagmiContext>
+        <PrivyContext>
+          <WagmiContext>
+            {children}
+            <Footer />
+            <Toaster expand={true} richColors />
+          </WagmiContext>
+        </PrivyContext>
       </body>
     </html>
   );
