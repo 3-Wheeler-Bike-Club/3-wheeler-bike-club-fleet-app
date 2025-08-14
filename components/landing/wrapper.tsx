@@ -3,29 +3,22 @@
 import { useRouter } from "next/navigation";
 
 import { Button } from "../ui/button";
-import { Wallet, TrendingUp, ShieldCheck } from "lucide-react";
+import { Wallet, TrendingUp, ShieldCheck, ChartNoAxesCombined } from "lucide-react";
 import Image from "next/image";
-import { useAccount, useConnect } from "wagmi";
-import { injected } from "wagmi/connectors";
+import { usePrivy } from "@privy-io/react-auth";
 
 export function Wrapper() {
 
-    
+    const { ready, authenticated, login } = usePrivy()
     const router = useRouter()
-    console.log(router)
 
-    const { connectAsync } = useConnect()
 
-    const { isConnected } = useAccount()
     
     async function Login() {
-        if (!isConnected) {
-            await connectAsync({ connector: injected() })
-            
-            router.push("/fleet")
-            
+        if (ready && !authenticated) {
+            login()
         }
-        if (isConnected) {
+        if (ready && authenticated) {
             router.push("/fleet")
         }
     }
@@ -54,7 +47,7 @@ export function Wrapper() {
                     <div className="flex flex-col items-center p-8 rounded-2xl border">
                         <TrendingUp className="w-16 h-16 mb-6" />
                         <h3 className="text-lg text-center font-semibold mb-4">High Returns</h3>
-                        <p className="text-center text-sm">Earn up to 2x returns on fleet investments</p>
+                        <p className="text-center text-sm">Targets up to 45% returns on fleet investments</p>
                     </div>
                     
                     <div className="flex flex-col items-center p-8 rounded-2xl border">
@@ -66,16 +59,19 @@ export function Wrapper() {
                     <div className="flex flex-col items-center p-8 rounded-2xl border">
                         <Wallet className="w-16 h-16 mb-6" />
                         <h3 className="text-lg text-center font-semibold mb-4">Passive Income</h3>
-                        <p className="text-center text-sm">Regular returns from fleet operations</p>
+                        <p className="text-center text-sm">On-time weekly returns from fleet operations</p>
                     </div>
                 </div>
 
                 <Button 
                     onClick={Login} 
-                    //disabled={isConnected}
-                    className="w-64 h-16 text-base font-semibold rounded-3xl"
+                    disabled={!ready}
+                    className="rounded-full px-12 py-7 max-sm:px-8 max-sm:py-6"
                 >
-                    <p>START EARNING</p>
+                    <div className="flex">
+                        <ChartNoAxesCombined />
+                    </div>
+                    Start Earning
                 </Button>
                 
             </div>
