@@ -5,13 +5,17 @@ import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Wallet, TrendingUp, ShieldCheck, ChartNoAxesCombined } from "lucide-react";
 import Image from "next/image";
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy, useLogin } from "@privy-io/react-auth";
 
 export function Wrapper() {
 
-    const { ready, authenticated, login } = usePrivy()
+    const { ready, authenticated } = usePrivy()
     const router = useRouter()
-
+    const { login } = useLogin({
+        onComplete: () => {
+            router.push("/fleet")
+        }
+    })
 
     
     async function Login() {
