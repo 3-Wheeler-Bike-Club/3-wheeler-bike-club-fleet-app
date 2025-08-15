@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const NextConfigDevelopment: NextConfig = {}
+
+const NextConfigProduction: NextConfig = {
   async headers() {
     return [
       {
@@ -27,8 +29,8 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-    ];
+    ];  
   },
 };
 
-export default nextConfig;
+export default process.env.NODE_ENV === "production" ? NextConfigProduction : NextConfigDevelopment;
