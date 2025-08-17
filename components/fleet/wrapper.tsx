@@ -1,6 +1,6 @@
 "use client"
 
-import { useAccount, useBlockNumber, useReadContract } from "wagmi"
+import { useBlockNumber, useReadContract } from "wagmi"
 import { fleetOrderBook } from "@/utils/constants/addresses"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { useQueryClient } from "@tanstack/react-query"
@@ -8,11 +8,16 @@ import { useEffect } from "react"
 import { Garage } from "./garage"
 import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
+import { usePrivy } from "@privy-io/react-auth"
 
 
 export function Wrapper() {
 
-    const { address } = useAccount()
+    const { user } = usePrivy()
+    console.log(user)
+    console.log(user?.wallet?.address)
+    const address = user?.wallet?.address as `0x${string}`
+    
     const router = useRouter()
 
 
@@ -45,7 +50,7 @@ export function Wrapper() {
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
             {
-                compliantLoading
+                compliantLoading 
                 ? (
                     <div className="flex h-full justify-center items-center text-2xl font-bold">
                         <p>Loading...</p>

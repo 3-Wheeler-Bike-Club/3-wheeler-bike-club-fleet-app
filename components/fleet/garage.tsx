@@ -4,7 +4,7 @@ import { Caravan, HandCoins, OctagonMinus, Warehouse } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 
-import { useBlockNumber, useReadContract, useAccount } from 'wagmi'
+import { useBlockNumber, useReadContract } from 'wagmi'
 import { useRouter } from "next/navigation";
 import { fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Progress } from "../ui/progress";
 import { Returns } from "./withdraw/returns";
+import { usePrivy } from "@privy-io/react-auth";
 
 
 export function Garage() {
@@ -40,7 +41,10 @@ export function Garage() {
     }, [api])
 
     
-    const { address, isConnected } = useAccount()
+    const { user, ready, authenticated } = usePrivy()
+    console.log(user)
+    console.log(user?.wallet?.address)
+    const address = user?.wallet?.address as `0x${string}`
 
     const fleetOwnedQueryClient = useQueryClient() 
     const maxFleetOrderQueryClient = useQueryClient() 
@@ -140,7 +144,7 @@ export function Garage() {
                         <div/>
                         <div className="flex gap-2">
                             <Button 
-                                disabled={!isConnected}
+                                disabled={!ready || !authenticated}
                                 className="max-w-fit h-12 rounded-xl"
                                 onClick={() => router.push(`/fleet/buy`)}
                             >

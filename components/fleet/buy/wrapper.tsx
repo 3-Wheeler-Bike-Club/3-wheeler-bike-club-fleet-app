@@ -14,8 +14,7 @@ import {
 } from "@/components/ui/drawer"
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import { BanknoteArrowDown, ChartPie, Ellipsis, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
+import { BanknoteArrowDown, ChartPie, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, fleetOrderBook, cUSD } from "@/utils/constants/addresses";
@@ -30,11 +29,17 @@ import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 import { useSwitchChain } from "wagmi";
 import { OnRamp } from "./onRamp";
+import { usePrivy } from "@privy-io/react-auth";
 
 
 export function Wrapper() {
 
-    const { address, chainId } = useAccount()
+    const { user } = usePrivy()
+    console.log(user)
+    console.log(user?.wallet?.address)
+    const address = user?.wallet?.address as `0x${string}`
+    
+    const { chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
     console.log(chainId)
 

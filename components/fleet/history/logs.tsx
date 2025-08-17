@@ -10,19 +10,22 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { Button } from "../../ui/button";
+import { Button } from "@/components/ui/button";
 import { HistoryIcon } from "lucide-react";
 import { useGetLogs } from "@/hooks/useGetLogs";
-import { Table, TableBody, TableCaption } from "../../ui/table";
+import { Table, TableBody } from "@/components/ui/table";
 import { Log } from "./log";
-import { useAccount } from "wagmi";
+import { usePrivy } from "@privy-io/react-auth";
 
 
 
 
 export function Logs() {
 
-   const { address } = useAccount()
+   const { user } = usePrivy()
+    console.log(user)
+    console.log(user?.wallet?.address)
+    const address = user?.wallet?.address as `0x${string}`
 
    const { logs } = useGetLogs(address);
    console.log(logs)
