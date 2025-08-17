@@ -511,7 +511,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                               }
                               {
                                 profile.files.length > 0
-                                ? <p>KYC Pending...</p>
+                                ? <p>KYC Review Pending...</p>
                                 : <p>Scan & Upload ID</p>
                               }
                           </Button>
@@ -718,7 +718,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                             }
                                             {
                                               profile.files.length > 0
-                                              ? <p>KYC Pending...</p>
+                                              ? <p>KYC Review Pending...</p>
                                               : <p>Scan Self.xyz QR</p>
                                             }
                                         </Button>
