@@ -24,6 +24,7 @@ import { getProfileByPhoneAction } from "@/app/actions/kyc/getProfileByPhoneActi
 import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
 import { Checkbox } from "../ui/checkbox"
 import { Label } from "../ui/label"
+import { usePrivy } from "@privy-io/react-auth"
 
   
 
@@ -54,6 +55,10 @@ interface VerifyEmailProps {
 
 export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailProps) {
 
+  const { user } = usePrivy()
+  const emailFromPrivy = user?.email?.address
+  console.log(emailFromPrivy)
+
   const [email, setEmail] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [tryAnotherEmail, setTryAnotherEmail] = useState(false)
@@ -71,6 +76,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
 
   const [verifiedEmail, setVerifiedEmail] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState(false);
+
   
   
   const emailForm = useForm < z.infer < typeof emailFormSchema >> ({
@@ -273,9 +279,6 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     }
   }
 
-  
-
-
   useEffect(() => {
     let intervalEmail: NodeJS.Timeout;
     let intervalPhone: NodeJS.Timeout;
@@ -331,30 +334,52 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
               </DrawerTitle>
               <DrawerDescription className="max-md:text-[0.9rem]">
                 {
-                  !verifiedEmail && !verifiedPhone && (
+                  !verifiedEmail && !verifiedPhone && !emailFromPrivy && (
                     <p>
                       Step 1 of 3: Email Verification
                     </p>
                   )
                 }
+
+
+                {/**phone verification w/o email from privy */}
                 {
-                  verifiedEmail && !verifiedPhone && (
+                  (verifiedEmail && !verifiedPhone) && (
                     <p>
                       Step 2 of 3: Phone Verification
                     </p>
                   )
                 }
+                {/**phone verification w/ email from privy */}
                 {
-                  verifiedEmail && verifiedPhone && (
+                  (emailFromPrivy && !verifiedPhone) && (
                     <p>
-                      Step 3 of 3: Terms and Conditions
+                      Step 1 of 2: Phone Verification
+                    </p>
+                  )
+                }
+
+
+                {/**terms and conditions w/o email from privy */}
+                {
+                   (emailFromPrivy && verifiedPhone && !verifiedEmail) || (verifiedEmail && verifiedPhone) && (
+                    <p>
+                      {emailFromPrivy ? "Step 3 of 3: Terms and Conditions" : "Step 2 of 2: Terms and Conditions"}
+                    </p>
+                  ) 
+                }
+                {/**terms and conditions w/ email from privy */}
+                {
+                  emailFromPrivy && verifiedPhone && (
+                    <p>
+                      {emailFromPrivy ? "Step 3 of 3: Terms and Conditions" : "Step 2 of 2: Terms and Conditions"}
                     </p>
                   ) 
                 }
               </DrawerDescription>
           </DrawerHeader>
           {
-            !verifiedEmail && !verifiedPhone && (
+            !verifiedEmail && !verifiedPhone && !emailFromPrivy && (
               <>
                 <div className="flex flex-col p-4 w-full pb-10">
                   <Form {...emailForm}>
@@ -480,6 +505,8 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
               </>
             )
           }
+
+          {/**phone verification w/o email from privy */}
           {
             verifiedEmail && !verifiedPhone && (
               <>
@@ -614,8 +641,203 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
               </>
             )
           }
+          {/**phone verification w/ email from privy */}
+          {
+            emailFromPrivy && !verifiedPhone && (
+              <>
+                <div className="flex flex-col p-4 w-full pb-10">
+                  <Form {...phoneForm}>
+                    <form onSubmit={phoneForm.handleSubmit(onSubmitPhone)} className="space-y-6">
+                      <div className="flex w-full justify-between gap-2">
+                        <div className="flex flex-col w-full">
+                        <FormField
+                          control={phoneForm.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col items-start">
+                              <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel>Enter your WhatsApp number</FormLabel>
+                                <FormControl className="w-full">
+                                  <PhoneInput
+                                    autoComplete="off"
+                                    disabled={ !!profile?.phone || loadingCode || isDisabledPhone } 
+                                    placeholder={profile?.phone ? profile.phone : "Enter your phone number"}
+                                    className="col-span-3"
+                                    defaultCountry="GH"
+                                    {...field}
+                                  />
+                                </FormControl>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        </div>
+                        <div className="flex items-end justify-center w-2/10">
+                            <Button
+                              className="w-12"
+                              disabled={loadingCode || isDisabledPhone}
+                              type="submit"
+                            >
+                              {
+                                loadingCode
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Send className="w-4 h-4" />
+                              }
+                            </Button>
+                        </div>
+                      </div>
+                      
+                    </form>
+                    {
+                      tryAnotherPhone && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            Entered the wrong phone number?{" "}
+                            <span 
+                              onClick={() => {
+                                setPhone(null);
+                                setTryAnotherPhone(false);
+                                setTokenPhone(null);
+                                setIsDisabledPhone(false);
+                                phoneForm.reset();
+                                setLoadingLinkingPhone(false);
+                              }} 
+                              className="text-yellow-600 font-bold"
+                            >
+                              Try another one
+                            </span>.
+                          </p>
+                        </div>
+                      )
+                    }
+                    {
+                      countdownPhone > 0 && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            You can only send a new code in <span className="text-yellow-600">{countdownPhone}</span> seconds.
+                          </p>
+                        </div>
+                      )
+                    }
+                  </Form>
+                </div> 
+                <>
+                  <div className="flex flex-col p-4 w-full">
+                    <Form {...phoneCodeForm}>
+                      <form onSubmit={phoneCodeForm.handleSubmit(onSubmitPhoneCode)} className="space-y-6">
+                        <FormField
+                          control={phoneCodeForm.control}
+                          name="phoneCode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel>Enter One-Time Password</FormLabel>
+                                <FormControl>
+                                  <div className="flex justify-center">
+                                    <InputOTP pattern={ REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinkingPhone || !phone} {...field} className="w-full ">
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={0} />
+                                        <InputOTPSlot index={1} />
+                                        <InputOTPSlot index={2} />
+                                      </InputOTPGroup>
+                                      <InputOTPSeparator />
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={3} />
+                                        <InputOTPSlot index={4} />
+                                        <InputOTPSlot index={5} />
+                                      </InputOTPGroup>
+                                    </InputOTP>
+                                  </div>
+                                </FormControl>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="flex justify-between">
+                          <div/>
+                          <Button
+                              className="w-36"
+                              disabled={loadingLinkingPhone || phoneCodeForm.getValues("phoneCode")?.length < 6 || !phone}
+                              type="submit"
+                          >
+                              {
+                                      loadingLinkingPhone
+                                      ? <Loader2 className="w-4 h-4 animate-spin" />
+                                      : <Link />
+                                  }
+                                  <p>Link Phone</p>
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>  
+                </>
+              </>
+            )
+          }
+
+          {/**terms and conditions w/o email from privy */}
           {
             verifiedEmail && verifiedPhone && (
+              <>
+                  <div className="flex flex-col p-4 w-full">
+                    <Form {...termsForm}>
+                      <form onSubmit={termsForm.handleSubmit(onSubmitTerms)} className="space-y-6">
+                      <FormField
+                      control={termsForm.control}
+                      name="terms"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                            <FormLabel></FormLabel>
+                            <FormControl>
+                              <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-yellow-600 has-[[aria-checked=true]]:bg-yellow-50 dark:has-[[aria-checked=true]]:border-yellow-900 dark:has-[[aria-checked=true]]:bg-yellow-950">
+                                <Checkbox
+                                  id="toggle-2"
+                                  defaultChecked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="data-[state=checked]:border-yellow-600 data-[state=checked]:bg-yellow-600 data-[state=checked]:text-white dark:data-[state=checked]:border-yellow-700 dark:data-[state=checked]:bg-yellow-700"
+                                />
+                                <div className="grid gap-1.5 font-normal">
+                                  <p className="text-sm leading-none font-medium">
+                                    Accept terms and conditions
+                                  </p>
+                                  <p className="text-muted-foreground text-sm">
+                                    By clicking this checkbox, you agree to the <a href="https://finance.3wb.club/privacy" target="_blank" className="text-yellow-600">privacy policy</a>.
+                                  </p>
+                                </div>
+                              </Label>
+                            </FormControl>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                        
+                        <div className="flex justify-between">
+                          <div/>
+                          <Button
+                            className="w-36"
+                            disabled={loadingLinkingTerms || !termsForm.getValues("terms")}
+                            type="submit"
+                          >
+                            {
+                              loadingLinkingTerms
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <Save />
+                            }
+                            <p>Save Contact</p>
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>  
+                </>
+            ) 
+          }
+          {/**terms and conditions w/ email from privy */}
+          {
+            emailFromPrivy && verifiedPhone && (
               <>
                   <div className="flex flex-col p-4 w-full">
                     <Form {...termsForm}>
