@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { WagmiContext } from "@/context/wagmiContext";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/bottom/footer";
-import PrivyContext from "@/context/privyContext";
+import Providers from "@/context/providers";
 
 
 
@@ -30,13 +29,11 @@ export default function RootLayout({
       <body
         className={`${geistMono.className}`}
       >
-        <PrivyContext>
-          <WagmiContext>
-            {children}
-            <Footer />
-            <Toaster expand={true} richColors />
-          </WagmiContext>
-        </PrivyContext>
+        <Providers>
+          {children}
+          <Footer />
+          <Toaster expand={true} richColors />
+        </Providers>
       </body>
     </html>
   );

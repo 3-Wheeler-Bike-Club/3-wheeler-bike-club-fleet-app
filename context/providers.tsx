@@ -1,11 +1,13 @@
+"use client";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { PrivyProvider } from "@privy-io/react-auth";
 // Make sure to import these from `@privy-io/wagmi`, not `wagmi`
 import { WagmiProvider } from '@privy-io/wagmi';
 
-import { privyConfig } from "./privyConfig";
-import { wagmiConfig } from "./wagmiConfig";
+import { privyConfig } from "@/context/privyConfig";
+import { wagmiConfig } from "@/context/wagmiConfig";
 
 const queryClient = new QueryClient();
 
