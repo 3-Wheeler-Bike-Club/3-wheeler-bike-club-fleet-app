@@ -1,6 +1,6 @@
 "use client"
 
-import { useAccount, useBlockNumber, useReadContract } from "wagmi"
+import { useBlockNumber, useReadContract } from "wagmi"
 import { fleetOrderBook } from "@/utils/constants/addresses"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { useQueryClient } from "@tanstack/react-query"
@@ -8,16 +8,21 @@ import { useEffect } from "react"
 import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
 import { useGetProfile } from "@/hooks/useGetProfile"
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { DoorOpen, UserRoundSearch } from "lucide-react"
 import { VerifyKYC } from "./verifyKYC"
 import { VerifyContact } from "./verifyContact"
+import { usePrivy } from "@privy-io/react-auth"
 
 
 
 export function Wrapper() {
 
-    const { address } = useAccount()
+    const { user } = usePrivy()
+    console.log(user)
+    console.log(user?.wallet?.address)
+    const address = user?.wallet?.address as `0x${string}`
+    
     const { profile, loading, getProfileSync } = useGetProfile(address!)
     console.log(profile);
     const router = useRouter()  
