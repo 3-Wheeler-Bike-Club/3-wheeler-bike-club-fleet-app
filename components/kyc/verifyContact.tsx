@@ -279,6 +279,44 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     }
   }
 
+  async function onSubmitTermsWithPrivyEmail(values: z.infer < typeof termsFormSchema > ) {
+    setLoadingLinkingTerms(true);
+    try {
+      if (emailFromPrivy && values.terms) {
+        //post profile preupload
+        
+        const postProfile = await postProfileAction(
+          address!,
+          emailFromPrivy!.toLowerCase(),
+          phone!,
+        );
+        getProfileSync();
+        if (postProfile) {
+          toast.success("Contact saved successfully", {
+            description: `You can now complete your KYC`,
+          })
+          setLoadingLinkingTerms(false);
+        } else {
+          toast.error("Failed to save contact.", {
+            description: `Something went wrong, please try again`,
+          })
+          setLoadingLinkingTerms(false);
+        }
+      } else {
+        toast.error("You must agree to the terms and conditions", {
+          description: `Please read and agree to the terms and conditions`,
+        })  
+        setLoadingLinkingTerms(false);
+      }
+    } catch (error) {
+      console.error("Submit terms error", error);
+      toast.error("Failed to submit terms.", {
+        description: `Something went wrong, please try again`,
+      })
+      setLoadingLinkingTerms(false);
+    }
+  }
+
   useEffect(() => {
     let intervalEmail: NodeJS.Timeout;
     let intervalPhone: NodeJS.Timeout;
@@ -841,7 +879,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
               <>
                   <div className="flex flex-col p-4 w-full">
                     <Form {...termsForm}>
-                      <form onSubmit={termsForm.handleSubmit(onSubmitTerms)} className="space-y-6">
+                      <form onSubmit={termsForm.handleSubmit(onSubmitTermsWithPrivyEmail)} className="space-y-6">
                       <FormField
                       control={termsForm.control}
                       name="terms"
