@@ -19,7 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, fleetOrderBook, cUSD } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { encodeFunctionData, erc20Abi, formatUnits, parseUnits } from "viem";
+import { encodeFunctionData, erc20Abi, formatUnits } from "viem";
 import { celo, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,7 +28,7 @@ import { useDivvi } from "@/hooks/useDivvi";
 import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 import { useSwitchChain } from "wagmi";
-import { OnRamp } from "./onRamp";
+import { OnRamp } from "@/components/fleet/buy/onRamp";
 import { usePrivy } from "@privy-io/react-auth";
 
 
