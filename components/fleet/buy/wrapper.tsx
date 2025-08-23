@@ -291,7 +291,7 @@ export function Wrapper() {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? decreaseFractions : decrease}
-                                        disabled={isFractionsMode ? fractions <= 1 : amount <= 1}
+                                        disabled={ isFractionsMode ? fractions <= 1 : amount <= 1 || loading || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
 
                                     >
                                         <Minus />
@@ -300,8 +300,8 @@ export function Wrapper() {
                                     <div className="flex items-center justify-center space-x-2">
                                         <div className="flex-1 text-center">
                                             
-                                            <div className="text-7xl max-md:text-5xl font-bold tracking-tighter">
-                                            {isFractionsMode ? fractions : amount}
+                                            <div className={`text-7xl max-md:text-5xl font-bold tracking-tighter ${ ( allowanceCeloUSD == BigInt(0)) ? "text-muted-foreground" : ""}`}>
+                                                {isFractionsMode ? fractions : amount}
                                             </div>
                                             <div className="text-[0.70rem] max-md:text-[0.6rem] uppercase text-muted-foreground">
                                                 No. of {isFractionsMode ? "Fractions" : "3-Wheelers"}
@@ -313,7 +313,7 @@ export function Wrapper() {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? increaseFractions : increase}
-                                        disabled={isFractionsMode ? fractions >= 50 : amount >= 3}
+                                        disabled={ (isFractionsMode ? fractions >= 50 : amount >= 3) || loading || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
                                     >
                                         <Plus />
                                         <span className="sr-only">Increase</span>
