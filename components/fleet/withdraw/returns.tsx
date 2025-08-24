@@ -9,7 +9,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { Button } from "../../ui/button";
+import { Button } from "@/components/ui/button";
 import { BanknoteArrowUp } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 

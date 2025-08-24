@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Logout } from "./logout";
+import { Logout } from "@/components/top/logout";
 
 
 export function Menu() {

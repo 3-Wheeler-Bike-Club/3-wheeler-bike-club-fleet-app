@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUploadThing } from "@/hooks/useUploadThing"
 import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
 import { Profile } from "@/hooks/useGetProfile"
-import { Label } from "../ui/label"
+import { Label } from "@/components/ui/label"
 import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode"
 import { sendVerifySelfMail } from "@/app/actions/mail/sendVerifySelfMail"
 import { sendVerifySelfAdminMail } from "@/app/actions/mail/sendVerifySelfAdminMail"
