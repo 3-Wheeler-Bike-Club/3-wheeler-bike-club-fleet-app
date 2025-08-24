@@ -1,6 +1,3 @@
-import Image from "next/image";
-
-
 export function Footer() {
     return (
         <div className="flex flex-col w-full gap-5 items-center justify-center px-4 mb-4">

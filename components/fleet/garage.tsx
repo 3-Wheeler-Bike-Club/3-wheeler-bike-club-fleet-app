@@ -1,21 +1,21 @@
 "use client"
 
 import { Caravan, HandCoins, OctagonMinus, Warehouse } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Button } from "../ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 import { useBlockNumber, useReadContract } from 'wagmi'
 import { useRouter } from "next/navigation";
 import { fleetOrderBook } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { Logs } from "./history/logs";
-import { CarouselApi, CarouselContent, CarouselNext, CarouselPrevious } from "../ui/carousel";
-import { Carousel } from "../ui/carousel";
-import { Id } from "./id";
+import { Logs } from "@/components/fleet/history/logs";
+import { CarouselApi, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel } from "@/components/ui/carousel";
+import { Id } from "@/components/fleet/id";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Progress } from "../ui/progress";
-import { Returns } from "./withdraw/returns";
+import { Progress } from "@/components/ui/progress";
+import { Returns } from "@/components/fleet/withdraw/returns";
 import { usePrivy } from "@privy-io/react-auth";
 
 

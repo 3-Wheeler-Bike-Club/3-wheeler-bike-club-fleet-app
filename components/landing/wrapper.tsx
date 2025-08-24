@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Wallet, TrendingUp, ShieldCheck, ChartNoAxesCombined } from "lucide-react";
 import Image from "next/image";
 import { usePrivy, useLogin } from "@privy-io/react-auth";

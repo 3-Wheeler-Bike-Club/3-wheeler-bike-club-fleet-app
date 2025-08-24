@@ -9,10 +9,9 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger 
-} from "../ui/alert-dialog"
-import { Button } from "../ui/button"
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
-import { useDisconnect } from "wagmi"
 import { useLogout } from "@privy-io/react-auth"
 
 export function Logout () {
