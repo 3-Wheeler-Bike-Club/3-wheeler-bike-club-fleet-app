@@ -1790,4 +1790,4 @@ export const fleetOrderBookAbi = [
     "type": "receive",
     "stateMutability": "payable"
   }
-]
+] as const;
