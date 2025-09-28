@@ -24,7 +24,7 @@ import { celo, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { divviAbi } from "@/utils/abis/divvi";
-import { useDivvi } from "@/hooks/useDivvi";
+import { useApprove } from "@/hooks/useApprove";
 import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 import { useSwitchChain } from "wagmi";
@@ -66,7 +66,7 @@ export function Wrapper() {
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
     const { sendTransactionAsync } = useSendTransaction();
-    const { registerUser, loading } = useDivvi()
+    const { approve, loadingApproval } = useApprove()
 
 
 
@@ -291,7 +291,7 @@ export function Wrapper() {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? decreaseFractions : decrease}
-                                        disabled={ isFractionsMode ? fractions <= 1 : amount <= 1 || loading || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
+                                        disabled={ isFractionsMode ? fractions <= 1 : amount <= 1 || loadingApproval || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
 
                                     >
                                         <Minus />
@@ -313,7 +313,7 @@ export function Wrapper() {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? increaseFractions : increase}
-                                        disabled={ (isFractionsMode ? fractions >= 50 : amount >= 3) || loading || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
+                                        disabled={ (isFractionsMode ? fractions >= 50 : amount >= 3) || loadingApproval || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
                                     >
                                         <Plus />
                                         <span className="sr-only">Increase</span>
@@ -329,7 +329,7 @@ export function Wrapper() {
                                     {/**pay with celoUSD */}
                                     <Button 
                                         className={` ${allowanceCeloUSD && allowanceCeloUSD > 0 ? "w-full hover:bg-yellow-600" : "w-full bg-yellow-300 hover:bg-yellow-400"}` }
-                                        disabled={loadingCeloUSD  || loading} 
+                                        disabled={loadingCeloUSD  || loadingApproval} 
                                         onClick={() => {
                                             if (allowanceCeloUSD && allowanceCeloUSD > 0) {
                                                 if (isFractionsMode) {
@@ -351,7 +351,7 @@ export function Wrapper() {
                                                 
                                             } else {
                                                 if (!isUserReferredToProvider || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
-                                                    registerUser(address!, cUSD)
+                                                    approve(address!, cUSD)
                                                 } else {
                                                     toast.error("Already approved!", {
                                                         description: "You are have already approved & registered to a provider",
@@ -363,7 +363,7 @@ export function Wrapper() {
                                         }}
                                     >
                                         {
-                                            loadingCeloUSD || loading || loadingAddCeloDollar
+                                            loadingCeloUSD || loadingApproval || loadingAddCeloDollar
                                             ? (
                                                 <Loader2 className="w-4 h-4 animate-spin" /> 
                                             )
