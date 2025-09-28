@@ -48,7 +48,7 @@ export function Garage() {
 
     const fleetOwnedQueryClient = useQueryClient() 
     const maxFleetOrderPerContainerQueryClient = useQueryClient() 
-    const totalFleetQueryClient = useQueryClient()
+    const totalFleetOrderPerContainerQueryClient = useQueryClient()
     const lastFleetFractionQuerClient = useQueryClient()
     const totalFractionsQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
@@ -76,14 +76,14 @@ export function Garage() {
 
 
     // read balance of total fleet ordered
-    const { data: totalFleet, queryKey: totalFleetQueryKey } = useReadContract({
+    const { data: totalFleetOrderPerContainer, queryKey: totalFleetOrderPerContainerQueryKey } = useReadContract({
         address: fleetOrderBook,
         abi: fleetOrderBookAbi,
-        functionName: "totalFleet",
+        functionName: "totalFleetOrderPerContainer",
     });
     useEffect(() => { 
-        totalFleetQueryClient.invalidateQueries({ queryKey: totalFleetQueryKey }) 
-    }, [blockNumber, totalFleetQueryClient, totalFleetQueryKey]) 
+        totalFleetOrderPerContainerQueryClient.invalidateQueries({ queryKey: totalFleetOrderPerContainerQueryKey }) 
+    }, [blockNumber, totalFleetOrderPerContainerQueryClient, totalFleetOrderPerContainerQueryKey]) 
 
     // read last fleet fraction 
     const { data: lastFleetFractionID, queryKey: lastFleetFractionQueryKey } = useReadContract({
@@ -109,14 +109,14 @@ export function Garage() {
     
     useEffect(() => {
         if (totalFractions) {
-            const totalFractionsSold = Number(totalFractions) + ((Number(totalFleet) - 1) * 50)
+            const totalFractionsSold = Number(totalFractions) + ((Number(totalFleetOrderPerContainer) - 1) * 50)
 
             const totalFractionsAvailable = Number(maxFleetOrderPerContainer) * 50
 
             const value = (totalFractionsSold / totalFractionsAvailable) * 100
             setProgress(value)
         }
-    }, [totalFractions, totalFleet, maxFleetOrderPerContainer])
+    }, [totalFractions, totalFleetOrderPerContainer, maxFleetOrderPerContainer])
     
     return (
         <div className="flex flex-col h-full w-full gap-6">
@@ -131,7 +131,7 @@ export function Garage() {
                             <Progress value={progress} className="w-full h-2" />
                             <div className="flex justify-between text-[0.7rem] text-[9px] text-muted-foreground">
                                 <span>{(progress?.toFixed(2))}% complete</span>
-                                <span>{Number(maxFleetOrderPerContainer) - Number(totalFleet)} units, {50 - Number(totalFractions)} fractions left</span>
+                                <span>{Number(maxFleetOrderPerContainer) - Number(totalFleetOrderPerContainer)} units, {50 - Number(totalFractions)} fractions left</span>
                             </div>
                         </div>
                     </AlertDescription>
