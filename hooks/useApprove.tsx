@@ -8,16 +8,16 @@ import { celo } from "viem/chains"
 import { useAccount, useSendTransaction, useSwitchChain } from "wagmi";
 
 
-export const useDivvi = () => {
+export const useApprove = () => {
   
-    const [loading, setLoading] = useState(false)
+    const [loadingApproval, setLoadingApproval] = useState(false)
     const { sendTransactionAsync } = useSendTransaction();
     const { chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
 
-    async function registerUser(account: `0x${string}`, to: `0x${string}`) {
+    async function approve(account: `0x${string}`, to: `0x${string}`) {
       try {
-        setLoading(true)
+        setLoadingApproval(true)
         
 
         const data = encodeFunctionData({
@@ -58,18 +58,18 @@ export const useDivvi = () => {
             chainId: celo.id
           })
         }
-        setLoading(false) 
+        setLoadingApproval(false) 
         toast.info("Approval successful", {
           description: "You can now purchase the 3-Wheelers",
         })
       } catch (error) {
         console.log(error)
-        setLoading(false)
+        setLoadingApproval(false)
         toast.error("Approval failed", {
           description: `Something went wrong, please try again`,
         })
       }   
     }
-    return { registerUser, loading }
+    return { approve, loadingApproval }
   
 }
