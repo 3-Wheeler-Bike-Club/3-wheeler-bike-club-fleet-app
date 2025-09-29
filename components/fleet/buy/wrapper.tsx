@@ -26,6 +26,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { divviAbi } from "@/utils/abis/divvi";
 import { useApprove } from "@/hooks/useApprove";
 import { useOrderFleet } from "@/hooks/useOrderFleet";
+import { useOrderFleetFraction } from "@/hooks/useOrderFleetFraction";
 import { useSendTransaction } from "wagmi";
 import { publicClient } from "@/utils/client";
 import { useSwitchChain } from "wagmi";
@@ -69,7 +70,7 @@ export function Wrapper() {
     const { sendTransactionAsync } = useSendTransaction();
     const { approve, loadingApproval } = useApprove()
     const { orderFleet, loadingOrderFleet } = useOrderFleet()
-
+    const { orderFleetFraction, loadingOrderFleetFraction } = useOrderFleetFraction()
 
 
     //increase and decrease amount...
@@ -189,7 +190,7 @@ export function Wrapper() {
         }
     }
 */
-
+/*
     // order fleet fractions & single 3-Wheeler with celoUSD
     async function orderFleetFractionsWithCeloUSD( shares: number ) {    
         try {
@@ -228,6 +229,7 @@ export function Wrapper() {
             setLoadingCeloUSD(false)
         }
     }
+*/
 
     const onRamp = () => {
         setLoadingAddCeloDollar(true)
@@ -338,7 +340,7 @@ export function Wrapper() {
                                                     if ( (Number(formatUnits(tokenBalance!, 18))) < Math.ceil(fractions * ( Number(fleetFractionPrice) )) ) {
                                                         onRamp()
                                                     } else {
-                                                        orderFleetFractionsWithCeloUSD(fractions)
+                                                        orderFleetFraction(address!, fractions)
                                                     }
                                                     
                                                 } else {

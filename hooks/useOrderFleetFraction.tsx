@@ -10,24 +10,24 @@ import { celo } from "viem/chains"
 import { useAccount, useSendTransaction, useSwitchChain } from "wagmi";
 
 
-export const useOrderFleet = () => {
+export const useOrderFleetFraction = () => {
   
-    const [loadingOrderFleet, setLoadingOrderFleet] = useState(false)
+    const [loadingOrderFleetFraction, setLoadingOrderFleetFraction] = useState(false)
     const { sendTransactionAsync } = useSendTransaction();
     const { chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
 
     const router = useRouter()
 
-    async function orderFleet(account: `0x${string}`, amount: number, ) {
+    async function orderFleetFraction(account: `0x${string}`, shares: number, ) {
       try {
-        setLoadingOrderFleet(true)
+        setLoadingOrderFleetFraction(true)
         
 
         const data = encodeFunctionData({
           abi: fleetOrderBookAbi,
-          functionName: "orderFleet",
-          args: [BigInt(amount), cUSD, account!],
+          functionName: "orderFleetFraction",
+          args: [BigInt(shares), cUSD, account!],
         })
         
 
@@ -62,19 +62,20 @@ export const useOrderFleet = () => {
             chainId: celo.id
           })
         }
-        setLoadingOrderFleet(false) 
+        setLoadingOrderFleetFraction(false) 
+        //success toast
         toast.success("Purchase successful", {
-          description: `You can now view your ${amount > 1 ? "3-Wheelers" : " 3-Wheeler"} in your fleet`,
+            description: `You can now view your 3-Wheeler ${shares == 50 ? "" : `${shares > 1 ? "fractions" : "fraction"}`} in your fleet`,
         })
         router.push("/fleet")
       } catch (error) {
         console.log(error)
-        setLoadingOrderFleet(false)
+        setLoadingOrderFleetFraction(false)
         toast.error("Purchase failed", {
           description: `Something went wrong, please try again`,
       })
       }   
     }
-    return { orderFleet, loadingOrderFleet }
+    return { orderFleetFraction, loadingOrderFleetFraction }
   
 }
