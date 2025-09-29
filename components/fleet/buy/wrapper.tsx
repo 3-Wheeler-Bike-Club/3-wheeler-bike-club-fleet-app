@@ -19,7 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { divvi, fleetOrderBook, cUSD } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
-import { encodeFunctionData, erc20Abi, formatUnits } from "viem";
+import { erc20Abi, formatUnits } from "viem";
 import { celo, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,9 +27,6 @@ import { divviAbi } from "@/utils/abis/divvi";
 import { useApprove } from "@/hooks/useApprove";
 import { useOrderFleet } from "@/hooks/useOrderFleet";
 import { useOrderFleetFraction } from "@/hooks/useOrderFleetFraction";
-import { useSendTransaction } from "wagmi";
-import { publicClient } from "@/utils/client";
-import { useSwitchChain } from "wagmi";
 import { OnRamp } from "@/components/fleet/buy/onRamp";
 import { usePrivy } from "@privy-io/react-auth";
 
@@ -41,15 +38,11 @@ export function Wrapper() {
     console.log(user?.wallet?.address)
     const address = user?.wallet?.address as `0x${string}`
     
-    const { chainId } = useAccount()
-    const { switchChainAsync } = useSwitchChain()
-    console.log(chainId)
 
     const [openDrawer, setOpenDrawer] = useState(true)
     
     const [amount, setAmount] = useState(1)
     const [fractions, setFractions] = useState(1)
-    const [loadingCeloUSD, setLoadingCeloUSD] = useState(false)
     const [loadingAddCeloDollar, setLoadingAddCeloDollar] = useState(false)
         
     const [isFractionsMode, setIsFractionsMode] = useState(true)
@@ -67,7 +60,7 @@ export function Wrapper() {
     const compliantQueryClient = useQueryClient()
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
-    const { sendTransactionAsync } = useSendTransaction();
+    
     const { approve, loadingApproval } = useApprove()
     const { orderFleet, loadingOrderFleet } = useOrderFleet()
     const { orderFleetFraction, loadingOrderFleetFraction } = useOrderFleetFraction()
@@ -151,85 +144,6 @@ export function Wrapper() {
         compliantQueryClient.invalidateQueries({ queryKey: compliantQueryKey }) 
     }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
 
-/*
-    // order multiple fleet with celoUSD
-    async function orderFleetWithCeloUSD() { 
-        try {
-            setLoadingCeloUSD(true)
-            if (chainId !== celo.id) {
-               await switchChainAsync({ chainId: celo.id })
-            }
-            const hash = await sendTransactionAsync({
-                to: fleetOrderBook,
-                data: encodeFunctionData({
-                    abi: fleetOrderBookAbi,
-                    functionName: "orderFleet",
-                    args: [BigInt(amount), cUSD, address!],
-                }),
-                chainId: celo.id,
-            })
-            const transaction = await publicClient.waitForTransactionReceipt({
-                confirmations: 1,
-                hash: hash
-            })
-              
-            if (transaction) {
-                //success toast
-                toast.success("Purchase successful", {
-                    description: `You can now view your ${amount > 1 ? "3-Wheelers" : " 3-Wheeler"} in your fleet`,
-                })
-                setLoadingCeloUSD(false)
-                router.push("/fleet")
-            }
-        } catch (error) {
-            console.log(error)
-            toast.error("Purchase failed", {
-                description: `Something went wrong, please try again`,
-            })
-            setLoadingCeloUSD(false)
-        }
-    }
-*/
-/*
-    // order fleet fractions & single 3-Wheeler with celoUSD
-    async function orderFleetFractionsWithCeloUSD( shares: number ) {    
-        try {
-            setLoadingCeloUSD(true)
-            if (chainId !== celo.id) {
-                await switchChainAsync({ chainId: celo.id })
-            }
-            const hash = await sendTransactionAsync({
-                to: fleetOrderBook,
-                data: encodeFunctionData({
-                    abi: fleetOrderBookAbi,
-                    functionName: "orderFleetFraction",
-                    args: [BigInt(shares), cUSD, address!],
-                }),
-                chainId: celo.id,
-            })
-            const transaction = await publicClient.waitForTransactionReceipt({
-                confirmations: 1,
-                hash: hash
-            })
-
-            if (transaction) {
-                //success toast
-                toast.success("Purchase successful", {
-                    description: `You can now view your 3-Wheeler ${shares == 50 ? "" : `${shares > 1 ? "fractions" : "fraction"}`} in your fleet`,
-                })
-
-                setLoadingCeloUSD(false)
-                router.push("/fleet")
-            }
-        } catch (error) {
-            console.log(error)
-            toast.error("Purchase failed", {
-                description: `Something went wrong, please try again`,
-            })
-            setLoadingCeloUSD(false)
-        }
-    }
-*/
 
     const onRamp = () => {
         setLoadingAddCeloDollar(true)
@@ -295,7 +209,7 @@ export function Wrapper() {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? decreaseFractions : decrease}
-                                        disabled={ isFractionsMode ? fractions <= 1 : amount <= 1 || loadingApproval || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
+                                        disabled={ isFractionsMode ? fractions <= 1 : amount <= 1 || loadingApproval || loadingOrderFleet || loadingOrderFleetFraction || ( allowanceCeloUSD == BigInt(0)) }
 
                                     >
                                         <Minus />
@@ -317,7 +231,7 @@ export function Wrapper() {
                                         size="icon"
                                         className="h-8 w-8 shrink-0 rounded-full"
                                         onClick={isFractionsMode ? increaseFractions : increase}
-                                        disabled={ (isFractionsMode ? fractions >= 50 : amount >= 3) || loadingApproval || loadingCeloUSD || ( allowanceCeloUSD == BigInt(0)) }
+                                        disabled={ (isFractionsMode ? fractions >= 50 : amount >= 3) || loadingApproval || loadingOrderFleet || loadingOrderFleetFraction || ( allowanceCeloUSD == BigInt(0)) }
                                     >
                                         <Plus />
                                         <span className="sr-only">Increase</span>
@@ -333,7 +247,7 @@ export function Wrapper() {
                                     {/**pay with celoUSD */}
                                     <Button 
                                         className={` ${allowanceCeloUSD && allowanceCeloUSD > 0 ? "w-full hover:bg-yellow-600" : "w-full bg-yellow-300 hover:bg-yellow-400"}` }
-                                        disabled={loadingCeloUSD  || loadingApproval} 
+                                        disabled={loadingOrderFleet || loadingOrderFleetFraction || loadingApproval} 
                                         onClick={() => {
                                             if (allowanceCeloUSD && allowanceCeloUSD > 0) {
                                                 if (isFractionsMode) {
@@ -367,7 +281,7 @@ export function Wrapper() {
                                         }}
                                     >
                                         {
-                                            loadingCeloUSD || loadingApproval || loadingAddCeloDollar
+                                            loadingOrderFleet || loadingOrderFleetFraction || loadingApproval || loadingAddCeloDollar
                                             ? (
                                                 <Loader2 className="w-4 h-4 animate-spin" /> 
                                             )
