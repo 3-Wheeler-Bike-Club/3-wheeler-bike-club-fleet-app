@@ -5,7 +5,7 @@ import { getReferralTag, submitReferral } from "@divvi/referral-sdk"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
-import { encodeFunctionData, erc20Abi, maxUint256 } from "viem"
+import { encodeFunctionData } from "viem"
 import { celo } from "viem/chains"
 import { useAccount, useSendTransaction, useSwitchChain } from "wagmi";
 
