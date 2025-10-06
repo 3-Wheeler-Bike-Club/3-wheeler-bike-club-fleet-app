@@ -76,7 +76,7 @@ export function Id( {fleet}: IdProps ) {
     const { data: fleetOrderStatus, queryKey: fleetOrderStatusQueryKey } = useReadContract({
         address: fleetOrderBook,
         abi: fleetOrderBookAbi,
-        functionName: "getFleetOrderStatus",
+        functionName: "getFleetOrderStatusReadable",
         args: [BigInt(Number(fleet))],
     })
     useEffect(() => { 
