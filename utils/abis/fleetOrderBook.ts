@@ -31,17 +31,7 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
-    "name": "BulkUpdateLimitExceeded",
-    "type": "error",
-    "inputs": []
-  },
-  {
     "name": "CannotChangeValueDuringOpenRound",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "DuplicateIds",
     "type": "error",
     "inputs": []
   },
@@ -56,22 +46,12 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
-    "name": "ExpectedValueAlreadySet",
-    "type": "error",
-    "inputs": []
-  },
-  {
     "name": "FractionExceedsMax",
     "type": "error",
     "inputs": []
   },
   {
     "name": "IdDoesNotExist",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "InitialValueAlreadySet",
     "type": "error",
     "inputs": []
   },
@@ -106,21 +86,6 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
-    "name": "InvalidStateTransition",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "InvalidStatus",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "LockPeriodAlreadySet",
-    "type": "error",
-    "inputs": []
-  },
-  {
     "name": "MaxFleetOrderPerAddressExceeded",
     "type": "error",
     "inputs": []
@@ -141,11 +106,6 @@ export const fleetOrderBookAbi = [
     "inputs": []
   },
   {
-    "name": "MaxFleetOrderPerContainerNotReached",
-    "type": "error",
-    "inputs": []
-  },
-  {
     "name": "MaxOrderMultipleFleetExceeded",
     "type": "error",
     "inputs": []
@@ -162,11 +122,6 @@ export const fleetOrderBookAbi = [
   },
   {
     "name": "NotEnoughTokens",
-    "type": "error",
-    "inputs": []
-  },
-  {
-    "name": "OperatorAlreadyAssigned",
     "type": "error",
     "inputs": []
   },
@@ -233,32 +188,6 @@ export const fleetOrderBookAbi = [
     "anonymous": false
   },
   {
-    "name": "ERC20Added",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "name": "ERC20Removed",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
-    ],
-    "anonymous": false
-  },
-  {
     "name": "FleetFractionOrdered",
     "type": "event",
     "inputs": [
@@ -309,44 +238,6 @@ export const fleetOrderBookAbi = [
     "anonymous": false
   },
   {
-    "name": "FleetFractionPriceChanged",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "oldPrice",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "newPrice",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "name": "FleetOrderStatusChanged",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "id",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
-      },
-      {
-        "name": "status",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
     "name": "FleetOrdered",
     "type": "event",
     "inputs": [
@@ -366,50 +257,6 @@ export const fleetOrderBookAbi = [
         "name": "amount",
         "type": "uint256",
         "indexed": true,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "name": "FleetSalesWithdrawn",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "to",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "amount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "name": "MaxFleetOrderPerContainerChanged",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "oldMax",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "newMax",
-        "type": "uint256",
-        "indexed": false,
         "internalType": "uint256"
       }
     ],
@@ -745,24 +592,6 @@ export const fleetOrderBookAbi = [
     "stateMutability": "nonpayable"
   },
   {
-    "name": "assignFleetOperator",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "id",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "operator",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
     "name": "balanceOf",
     "type": "function",
     "inputs": [
@@ -819,6 +648,19 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "fleetFractionPriceWithOffRampServiceFee",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "fleetLiquidityProviderExpectedValue",
     "type": "function",
     "inputs": [],
@@ -840,19 +682,6 @@ export const fleetOrderBookAbi = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "fleetOrderYieldContract",
-    "type": "function",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "contract IFleetOrderYield"
       }
     ],
     "stateMutability": "view"
@@ -942,82 +771,6 @@ export const fleetOrderBookAbi = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "getFleetOperated",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "operator",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "getFleetOperators",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "id",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "getFleetOrderStatus",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "id",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "getFleetOrderStatusReadable",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "id",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "string",
-        "internalType": "string"
       }
     ],
     "stateMutability": "view"
@@ -1498,24 +1251,6 @@ export const fleetOrderBookAbi = [
     "stateMutability": "nonpayable"
   },
   {
-    "name": "setBulkFleetOrderStatus",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "ids",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
-      },
-      {
-        "name": "status",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
     "name": "setCompliance",
     "type": "function",
     "inputs": [
@@ -1559,19 +1294,6 @@ export const fleetOrderBookAbi = [
         "name": "_fleetFractionPrice",
         "type": "uint256",
         "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "name": "setFleetOrderYieldContract",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "_fleetOrderYieldContract",
-        "type": "address",
-        "internalType": "address"
       }
     ],
     "outputs": [],

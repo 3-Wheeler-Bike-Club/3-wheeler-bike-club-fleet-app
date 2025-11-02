@@ -54,6 +54,7 @@ export function Wrapper() {
     
 
     const fleetFractionPriceQueryClient = useQueryClient()
+    const fleetFractionPriceOffRampServiceFeeQueryClient = useQueryClient()
     const allowanceCeloDollarQueryClient = useQueryClient()
     const isUserReferredToProviderQueryClient = useQueryClient()
     const tokenBalanceQueryClient = useQueryClient()
@@ -93,6 +94,16 @@ export function Wrapper() {
         fleetFractionPriceQueryClient.invalidateQueries({ queryKey: fleetFractionPriceQueryKey }) 
     }, [blockNumber, fleetFractionPriceQueryClient, fleetFractionPriceQueryKey]) 
 
+
+
+    const { data: fleetFractionPriceOffRampServiceFee, queryKey: fleetFractionPriceOffRampServiceFeeQueryKey } = useReadContract({
+        abi: fleetOrderBookAbi,
+        address: fleetOrderBook,
+        functionName: "fleetFractionPriceWithOffRampServiceFee",
+    })
+    useEffect(() => { 
+        fleetFractionPriceOffRampServiceFeeQueryClient.invalidateQueries({ queryKey: fleetFractionPriceOffRampServiceFeeQueryKey }) 
+    }, [blockNumber, fleetFractionPriceOffRampServiceFeeQueryClient, fleetFractionPriceOffRampServiceFeeQueryKey]) 
 
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
