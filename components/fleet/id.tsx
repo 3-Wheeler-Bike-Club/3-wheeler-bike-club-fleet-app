@@ -4,10 +4,11 @@ import { Card } from "@/components/ui/card"
 import Image from "next/image"
 import { useBlockNumber, useReadContract } from "wagmi"
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
-import { fleetOrderBook } from "@/utils/constants/addresses"
+import { fleetOrderBook, fleetOrderYield } from "@/utils/constants/addresses"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { usePrivy } from "@privy-io/react-auth"
+import { fleetOrderYieldAbi } from "@/utils/abis/fleetOrderYield"
 
 
 
@@ -76,8 +77,8 @@ export function Id( {fleet}: IdProps ) {
 
 
     const { data: fleetOrderStatus, queryKey: fleetOrderStatusQueryKey } = useReadContract({
-        address: fleetOrderBook,
-        abi: fleetOrderBookAbi,
+        address: fleetOrderYield,
+        abi: fleetOrderYieldAbi,
         functionName: "getFleetOrderStatusReadable",
         args: [BigInt(Number(fleet))],
     })
