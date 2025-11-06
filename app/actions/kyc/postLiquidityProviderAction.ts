@@ -1,13 +1,13 @@
 "use server"
 
 
-export async function postProfileAction(
+export async function postLiquidityProviderAction(
     address: `0x${string}`,
     email: string,
     phone: string,
 ) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/postProfile`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/kyc/postLiquidityProvider`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export async function postProfileAction(
             })
         })
         if (!response.ok) {
-            throw new Error("Failed to post profile")
+            throw new Error("Failed to post liquidity provider")
         }
         return response.json()
     } catch (error) { 

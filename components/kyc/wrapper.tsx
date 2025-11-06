@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
-import { useGetProfile } from "@/hooks/useGetProfile"
+import { useGetLiquidityProvider } from "@/hooks/useGetLiquidityProvider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { DoorOpen, UserRoundSearch } from "lucide-react"
 import { VerifyKYC } from "@/components/kyc/verifyKYC"
@@ -23,8 +23,8 @@ export function Wrapper() {
     console.log(user?.wallet?.address)
     const address = user?.wallet?.address as `0x${string}`
     
-    const { profile, loading, getProfileSync } = useGetProfile(address!)
-    console.log(profile);
+    const { liquidityProvider, loading, getLiquidityProviderSync } = useGetLiquidityProvider(address!)
+    console.log(liquidityProvider);
     const router = useRouter()  
 
 
@@ -82,12 +82,12 @@ export function Wrapper() {
                                         <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                                         <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
                                         {
-                                            profile?.files && profile?.files?.length > 0
+                                            liquidityProvider?.files && liquidityProvider?.files?.length > 0
                                             ? <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your KYC is pending verification. Please wait while we review your documents.</p>
                                             : <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC options below to access P2P fleet financing.</p>
                                         }
                                         {
-                                            profile?.email ? <VerifyKYC address={address!} profile={profile} getProfileSync={getProfileSync} /> : <VerifyContact address={address!} profile={profile} getProfileSync={getProfileSync} />
+                                            liquidityProvider?.email ? <VerifyKYC address={address!} liquidityProvider={liquidityProvider!} getLiquidityProviderSync={getLiquidityProviderSync} /> : <VerifyContact address={address!} liquidityProvider={liquidityProvider!} getLiquidityProviderSync={getLiquidityProviderSync} />
                                         }
                                     </div>
                                     

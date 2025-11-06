@@ -11,16 +11,16 @@ import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Profile } from "@/hooks/useGetProfile"
+import { LiquidityProvider } from "@/hooks/useGetLiquidityProvider"
 import { sendVerifyEmail } from "@/app/actions/mail/sendVerifyMail"
-import { postProfileAction } from "@/app/actions/kyc/postProfileAction"
+import { postLiquidityProviderAction } from "@/app/actions/kyc/postLiquidityProviderAction"
 import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
-import { getProfileByEmailAction } from "@/app/actions/kyc/getProfileByEmailAction"
+import { getLiquidityProviderByEmailAction } from "@/app/actions/kyc/getLiquidityProviderByEmailAction"
 import { PhoneInput } from "@/components/ui/phone-input"
 import { sendVerifyPhone } from "@/app/actions/phone/sendVerifyPhone"
-import { getProfileByPhoneAction } from "@/app/actions/kyc/getProfileByPhoneAction"
+import { getLiquidityProviderByPhoneAction } from "@/app/actions/kyc/getLiquidityProviderByPhoneAction"
 import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -47,13 +47,13 @@ const termsFormSchema = z.object({
   terms: z.boolean(),
 })
 
-interface VerifyEmailProps {
+interface VerifyContactProps {
   address: `0x${string}`
-  profile: Profile | null
-  getProfileSync: () => void
+  liquidityProvider: LiquidityProvider | null
+  getLiquidityProviderSync: () => void
 }
 
-export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailProps) {
+export function VerifyContact({ address, liquidityProvider, getLiquidityProviderSync }: VerifyContactProps) {
 
   const { user } = usePrivy()
   const emailFromPrivy = user?.email?.address
@@ -118,8 +118,8 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     try {
       setLoadingCode(true);
       //check if email is already in use
-      const profile = await getProfileByEmailAction(values.email.toLowerCase());
-      if(profile) {
+      const liquidityProvider = await getLiquidityProviderByEmailAction(values.email.toLowerCase());
+      if(liquidityProvider) {
         toast.error("Email already in use", {
           description: `Please enter a different email address`,
         })
@@ -185,8 +185,8 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     setLoadingCode(true);
     try {
       //check if phone is already in use
-      const profile = await getProfileByPhoneAction(values.phone);
-      if(profile) {
+      const liquidityProvider = await getLiquidityProviderByPhoneAction(values.phone);
+      if(liquidityProvider) {
         toast.error("Phone already in use", {
           description: `Please enter a different phone number`,
         })
@@ -245,15 +245,15 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     try {
       console.log(values);
       if (values.terms) {
-        //post profile preupload
+        //post liquidity provider preupload
         
-        const postProfile = await postProfileAction(
+        const postLiquidityProvider = await postLiquidityProviderAction(
           address!,
           email!.toLowerCase(),
           phone!,
         );
-        getProfileSync();
-        if (postProfile) {
+        getLiquidityProviderSync();
+        if (postLiquidityProvider) {
           toast.success("Contact saved successfully", {
             description: `You can now complete your KYC`,
           })
@@ -283,15 +283,15 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
     setLoadingLinkingTerms(true);
     try {
       if (emailFromPrivy && values.terms) {
-        //post profile preupload
+        //post liquidity provider preupload
         
-        const postProfile = await postProfileAction(
+        const postLiquidityProvider = await postLiquidityProviderAction(
           address!,
           emailFromPrivy!.toLowerCase(),
           phone!,
         );
-        getProfileSync();
-        if (postProfile) {
+        getLiquidityProviderSync();
+        if (postLiquidityProvider) {
           toast.success("Contact saved successfully", {
             description: `You can now complete your KYC`,
           })
@@ -432,7 +432,7 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                       <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                       <FormLabel>Enter your email address</FormLabel>
                                           <FormControl >
-                                              <Input autoComplete="off" disabled={ !!profile || !!email || loadingCode || isDisabledEmail } className="col-span-3" placeholder={""} {...field} />
+                                              <Input autoComplete="off" disabled={ !!liquidityProvider || !!email || loadingCode || isDisabledEmail } className="col-span-3" placeholder={""} {...field} />
                                           </FormControl>
                                       </div>
                                   </FormItem>
@@ -563,8 +563,8 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                 <FormControl className="w-full">
                                   <PhoneInput
                                     autoComplete="off"
-                                    disabled={ !!profile?.phone || loadingCode || isDisabledPhone } 
-                                    placeholder={profile?.phone ? profile.phone : "Enter your phone number"}
+                                    disabled={ !!liquidityProvider?.phone || loadingCode || isDisabledPhone } 
+                                    placeholder={liquidityProvider?.phone ? liquidityProvider.phone : "Enter your phone number"}
                                     className="col-span-3"
                                     defaultCountry="GH"
                                     {...field}
@@ -698,8 +698,8 @@ export function VerifyContact({ address, profile, getProfileSync }: VerifyEmailP
                                 <FormControl className="w-full">
                                   <PhoneInput
                                     autoComplete="off"
-                                    disabled={ !!profile?.phone || loadingCode || isDisabledPhone } 
-                                    placeholder={profile?.phone ? profile.phone : "Enter your phone number"}
+                                    disabled={ !!liquidityProvider?.phone || loadingCode || isDisabledPhone } 
+                                    placeholder={liquidityProvider?.phone ? liquidityProvider.phone : "Enter your phone number"}
                                     className="col-span-3"
                                     defaultCountry="GH"
                                     {...field}

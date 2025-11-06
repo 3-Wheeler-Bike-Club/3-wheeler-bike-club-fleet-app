@@ -1,17 +1,17 @@
 "use server"
 
-export async function getProfileByEmailAction(email: string) {
+export async function getLiquidityProviderByPhoneAction(phone: string) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getProfileByEmail`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getLiquidityProviderByPhone`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "x-api-key": process.env.THREEWB_API_KEY
             },
-            body: JSON.stringify({ email: email })
+            body: JSON.stringify({ phone: phone })
         })
         if (!response.ok) {
-            throw new Error("Failed to get profile")
+            throw new Error("Failed to get liquidity provider")
         }
         return response.json()
     } catch (error) {
