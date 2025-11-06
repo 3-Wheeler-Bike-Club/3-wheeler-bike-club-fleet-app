@@ -14,8 +14,8 @@ import { Input } from "@/components/ui/input"
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from "@/components/ui/file-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUploadThing } from "@/hooks/useUploadThing"
-import { updateProfileAction } from "@/app/actions/kyc/updateProfileAction"
-import { Profile } from "@/hooks/useGetProfile"
+import { updateLiquidityProviderAction } from "@/app/actions/kyc/updateLiquidityProviderAction"
+import { LiquidityProvider } from "@/hooks/useGetLiquidityProvider"
 import { Label } from "@/components/ui/label"
 import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode"
 import { sendVerifySelfMail } from "@/app/actions/mail/sendVerifySelfMail"
@@ -41,11 +41,11 @@ const ManualUploadFormSchema = z.object({
 
 interface VerifyKYCProps {
   address: `0x${string}`
-  profile: Profile
-  getProfileSync: () => void
+  liquidityProvider: LiquidityProvider
+  getLiquidityProviderSync: () => void
 }
 
-export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) {
+export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync }: VerifyKYCProps) {
 
   const [files, setFiles] = useState < File[] | null > (null);
   console.log(files);
@@ -142,8 +142,8 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
         } 
         const uploadFiles = await startUpload(files);
           if(uploadFiles) {
-            //update profile with files
-            const updateProfile = await updateProfileAction(
+            //update liquidity provider with files
+            const updateLiquidityProvider = await updateLiquidityProviderAction(
               address!,
               manualFormValues.firstname,
               manualFormValues.othername,
@@ -151,9 +151,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
               values.id,
               uploadFiles.map((file) => file.ufsUrl)
             );
-            if (updateProfile) {
+            if (updateLiquidityProvider) {
               await sendVerifySelfMail(
-                profile.email,
+                liquidityProvider.email,
                 manualFormValues.firstname
               )
               await sendVerifySelfAdminMail(
@@ -165,7 +165,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                 description: "Our Team will review your KYC and get back to you shortly",
               })
               setLoading(false);
-              getProfileSync();
+              getLiquidityProviderSync();
             } else {
               toast.error("KYC Failed", {
                 description: `Something went wrong, please try again`,
@@ -194,7 +194,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
       <DrawerTrigger asChild>
           <Button className="max-w-fit h-12 rounded-2xl">
               {
-                profile.files.length > 0
+                liquidityProvider.files.length > 0
                 ? <p>View KYC Profile</p>
                 : <p>Complete KYC</p>
               }
@@ -258,7 +258,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                 <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                     <FormLabel className="text-yellow-600">ID</FormLabel>
                                     {
-                                        !profile.id
+                                        !liquidityProvider.id
                                         ?(
                                             <>
                                                 <Select 
@@ -289,7 +289,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                         :(
                                             <>
                                                 <FormControl>
-                                                    <Input disabled className="col-span-3" placeholder={profile.id === "passport" ? "Passport" : "National ID" } {...field} />
+                                                    <Input disabled className="col-span-3" placeholder={liquidityProvider.id === "passport" ? "Passport" : "National ID" } {...field} />
                                                 </FormControl>
                                             </>
                                         )
@@ -304,7 +304,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                             <>
                               <div>
                                 {
-                                  profile.files.length <= 0
+                                  liquidityProvider.files.length <= 0
                                   ?(
                                     <>
                                       <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
@@ -434,9 +434,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                     <FormControl >
                                         <Input 
                                           autoComplete="off" 
-                                          disabled={ !!profile.firstname || loading } 
+                                          disabled={ !!liquidityProvider.firstname || loading } 
                                           className="col-span-3" 
-                                          placeholder={profile.firstname ? profile.firstname.toUpperCase() : "VITALIK"} 
+                                          placeholder={liquidityProvider.firstname ? liquidityProvider.firstname.toUpperCase() : "VITALIK"} 
                                           {...field}
                                           onChange={(e) => {
                                             field.onChange(e.target.value.toUpperCase())
@@ -457,9 +457,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                       <FormControl >
                                           <Input 
                                             autoComplete="off" 
-                                            disabled={ !!profile.othername || loading } 
+                                            disabled={ !!liquidityProvider.othername || loading } 
                                             className="col-span-3" 
-                                            placeholder={profile.othername ? profile.othername.toUpperCase() : "DOTETH"} 
+                                            placeholder={liquidityProvider.othername ? liquidityProvider.othername.toUpperCase() : "DOTETH"} 
                                             {...field}
                                             onChange={(e) => {
                                               field.onChange(e.target.value.toUpperCase())
@@ -480,9 +480,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                       <FormControl >
                                           <Input 
                                             autoComplete="off" 
-                                            disabled={ !!profile.lastname || loading } 
+                                            disabled={ !!liquidityProvider.lastname || loading } 
                                             className="col-span-3" 
-                                            placeholder={profile.lastname ? profile.lastname.toUpperCase() : "BUTERIN"} 
+                                            placeholder={liquidityProvider.lastname ? liquidityProvider.lastname.toUpperCase() : "BUTERIN"} 
                                             {...field}
                                             onChange={(e) => {
                                               field.onChange(e.target.value.toUpperCase())
@@ -497,20 +497,20 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                           
                           <Button
                               className="w-full"
-                              disabled={loading || profile.files.length > 0}
+                              disabled={loading || liquidityProvider.files.length > 0}
                               type="submit"
                           >
                               {
                                   loading
                                   ? <Loader2 className="w-4 h-4 animate-spin" />
                                   : (
-                                    profile.files.length > 0
+                                    liquidityProvider.files.length > 0
                                     ? <Hourglass />
                                     : <Scan />
                                   )
                               }
                               {
-                                profile.files.length > 0
+                                liquidityProvider.files.length > 0
                                 ? <p>KYC Review Pending...</p>
                                 : <p>Scan & Upload ID</p>
                               }
@@ -559,7 +559,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                       try {
                                         setLoading(true);
                                         const values = selfForm.getValues();
-                                        const updateProfile = await updateProfileAction(
+                                        const updateLiquidityProvider = await updateLiquidityProviderAction(
                                           address!,
                                           values.firstname,
                                           values.othername,
@@ -567,9 +567,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                           "self.xyz",
                                           ["self.xyz"]
                                         );
-                                        if (updateProfile) {
+                                        if (updateLiquidityProvider) {
                                           await sendVerifySelfMail(
-                                            profile.email,
+                                            liquidityProvider.email,
                                             values.firstname
                                           )
                                           await sendVerifySelfAdminMail(
@@ -581,7 +581,7 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                             description: "Our Team will review your KYC and get back to you shortly",
                                           })
                                           setLoading(false);
-                                          getProfileSync();
+                                          getLiquidityProviderSync();
                                         } else {
                                           toast.error("KYC Failed", {
                                             description: `Something went wrong, please try again`,
@@ -641,9 +641,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                                   <FormControl >
                                                       <Input 
                                                         autoComplete="off" 
-                                                        disabled={ !!profile.firstname || loading } 
+                                                          disabled={ !!liquidityProvider.firstname || loading } 
                                                         className="col-span-3" 
-                                                        placeholder={profile.firstname ? profile.firstname.toUpperCase() : "VITALIK"}
+                                                        placeholder={liquidityProvider.firstname ? liquidityProvider.firstname.toUpperCase() : "VITALIK"}
                                                         {...field}
                                                         onChange={(e) => {
                                                           field.onChange(e.target.value.toUpperCase())
@@ -664,9 +664,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                                     <FormControl >
                                                         <Input 
                                                           autoComplete="off" 
-                                                          disabled={ !!profile.othername || loading } 
+                                                          disabled={ !!liquidityProvider.othername || loading } 
                                                           className="col-span-3" 
-                                                          placeholder={profile.othername ? profile.othername.toUpperCase() : "DOTETH"} 
+                                                          placeholder={liquidityProvider.othername ? liquidityProvider.othername.toUpperCase() : "DOTETH"} 
                                                           {...field}
                                                           onChange={(e) => {
                                                             field.onChange(e.target.value.toUpperCase())
@@ -687,9 +687,9 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                                     <FormControl >
                                                         <Input 
                                                           autoComplete="off" 
-                                                          disabled={ !!profile.lastname || loading } 
+                                                          disabled={ !!liquidityProvider.lastname || loading } 
                                                           className="col-span-3" 
-                                                          placeholder={profile.lastname ? profile.lastname.toUpperCase() : "BUTERIN"} 
+                                                          placeholder={liquidityProvider.lastname ? liquidityProvider.lastname.toUpperCase() : "BUTERIN"} 
                                                           {...field}
                                                           onChange={(e) => {
                                                             field.onChange(e.target.value.toUpperCase())
@@ -704,20 +704,20 @@ export function VerifyKYC({ address, profile, getProfileSync }: VerifyKYCProps) 
                                     <div className="flex">
                                         <Button
                                             className="w-full"
-                                            disabled={loading || profile.files.length > 0}
+                                            disabled={loading || liquidityProvider.files.length > 0}
                                             type="submit"
                                         >
                                             {
                                                 loading
                                                 ? <Loader2 className="w-4 h-4 animate-spin" />
                                                 : (
-                                                  profile.files.length > 0
+                                                  liquidityProvider.files.length > 0
                                                   ? <Hourglass />
                                                   : <Camera />
                                                 )
                                             }
                                             {
-                                              profile.files.length > 0
+                                              liquidityProvider.files.length > 0
                                               ? <p>KYC Review Pending...</p>
                                               : <p>Scan Self.xyz QR</p>
                                             }

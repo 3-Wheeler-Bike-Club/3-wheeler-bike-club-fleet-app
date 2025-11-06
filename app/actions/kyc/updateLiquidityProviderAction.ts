@@ -1,7 +1,7 @@
 "use server"
 
 
-export async function updateProfileAction(
+export async function updateLiquidityProviderAction(
     address: `0x${string}`,
     firstname: string,
     othername: string,
@@ -10,7 +10,7 @@ export async function updateProfileAction(
     files: string[]
 ) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateProfile`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateLiquidityProvider`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -26,7 +26,7 @@ export async function updateProfileAction(
             })
         })
         if (!response.ok) {
-            throw new Error("Failed to update profile")
+            throw new Error("Failed to update liquidity provider")
         }
         return response.json()
     } catch (error) { 

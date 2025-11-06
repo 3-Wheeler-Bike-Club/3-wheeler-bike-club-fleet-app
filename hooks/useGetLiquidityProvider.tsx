@@ -1,8 +1,8 @@
-import { getProfileAction } from "@/app/actions/kyc/getProfileAction"
+import { getLiquidityProviderAction } from "@/app/actions/kyc/getLiquidityProviderAction"
 import { useEffect, useState } from "react"
 
 
-export interface Profile {
+export interface LiquidityProvider {
     address: `0x${string}`
     email: string
     phone: string
@@ -14,18 +14,18 @@ export interface Profile {
     compliant: boolean
 }
 
-export const useGetProfile = (address: `0x${string}` | undefined) => {
-    const [profile, setProfile] = useState<Profile | null>(null)
+export const useGetLiquidityProvider = (address: `0x${string}` | undefined) => {
+    const [liquidityProvider, setLiquidityProvider] = useState<LiquidityProvider | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<any | null>(null)
 
     useEffect(() => {
-        async function getProfile() {
+        async function getLiquidityProvider() {
             try {
                 setLoading(true)
                 if (address) {
-                    const data = await getProfileAction(address)
-                    setProfile(data)
+                    const data = await getLiquidityProviderAction(address)
+                    setLiquidityProvider(data)
                     setLoading(false)
                 }
             } catch (error) {
@@ -33,15 +33,15 @@ export const useGetProfile = (address: `0x${string}` | undefined) => {
                 setLoading(false)
             }
         }
-        getProfile()
+        getLiquidityProvider()
     }, [address])
 
-    const getProfileSync = async () => {
+    const getLiquidityProviderSync = async () => {
         try {
             setLoading(true)
             if (address) {
-                const data = await getProfileAction(address)
-                setProfile(data )
+                const data = await getLiquidityProviderAction(address)
+                setLiquidityProvider(data )
                 setLoading(false)
             }
         } catch (error) {
@@ -50,5 +50,5 @@ export const useGetProfile = (address: `0x${string}` | undefined) => {
         }
     }
 
-    return { profile, loading, error, getProfileSync }
+    return { liquidityProvider, loading, error, getLiquidityProviderSync }
 }

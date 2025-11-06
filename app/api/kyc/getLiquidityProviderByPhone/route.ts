@@ -1,4 +1,4 @@
-import Profile from "@/model/profile";
+import LiquidityProvider from "@/model/liquidityProvider";
 import connectDB from "@/utils/db/mongodb";
 import { middleware } from "@/utils/db/middleware";
 
@@ -9,17 +9,19 @@ export async function POST(
     const authResponse = middleware(req);
     if (authResponse.status !== 200) {
         return authResponse;
-    }
+       }
 
     try {
         await connectDB();
-        const profiles = await Profile.find({});
+        
+        const { phone } = await req.json();
 
+        const liquidityProvider = await LiquidityProvider.findOne({ phone: phone});
 
-        if (!profiles) {
+        if (!liquidityProvider) {
             return new Response(
                 JSON.stringify({
-                    error: "Profiles not found",
+                    error: "Liquidity provider not found",
                 }),
                 { status: 404 }
             );
@@ -27,14 +29,14 @@ export async function POST(
 
 
         return new Response(
-            JSON.stringify(profiles),
+            JSON.stringify(liquidityProvider),
             { status: 200 }
         );
 
     } catch (error) {
         return new Response(
             JSON.stringify({
-                error: "Failed to fetch profiles",
+                error: "Failed to fetch liquidity provider",
                 details: error
             }),
             { status: 500 }

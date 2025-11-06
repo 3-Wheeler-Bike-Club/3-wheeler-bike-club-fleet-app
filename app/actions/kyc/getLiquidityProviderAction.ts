@@ -1,8 +1,8 @@
 "use server"
 
-export async function getProfileAction(address: string) {
+export async function getLiquidityProviderAction(address: string) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getProfile`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getLiquidityProvider`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -11,7 +11,7 @@ export async function getProfileAction(address: string) {
             body: JSON.stringify({ address: address })
         })
         if (!response.ok) {
-            throw new Error("Failed to get profile")
+            throw new Error("Failed to get liquidity provider")
         }
         return response.json()
     } catch (error) {

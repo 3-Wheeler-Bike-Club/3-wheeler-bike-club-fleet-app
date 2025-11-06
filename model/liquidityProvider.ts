@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const ProfileSchema = new mongoose.Schema(
+const LiquidityProviderSchema = new mongoose.Schema(
     {
         address: {
             type: String,
@@ -51,6 +51,6 @@ const ProfileSchema = new mongoose.Schema(
     }
 )  
 
-const Profile = mongoose.models.Profile || mongoose.model("Profile", ProfileSchema)
+const LiquidityProvider = mongoose.models.LiquidityProvider || mongoose.model("LiquidityProvider", LiquidityProviderSchema)
 
-export default Profile
+export default LiquidityProvider;
