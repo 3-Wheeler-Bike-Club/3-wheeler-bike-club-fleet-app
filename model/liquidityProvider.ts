@@ -26,12 +26,12 @@ const LiquidityProviderSchema = new mongoose.Schema(
         lastname: {
             type: String,
         },
-        id: {
-            type: String,
-            enum: ["passport", "national", "self.xyz"],
-        },
-        files: {
+        national: {
             type: Array,
+        },
+        verification: {
+            type: String,
+            enum: ["manual", "self.xyz"],
         },
         compliant: {
             type: Boolean,

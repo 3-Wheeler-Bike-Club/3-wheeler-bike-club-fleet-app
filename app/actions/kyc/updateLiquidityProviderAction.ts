@@ -6,8 +6,8 @@ export async function updateLiquidityProviderAction(
     firstname: string,
     othername: string,
     lastname: string,
-    id: string,
-    files: string[]
+    national: string[],
+    verification: string
 ) {
     try {
         const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateLiquidityProvider`, {
@@ -21,8 +21,8 @@ export async function updateLiquidityProviderAction(
                 firstname: firstname,
                 othername: othername,
                 lastname: lastname,
-                id: id,
-                files: files
+                national: national,
+                verification: verification
             })
         })
         if (!response.ok) {

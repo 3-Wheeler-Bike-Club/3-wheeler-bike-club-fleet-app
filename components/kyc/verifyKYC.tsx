@@ -35,9 +35,6 @@ const ManualFormSchema = z.object({
     lastname: z.string(),
     
 })
-const ManualUploadFormSchema = z.object({
-  id: z.string(),
-})
 
 interface VerifyKYCProps {
   address: `0x${string}`
@@ -49,7 +46,6 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
 
   const [files, setFiles] = useState < File[] | null > (null);
   console.log(files);
-  const [maxFiles, setMaxFiles] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [manualVerification, setManualVerification] = useState(false);
   const [qr, setQR] = useState<boolean>(false);
@@ -110,12 +106,6 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
       lastname: undefined,
     },
   })
-  const manualUploadForm = useForm < z.infer < typeof ManualUploadFormSchema >> ({
-    resolver: zodResolver(ManualUploadFormSchema),
-    defaultValues: {
-      id: undefined,
-    },
-  })
 
   async function onSubmitSelf(values: z.infer < typeof SelfFormSchema > ) {
     setQR(true);
@@ -125,21 +115,20 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
     setUpload(true);
   }
 
-  async function onSubmitManualUpload(values: z.infer < typeof ManualUploadFormSchema > ) {
-    console.log(values);
+  async function onSubmitManualUpload() {
     const manualFormValues = manualForm.getValues();
     setLoading(true);
     try {
-      
-      console.log(values);
       if(files && files.length > 0) {
-        if (values.id === "national" && files.length != 2) {
+        
+        if (files.length != 2) {
           toast.error("National ID must have both front and back scans", {
             description: `Please upload both the front and back of your National ID`,
           })
           setLoading(false);
           return;
         } 
+        
         const uploadFiles = await startUpload(files);
           if(uploadFiles) {
             //update liquidity provider with files
@@ -148,8 +137,8 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
               manualFormValues.firstname,
               manualFormValues.othername,
               manualFormValues.lastname,
-              values.id,
-              uploadFiles.map((file) => file.ufsUrl)
+              uploadFiles.map((file) => file.ufsUrl),
+              "manual"
             );
             if (updateLiquidityProvider) {
               await sendVerifySelfMail(
@@ -194,7 +183,7 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
       <DrawerTrigger asChild>
           <Button className="max-w-fit h-12 rounded-2xl">
               {
-                liquidityProvider.files.length > 0
+                liquidityProvider.national.length > 0
                 ? <p>View KYC Profile</p>
                 : <p>Complete KYC</p>
               }
@@ -247,148 +236,52 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
               {
                 upload && (
                   <>
-                  <div className="flex flex-col p-4">
-                  <Form {...manualUploadForm}>
-                    <form onSubmit={manualUploadForm.handleSubmit(onSubmitManualUpload)} className="space-y-6">
-                      <FormField
-                        control={manualUploadForm.control}
-                        name="id"
-                        render={({ field }) => (
-                            <FormItem>
-                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                    <FormLabel className="text-yellow-600">ID</FormLabel>
-                                    {
-                                        !liquidityProvider.id
-                                        ?(
-                                            <>
-                                                <Select 
-                                                  onValueChange={(value) => {
-                                                    field.onChange(value);
-                                                    // Set maxFiles based on the ID type
-                                                    if (value === "passport") {
-                                                      setMaxFiles(1); // Only front needed
-                                                    } else if (value === "national") {
-                                                      setMaxFiles(2); // Front and back needed
-                                                    }
-                                                  }}
-                                          
-                                                  defaultValue={field.value}
-                                                >
-                                                    <FormControl>
-                                                    <SelectTrigger disabled={loading} className="col-span-3">
-                                                        <SelectValue placeholder="Select an ID Type" />
-                                                    </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent className="col-span-3">
-                                                        <SelectItem value="passport">Passport</SelectItem>
-                                                        <SelectItem value="national">National ID</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </>
-                                        )
-                                        :(
-                                            <>
-                                                <FormControl>
-                                                    <Input disabled className="col-span-3" placeholder={liquidityProvider.id === "passport" ? "Passport" : "National ID" } {...field} />
-                                                </FormControl>
-                                            </>
-                                        )
-                                    }
-                                </div>
-                            </FormItem>
-                        )}
-                      />
-                      <>
-                        {
-                          maxFiles && (
-                            <>
-                              <div>
-                                {
-                                  liquidityProvider.files.length <= 0
-                                  ?(
-                                    <>
-                                      <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
-                                      <div>
-                                        <FileUploader
-                                          value={files}
-                                          onValueChange={setFiles}
-                                          dropzoneOptions={{
-                                            maxFiles: maxFiles!,
-                                            maxSize: 1024 * 1024 * 4,
-                                            multiple: true,
-                                            accept: {
-                                              "image/*": [".png", ".jpg", ".jpeg"],
-                                            },
-                                          }}
-                                          className="relative bg-background rounded-lg p-2"
-                                        >
-                                          <FileInput
-                                            id="fileInput"
-                                            className="outline-dashed outline-1 outline-slate-500"
-                                          >
-                                            <div className="flex items-center justify-center flex-col py-2 w-full ">
-                                              <CloudUpload className='text-gray-500 w-10 h-10' />
-                                              <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                                                <span className="font-semibold">Click to upload </span>
-                                                or drag and drop
-                                              </p>
-                                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                PNG, JPG or JPEG
-                                              </p>
-                                            </div>
-                                          </FileInput>
-                                          <FileUploaderContent>
-                                            {files &&
-                                              files.length > 0 &&
-                                              files.map((file, i) => (
-                                                <FileUploaderItem key={i} index={i}>
-                                                  <Paperclip className="h-4 w-4 stroke-current" />
-                                                  <span>{file.name}</span>
-                                                </FileUploaderItem>
-                                              ))}
-                                          </FileUploaderContent>
-                                        </FileUploader>
-                                      </div>
-                                      <div className="text-xs text-muted-foreground text-center">{maxFiles === 1 ? "Upload the Front Photo of your Passport" : "Upload the Front and Back of your National ID"}</div>
-                                      
-                                    </>
-                                  ) 
-                                  :(
-                                    <>
-                                      <Label className="text-yellow-600">Uploaded ID Scans</Label>
-                                      <div>
-                                      </div>
-                                    </>
-                                  ) 
-                                }
+                    <div className="flex flex-col p-4 space-y-6">
+                      <div className="flex flex-col">
+                        <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
+                        <div>
+                          <FileUploader
+                            value={files}
+                            onValueChange={setFiles}
+                            dropzoneOptions={{
+                              maxFiles: 2,
+                              maxSize: 1024 * 1024 * 4,
+                              multiple: true,
+                              accept: {
+                                "image/*": [".png", ".jpg", ".jpeg"],
+                              },
+                            }}
+                            className="relative bg-background rounded-lg p-2"
+                          >
+                            <FileInput
+                              id="fileInput"
+                              className="outline-dashed outline-1 outline-slate-500"
+                            >
+                              <div className="flex items-center justify-center flex-col py-2 w-full ">
+                                <CloudUpload className='text-gray-500 w-10 h-10' />
+                                <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                  <span className="font-semibold">Click to upload </span>
+                                  or drag and drop
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  PNG, JPG or JPEG
+                                </p>
                               </div>
-                            </>
-                          )
-                        }
-                        {
-                          !maxFiles && (
-                            <div>
-                            <Label className="text-yellow-600">Upload ID <span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
-                            <div>
-                              <div
-                                className="relative bg-background rounded-lg p-2"
-                              >
-                                <div
-                                  className="outline-dashed outline-1 outline-slate-500 rounded-lg"
-                                >
-                                  <div className="flex items-center justify-center flex-col py-2 w-full ">
-                                    <FileWarning className='text-gray-500 w-10 h-10' />
-                                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                                      <span className="font-semibold">Select an ID type to upload </span>
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            </div>
-                          )
-                        }
-                      </> 
+                            </FileInput>
+                            <FileUploaderContent>
+                              {files &&
+                                files.length > 0 &&
+                                files.map((file, i) => (
+                                  <FileUploaderItem key={i} index={i}>
+                                    <Paperclip className="h-4 w-4 stroke-current" />
+                                    <span>{file.name}</span>
+                                  </FileUploaderItem>
+                                ))}
+                            </FileUploaderContent>
+                          </FileUploader>
+                        </div>
+                        <div className="text-xs text-muted-foreground text-center">{"Upload the Front Photo of your Passport or both sides of any National ID"}</div>
+                      </div>
                       <div className="flex justify-between">
                         <Button
                           disabled={loading}
@@ -412,9 +305,7 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
                           <p>Save & Submit</p>
                         </Button>
                       </div>
-                    </form>
-                  </Form>
-                </div>  
+                    </div>  
                   </>
                 )
               }
@@ -497,20 +388,20 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
                           
                           <Button
                               className="w-full"
-                              disabled={loading || liquidityProvider.files.length > 0}
+                              disabled={loading || liquidityProvider.national.length > 0}
                               type="submit"
                           >
                               {
                                   loading
                                   ? <Loader2 className="w-4 h-4 animate-spin" />
                                   : (
-                                    liquidityProvider.files.length > 0
+                                    liquidityProvider.national.length > 0
                                     ? <Hourglass />
                                     : <Scan />
                                   )
                               }
                               {
-                                liquidityProvider.files.length > 0
+                                liquidityProvider.national.length > 0
                                 ? <p>KYC Review Pending...</p>
                                 : <p>Scan & Upload ID</p>
                               }
@@ -545,7 +436,7 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
             )
             :(
               <>
-                <div className="flex flex-col gap-2 p-4 pb-0">
+                <div className="flex flex-col gap-2 pb-0">
                     <div>
                         {qr && (
                           <>
@@ -564,8 +455,8 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
                                           values.firstname,
                                           values.othername,
                                           values.lastname,
-                                          "self.xyz",
-                                          ["self.xyz"]
+                                          ["self.xyz"],
+                                          "self.xyz"
                                         );
                                         if (updateLiquidityProvider) {
                                           await sendVerifySelfMail(
@@ -704,20 +595,20 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
                                     <div className="flex">
                                         <Button
                                             className="w-full"
-                                            disabled={loading || liquidityProvider.files.length > 0}
+                                            disabled={loading || liquidityProvider.national.length > 0}
                                             type="submit"
                                         >
                                             {
                                                 loading
                                                 ? <Loader2 className="w-4 h-4 animate-spin" />
                                                 : (
-                                                  liquidityProvider.files.length > 0
+                                                  liquidityProvider.national.length > 0
                                                   ? <Hourglass />
                                                   : <Camera />
                                                 )
                                             }
                                             {
-                                              liquidityProvider.files.length > 0
+                                              liquidityProvider.national.length > 0
                                               ? <p>KYC Review Pending...</p>
                                               : <p>Scan Self.xyz QR</p>
                                             }
@@ -739,7 +630,6 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
                                 onClick={() => {
                                   setManualVerification(true);
                                   manualForm.reset();
-                                  manualUploadForm.reset();
                                   setUpload(false);
                                 }}
                             >
