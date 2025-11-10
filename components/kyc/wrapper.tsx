@@ -72,7 +72,7 @@ export function Wrapper() {
                                     <DoorOpen className="h-4 w-4" />
                                     <AlertTitle className="font-bold">Welcome to 3 Wheeler Bike Club!</AlertTitle>
                                     <AlertDescription className="text-xs italic">
-                                        <p className="max-md:text-[11px]">{"You can now complete KYC & operate your own 3-wheeler"}</p>
+                                        <p className="max-md:text-[11px]">{"You can now complete KYC & finance a 3-wheeler"}</p>
                                     </AlertDescription>
                                 </Alert>
                             </div>
@@ -97,7 +97,7 @@ export function Wrapper() {
                                                         <>
                                                             <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                                                             <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
-                                                            <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC by uploading your national ID and license.</p>
+                                                            <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC by uploading any of your valid national IDs.</p>
                                                         </>
                                                     )
                                                    }
