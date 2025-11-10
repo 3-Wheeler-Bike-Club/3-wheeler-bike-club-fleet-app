@@ -9,9 +9,11 @@ export interface LiquidityProvider {
     firstname: string
     othername: string
     lastname: string
-    id: string
-    files: string[]
+    national: string[]
+    verification: string
     compliant: boolean
+    createdAt: Date
+    updatedAt: Date
 }
 
 export const useGetLiquidityProvider = (address: `0x${string}` | undefined) => {

@@ -82,7 +82,7 @@ export function Wrapper() {
                                         <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                                         <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
                                         {
-                                            liquidityProvider?.files && liquidityProvider?.files?.length > 0
+                                            liquidityProvider?.national && liquidityProvider?.national?.length > 0
                                             ? <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your KYC is pending verification. Please wait while we review your documents.</p>
                                             : <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC options below to access P2P fleet financing.</p>
                                         }

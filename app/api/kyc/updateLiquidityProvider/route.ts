@@ -14,15 +14,15 @@ export async function POST(
     try {
         await connectDB();
         
-        const { address, firstname, othername, lastname, id, files } = await req.json();
+        const { address, firstname, othername, lastname, national, verification } = await req.json();
 
         const liquidityProvider = await LiquidityProvider.findOneAndUpdate({address: address}, {
             
             firstname: firstname,
             othername: othername,
             lastname: lastname,
-            id: id,
-            files: files
+            national: national,
+            verification: verification
         }, { new: true });
 
         if (!liquidityProvider) {
