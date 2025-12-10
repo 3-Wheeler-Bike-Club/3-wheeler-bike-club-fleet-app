@@ -25,6 +25,7 @@ import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { usePrivy } from "@privy-io/react-auth"
+import { sendWelcomeEmail } from "@/app/actions/mail/sendWelcomeMail"
 
   
 
@@ -245,8 +246,10 @@ export function VerifyContact({ address, liquidityProvider, getLiquidityProvider
     try {
       console.log(values);
       if (values.terms) {
+        //send welcome email
+        await sendWelcomeEmail(email!.toLowerCase());
+
         //post liquidity provider preupload
-        
         const postLiquidityProvider = await postLiquidityProviderAction(
           address!,
           email!.toLowerCase(),
@@ -283,8 +286,10 @@ export function VerifyContact({ address, liquidityProvider, getLiquidityProvider
     setLoadingLinkingTerms(true);
     try {
       if (emailFromPrivy && values.terms) {
-        //post liquidity provider preupload
+        //send welcome email
+        await sendWelcomeEmail(emailFromPrivy!.toLowerCase());
         
+        //post liquidity provider preupload
         const postLiquidityProvider = await postLiquidityProviderAction(
           address!,
           emailFromPrivy!.toLowerCase(),
