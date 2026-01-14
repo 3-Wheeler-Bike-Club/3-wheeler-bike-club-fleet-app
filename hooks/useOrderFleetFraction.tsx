@@ -1,6 +1,6 @@
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook"
 import { publicClient } from "@/utils/client"
-import { cUSD, fleetOrderBook } from "@/utils/constants/addresses"
+import { USD, fleetOrderBook } from "@/utils/constants/addresses"
 import { getReferralTag, submitReferral } from "@divvi/referral-sdk"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -27,7 +27,7 @@ export const useOrderFleetFraction = () => {
         const data = encodeFunctionData({
           abi: fleetOrderBookAbi,
           functionName: "orderFleetFraction",
-          args: [BigInt(shares), cUSD, account!],
+          args: [BigInt(shares), USD, account!],
         })
         
 

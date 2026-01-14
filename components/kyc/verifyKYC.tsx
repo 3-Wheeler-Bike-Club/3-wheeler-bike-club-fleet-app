@@ -294,7 +294,7 @@ export function VerifyKYC({ address, liquidityProvider, getLiquidityProviderSync
                           <Undo2   />
                         </Button>
                         <Button
-                          type="submit"
+                          onClick={onSubmitManualUpload}
                           disabled={loading}
                         >
                           {
