@@ -34,7 +34,7 @@ export function OnRamp({ setOpenOnRamp, address, reference, setLoadingAddCeloDol
                     <iframe
                         src={
                             `
-                                https://useaccrue.com/hosted/ramp?key=CSHRMP-PUBK_pVc9ndu0HOOS4opC&paymentType=deposit&address=${address}&coin=CUSD&network=CELO&reference=${reference}&isWalletContext=false
+                                https://useaccrue.com/hosted/ramp?key=CSHRMP-PUBK_pVc9ndu0HOOS4opC&paymentType=deposit&address=${address}&coin=USD&network=CELO&reference=${reference}&isWalletContext=false
                             `
                         }
                         title="cashRamp"

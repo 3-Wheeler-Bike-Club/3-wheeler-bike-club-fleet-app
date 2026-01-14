@@ -17,7 +17,7 @@ import Image from "next/image"
 import { BanknoteArrowDown, ChartPie, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { divvi, fleetOrderBook, cUSD } from "@/utils/constants/addresses";
+import { divvi, fleetOrderBook, USD } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
 import { erc20Abi, formatUnits } from "viem";
 import { celo, optimism } from "viem/chains";
@@ -108,7 +108,7 @@ export function Wrapper() {
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: cUSD,
+        address: USD,
         functionName: "allowance",
         args: [address!, fleetOrderBook],
     })
@@ -133,7 +133,7 @@ export function Wrapper() {
 
     const { data: tokenBalance, queryKey: tokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: cUSD,
+        address: USD,
         functionName: "balanceOf",
         chainId: celo.id,
         args: [address!],
@@ -198,7 +198,7 @@ export function Wrapper() {
                             </div>  
                             <div className="flex items-center justify-center gap-2 mt-2">
                                 <div className="text-sm text-muted-foreground">
-                                    Balance: {tokenBalance ? Number(formatUnits(tokenBalance, 18)).toLocaleString() : '0'} cUSD
+                                    Balance: {tokenBalance ? Number(formatUnits(tokenBalance, 18)).toLocaleString() : '0'} USD
                                 </div>
                                 <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
@@ -207,7 +207,7 @@ export function Wrapper() {
                                 }`}>
                                     {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
                                         ? "✓ Ready to buy" 
-                                        : "✗ Add more cUSD"
+                                        : "✗ Add more USD"
                                     }
                                 </div>
                             </div>
@@ -280,7 +280,7 @@ export function Wrapper() {
                                                 
                                             } else {
                                                 if (!isUserReferredToProvider || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
-                                                    approve(address!, cUSD)
+                                                    approve(address!, USD)
                                                 } else {
                                                     toast.error("Already approved!", {
                                                         description: "You are have already approved & registered to a provider",
@@ -336,13 +336,13 @@ export function Wrapper() {
                                                             allowanceCeloUSD && allowanceCeloUSD > 0 ? (
                                                             <>
                                                                 {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
-                                                                    ? "Pay with cUSD" 
-                                                                    : "Add more cUSD"
+                                                                    ? "Pay with USD" 
+                                                                    : "Add more USD"
                                                                 }
                                                             </>
                                                             ) : (
                                                                 <>
-                                                                    Approve cUSD
+                                                                    Approve USD
                                                                 </>
                                                             )
                                                         }
