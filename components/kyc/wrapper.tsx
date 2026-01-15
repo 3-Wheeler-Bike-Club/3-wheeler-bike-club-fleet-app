@@ -36,7 +36,7 @@ export function Wrapper() {
     const { data: compliant, isLoading: compliantLoading, queryKey: compliantQueryKey } = useReadContract({
         address: fleetOrderBook,
         abi: fleetOrderBookAbi,
-        functionName: "isCompliant",
+        functionName: "isLiquidityProviderCompliant",
         args: [address!],
     })
     useEffect(() => { 
