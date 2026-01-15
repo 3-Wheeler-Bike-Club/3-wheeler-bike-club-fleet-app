@@ -9,6 +9,7 @@ import { Garage } from "@/components/fleet/garage"
 import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
 import { usePrivy } from "@privy-io/react-auth"
+import { mantleSepoliaTestnet } from "viem/chains"
 
 
 export function Wrapper() {
@@ -29,12 +30,13 @@ export function Wrapper() {
     const { data: compliant, isLoading: compliantLoading, queryKey: compliantQueryKey } = useReadContract({
         address: fleetOrderBook,
         abi: fleetOrderBookAbi,
-        functionName: "isCompliant",
+        functionName: "isLiquidityProviderCompliant",
         args: [address!],
     })
     useEffect(() => { 
         compliantQueryClient.invalidateQueries({ queryKey: compliantQueryKey }) 
     }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
+    console.log(compliant)
 
 
 
