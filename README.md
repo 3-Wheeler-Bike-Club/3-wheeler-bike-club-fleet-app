@@ -48,7 +48,7 @@ npm install
 Create a `.env.local` in project root with:
 
 ```env
-NEXT_PUBLIC_CELO_RPC_URL=https://forno.celo.org
+NEXT_PUBLIC_CELO_RPC_URL=
 NEXT_PUBLIC_FLEET_ORDER_BOOK_ADDRESS=0xYourContractAddress
 NEXT_PUBLIC_FLEET_ORDER_TOKEN_ADDRESS=0xYourTokenAddress
 # Optional: specify accepted ERC20 stablecoin addresses

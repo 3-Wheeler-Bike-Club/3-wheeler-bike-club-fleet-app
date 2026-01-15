@@ -17,13 +17,12 @@ import Image from "next/image"
 import { BanknoteArrowDown, ChartPie, HandCoins, Loader2, Minus, Plus, RefreshCw, Signature } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { divvi, fleetOrderBook, USD } from "@/utils/constants/addresses";
+import { fleetOrderBook, USD } from "@/utils/constants/addresses";
 import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
 import { erc20Abi, formatUnits } from "viem";
-import { celo, optimism } from "viem/chains";
+import { mantleSepoliaTestnet, optimism } from "viem/chains";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { divviAbi } from "@/utils/abis/divvi";
 import { useApprove } from "@/hooks/useApprove";
 import { useOrderFleet } from "@/hooks/useOrderFleet";
 import { useOrderFleetFraction } from "@/hooks/useOrderFleetFraction";
@@ -118,24 +117,11 @@ export function Wrapper() {
     console.log(allowanceCeloUSD)
 
 
-    const { data: isUserReferredToProvider, queryKey: isUserReferredToProviderQueryKey } = useReadContract({
-        abi: divviAbi,
-        address: divvi,
-        functionName: "isUserReferredToProvider",
-        chainId: optimism.id,
-        args: [address!, "0x0423189886D7966f0DD7E7d256898DAeEE625dca"],
-
-    })
-    useEffect(() => { 
-        isUserReferredToProviderQueryClient.invalidateQueries({ queryKey: isUserReferredToProviderQueryKey }) 
-    }, [blockNumber, isUserReferredToProviderQueryClient, isUserReferredToProviderQueryKey]) 
-    console.log(isUserReferredToProvider!)
-
     const { data: tokenBalance, queryKey: tokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
         address: USD,
         functionName: "balanceOf",
-        chainId: celo.id,
+        chainId: mantleSepoliaTestnet.id,
         args: [address!],
 
     })
@@ -279,7 +265,7 @@ export function Wrapper() {
                                                 
                                                 
                                             } else {
-                                                if (!isUserReferredToProvider || (Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
+                                                if ((Number(formatUnits(allowanceCeloUSD!, 18))) === 0) {
                                                     approve(address!, USD)
                                                 } else {
                                                     toast.error("Already approved!", {
