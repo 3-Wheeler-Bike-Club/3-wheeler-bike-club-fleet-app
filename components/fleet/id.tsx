@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { usePrivy } from "@privy-io/react-auth"
 import { fleetOrderYieldAbi } from "@/utils/abis/fleetOrderYield"
+import { formatUnits } from "viem"
 
 
 
@@ -69,7 +70,7 @@ export function Id( {fleet}: IdProps ) {
         address: fleetOrderBook,
         abi: fleetOrderBookAbi,
         functionName: "getFleetLockPeriodPerOrder",
-        args: [BigInt(Number(fleet))],
+        args: [(fleet as bigint)],
     })
     useEffect(() => { 
         fleetLockPeriodQueryClient.invalidateQueries({ queryKey: fleetLockPeriodQueryKey }) 
@@ -80,11 +81,12 @@ export function Id( {fleet}: IdProps ) {
         address: fleetOrderYield,
         abi: fleetOrderYieldAbi,
         functionName: "getFleetOrderStatusReadable",
-        args: [BigInt(Number(fleet))],
+        args: [(fleet as bigint)],
     })
     useEffect(() => { 
         fleetOrderStatusQueryClient.invalidateQueries({ queryKey: fleetOrderStatusQueryKey }) 
     }, [blockNumber, fleetOrderStatusQueryClient, fleetOrderStatusQueryKey]) 
+    console.log(fleetOrderStatus)
 
 
     
@@ -97,27 +99,31 @@ export function Id( {fleet}: IdProps ) {
     useEffect(() => { 
         fleetFractionPriceQueryClient.invalidateQueries({ queryKey: fleetFractionPriceQueryKey }) 
     }, [blockNumber, fleetFractionPriceQueryClient, fleetFractionPriceQueryKey]) 
-
+    console.log(fleetFractionPrice)    
 
     const { data: fleetInitialValuePerOrder, queryKey: fleetInitialValuePerOrderQueryKey } = useReadContract({
         abi: fleetOrderBookAbi,
         address: fleetOrderBook,
         functionName: "getFleetInitialValuePerOrder",
+        args: [(fleet as bigint)],
     })
     useEffect(() => { 
         fleetInitialValuePerOrderQueryClient.invalidateQueries({ queryKey: fleetInitialValuePerOrderQueryKey }) 
     }, [blockNumber, fleetInitialValuePerOrderQueryClient, fleetInitialValuePerOrderQueryKey]) 
-
+    console.log(fleetInitialValuePerOrder)
 
     const { data: fleetLiquidityProviderExpectedValuePerOrder, queryKey: fleetLiquidityProviderExpectedValuePerOrderQueryKey } = useReadContract({
         abi: fleetOrderBookAbi,
         address: fleetOrderBook,
         functionName: "getFleetLiquidityProviderExpectedValuePerOrder",
+        args: [(fleet as bigint)],
     })
     useEffect(() => { 
         fleetLiquidityProviderExpectedValuePerOrderQueryClient.invalidateQueries({ queryKey: fleetLiquidityProviderExpectedValuePerOrderQueryKey }) 
     }, [blockNumber, fleetLiquidityProviderExpectedValuePerOrderQueryClient, fleetLiquidityProviderExpectedValuePerOrderQueryKey]) 
-    
+    console.log(fleetLiquidityProviderExpectedValuePerOrder)
+    console.log(fleetLockPeriod)
+
     return (
         <>
             <CarouselItem key={Number(fleet)}>
@@ -145,9 +151,9 @@ export function Id( {fleet}: IdProps ) {
                                 <div className="flex justify-between items-center">
                                     <span className="font-semibold">Shares:</span>
                                     <div className="flex items-center gap-1">
-                                        <span className="text-right font-bold">{fleetShares}</span>
+                                        <span className="text-right font-bold">{Number(fleetShares)}</span>
                                         <span className="text-muted-foreground"> / </span>
-                                        <span className="text-right font-semibold italic">{totalSupply}</span>
+                                        <span className="text-right font-semibold italic">{Number(totalSupply)}</span>
                                         <span className="text-muted-foreground"> / </span>
                                         <span className="text-muted-foreground italic">50</span>
                                     </div>
@@ -156,11 +162,21 @@ export function Id( {fleet}: IdProps ) {
                         }
                         <div className="flex justify-between items-center">
                             <span className="font-semibold">Capital:</span>
-                            <span className="text-right"><span className="font-bold text-muted-foreground">$ </span>{isfleetFractioned ? `${fleetLiquidityProviderExpectedValuePerOrder! / fleetShares!}` : `${Number(fleetLiquidityProviderExpectedValuePerOrder!)}`}</span>
+                            <span className="text-right">
+                                <span className="font-bold text-muted-foreground">$ </span>
+                                {isfleetFractioned 
+                                    ? (fleetFractionPrice !== undefined && fleetShares !== undefined 
+                                        ? `${Number(formatUnits(fleetFractionPrice, 6)) * Number(fleetShares)}` 
+                                        : "Loading...")
+                                    : (fleetInitialValuePerOrder !== undefined 
+                                        ? `${Number(formatUnits(fleetInitialValuePerOrder, 6))}` 
+                                        : "Loading...")
+                                }
+                            </span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="font-semibold">Yield Period:</span>
-                            <span className="text-right">{Number(fleetLockPeriod)} weeks</span>
+                            <span className="text-right">{fleetLockPeriod !== undefined ? `${Number(fleetLockPeriod)} weeks` : "Loading..."}</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="font-semibold">Start Date:</span>
@@ -168,11 +184,31 @@ export function Id( {fleet}: IdProps ) {
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="font-semibold">Weekly ROI:</span>
-                            <span className="text-right"><span className="font-bold text-muted-foreground" >$</span> {isfleetFractioned ? `${((( Number(fleetLiquidityProviderExpectedValuePerOrder!) / Number(fleetShares!) ) * 1.45) / Number(fleetLockPeriod)).toFixed(4)}` : `${(( (Number(fleetLiquidityProviderExpectedValuePerOrder!)) * 1.45 ) / Number(fleetLockPeriod)).toFixed(4)}`}</span>
+                            <span className="text-right">
+                                <span className="font-bold text-muted-foreground">$</span>{" "}
+                                {fleetLiquidityProviderExpectedValuePerOrder !== undefined && fleetLockPeriod !== undefined
+                                    ? (isfleetFractioned 
+                                        ? (fleetShares !== undefined
+                                            ? `${((( Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)) / Number(fleetShares) ) * 1.45) / Number(fleetLockPeriod)).toFixed(4)}`
+                                            : "Loading...")
+                                        : `${(( (Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6))) * 1.45 ) / Number(fleetLockPeriod)).toFixed(4)}`)
+                                    : "Loading..."
+                                }
+                            </span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="font-semibold">Total ROI <span className="text-muted-foreground italic text-yellow-800">(45%)</span>:</span>
-                            <span className="text-right"><span className="font-bold text-muted-foreground" >$</span> {isfleetFractioned ? `${ (( Number(fleetLiquidityProviderExpectedValuePerOrder!) / Number(fleetShares!) ) * 1.45).toFixed(2) }` : `${ (( Number(fleetLiquidityProviderExpectedValuePerOrder!) ) * 1.45).toFixed(2) }`}</span>
+                            <span className="text-right">
+                                <span className="font-bold text-muted-foreground">$</span>{" "}
+                                {fleetLiquidityProviderExpectedValuePerOrder !== undefined
+                                    ? (isfleetFractioned 
+                                        ? (fleetShares !== undefined
+                                            ? `${(( Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)) / Number(fleetShares) ) * 1.45).toFixed(2)}`
+                                            : "Loading...")
+                                        : `${(( Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)) ) * 1.45).toFixed(2)}`)
+                                    : "Loading..."
+                                }
+                            </span>
                         </div>
                     </div>
                 </div>

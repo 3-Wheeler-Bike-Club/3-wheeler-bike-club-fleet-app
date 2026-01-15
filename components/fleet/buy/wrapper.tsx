@@ -134,7 +134,7 @@ export function Wrapper() {
     const { data: compliant, isLoading: compliantLoading, queryKey: compliantQueryKey } = useReadContract({
         address: fleetOrderBook,
         abi: fleetOrderBookAbi,
-        functionName: "isCompliant",
+        functionName: "isLiquidityProviderCompliant",
         args: [address!],
     })
     useEffect(() => { 
@@ -179,7 +179,7 @@ export function Wrapper() {
                                     ~
                                 </div>
                                 <div className="text-xl font-bold">
-                                    {isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))} <span className="text-muted-foreground">USD</span>
+                                    {fleetFractionPrice ? (isFractionsMode ? Math.ceil(fractions * ( Number(formatUnits(fleetFractionPrice, 6)) )) : Math.ceil(amount * (Number(formatUnits(fleetFractionPrice, 6)) * 50))) : 0} <span className="text-muted-foreground">USD</span>
                                 </div>
                             </div>  
                             <div className="flex items-center justify-center gap-2 mt-2">
@@ -187,11 +187,11 @@ export function Wrapper() {
                                     Balance: {tokenBalance ? Number(formatUnits(tokenBalance, 18)).toLocaleString() : '0'} USD
                                 </div>
                                 <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                    tokenBalance && fleetFractionPrice && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(formatUnits(fleetFractionPrice, 6)) )) : Math.ceil(amount * (Number(formatUnits(fleetFractionPrice, 6)) * 50))) 
                                     ? "bg-green-100 text-green-800" 
                                     : "bg-red-100 text-red-800"
                                 }`}>
-                                    {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                    {tokenBalance && fleetFractionPrice && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(formatUnits(fleetFractionPrice, 6)) )) : Math.ceil(amount * (Number(formatUnits(fleetFractionPrice, 6)) * 50))) 
                                         ? "✓ Ready to buy" 
                                         : "✗ Add more USD"
                                     }
@@ -248,16 +248,16 @@ export function Wrapper() {
                                         onClick={() => {
                                             if (allowanceCeloUSD && allowanceCeloUSD > 0) {
                                                 if (isFractionsMode) {
-                                                    if ( (Number(formatUnits(tokenBalance!, 18))) < Math.ceil(fractions * ( Number(fleetFractionPrice) )) ) {
+                                                    if (fleetFractionPrice && (Number(formatUnits(tokenBalance!, 18))) < Math.ceil(fractions * ( Number(formatUnits(fleetFractionPrice, 6)) )) ) {
                                                         onRamp()
-                                                    } else {
+                                                    } else if (fleetFractionPrice) {
                                                         orderFleetFraction(address!, fractions)
                                                     }
                                                     
                                                 } else {
-                                                    if ( (Number(formatUnits(tokenBalance!, 18))) < Math.ceil(amount * (Number(fleetFractionPrice) * 50)) ) {
+                                                    if (fleetFractionPrice && (Number(formatUnits(tokenBalance!, 18))) < Math.ceil(amount * (Number(formatUnits(fleetFractionPrice, 6)) * 50)) ) {
                                                         onRamp()
-                                                    } else {
+                                                    } else if (fleetFractionPrice) {
                                                         orderFleet(address!, amount)
                                                     }
                                                     
@@ -293,7 +293,7 @@ export function Wrapper() {
                                                                 {
                                                                     allowanceCeloUSD && allowanceCeloUSD > 0 ? (
                                                                     <>
-                                                                        {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                                                        {tokenBalance && fleetFractionPrice && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(formatUnits(fleetFractionPrice, 6)) )) : Math.ceil(amount * (Number(formatUnits(fleetFractionPrice, 6)) * 50))) 
                                                                             ? <HandCoins />
                                                                             : <BanknoteArrowDown />
                                                                         }
@@ -321,7 +321,7 @@ export function Wrapper() {
                                                         {
                                                             allowanceCeloUSD && allowanceCeloUSD > 0 ? (
                                                             <>
-                                                                {tokenBalance && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(fleetFractionPrice) )) : Math.ceil(amount * (Number(fleetFractionPrice) * 50))) 
+                                                                {tokenBalance && fleetFractionPrice && Number(formatUnits(tokenBalance, 18)) >= (isFractionsMode ? Math.ceil(fractions * ( Number(formatUnits(fleetFractionPrice, 6)) )) : Math.ceil(amount * (Number(formatUnits(fleetFractionPrice, 6)) * 50))) 
                                                                     ? "Pay with USD" 
                                                                     : "Add more USD"
                                                                 }

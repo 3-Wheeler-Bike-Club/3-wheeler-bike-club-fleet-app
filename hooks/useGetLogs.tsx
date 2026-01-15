@@ -66,7 +66,7 @@ export const useGetLogs = (address: `0x${string}` | undefined) => {
                 setLogs(sortedLogs);
             }
         }
-        sortLogs()
+        //sortLogs()
     }, [address, blockNumber]);
 
     return { logs };
