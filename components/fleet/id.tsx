@@ -189,9 +189,9 @@ export function Id( {fleet}: IdProps ) {
                                 {fleetLiquidityProviderExpectedValuePerOrder !== undefined && fleetLockPeriod !== undefined
                                     ? (isfleetFractioned 
                                         ? (fleetShares !== undefined
-                                            ? `${((( Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)) / Number(fleetShares) ) * 1.45) / Number(fleetLockPeriod)).toFixed(4)}`
+                                            ? `${ (((Number(fleetShares) / 50) * (Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)))) / (Number(fleetLockPeriod))).toFixed(2) }`
                                             : "Loading...")
-                                        : `${(( (Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6))) * 1.45 ) / Number(fleetLockPeriod)).toFixed(4)}`)
+                                        : `${ ((Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6))) / (Number(fleetLockPeriod))).toFixed(2) }`)
                                     : "Loading..."
                                 }
                             </span>
@@ -203,9 +203,9 @@ export function Id( {fleet}: IdProps ) {
                                 {fleetLiquidityProviderExpectedValuePerOrder !== undefined
                                     ? (isfleetFractioned 
                                         ? (fleetShares !== undefined
-                                            ? `${(( Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)) / Number(fleetShares) ) * 1.45).toFixed(2)}`
+                                            ? `${ ((Number(fleetShares) / 50) * (Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)))).toFixed(2) }`
                                             : "Loading...")
-                                        : `${(( Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6)) ) * 1.45).toFixed(2)}`)
+                                        : `${ (Number(formatUnits(fleetLiquidityProviderExpectedValuePerOrder, 6))).toFixed(2) }`)
                                     : "Loading..."
                                 }
                             </span>
